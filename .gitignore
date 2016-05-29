@@ -234,3 +234,8 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+/doc/latrunculi-gratz.lot
+/doc/latrunculi-gratz.lof
+/doc/latrunculi-gratz.aux
+/doc/latrunculi-gratz.toc
+/doc/latrunculi-gratz.synctex.gz
