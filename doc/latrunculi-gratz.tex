@@ -1,7 +1,8 @@
 \documentclass[12pt]{article}
 
-\usepackage[tables,figures]{uproject}
+\usepackage[figures]{uproject}
 \usepackage[utf8]{inputenc}
+\usepackage{epsfig}
  
 \title{Projektový seminář}
 \subtitle{Latrunculi}
@@ -43,9 +44,22 @@ Použití \emph{WinForms} by bylo výhodné, jelikož vývoj je jednoduchý (úd
 
 Naproti tomu u~\emph{WPF} je již při vývoji myšleno na responzivní design. Prvky uživatelského rozhraní mají velmi bohaté a~pro programátora snadno použitelné vlastnosti, které umožňují přízpůsobit aplikaci různým velikostem obrazovky a~různým způsobům vstupu od uživatele (dotykové obrazovky, přizpůsobení pro zrakově nebo tělesně hendikepované uživatele). Návrh uživatelského rozhraní je~navíc velmi dobře oddělen od samotného kódu a~umožňuje s~použitím nástroje \emph{Microsoft Blend} výrazně zasáhnout do designu aplikace i~grafikovi (bez nutnosti znalosti programování a~bez zásahu do~modelu aplikace).
 
+\begin{figure}[ht]
+	\epsfysize=60mm
+	\center{\epsfbox{Assemblies.eps}}
+	\caption{Závislosti binárních souborů}
+	\label{Assemblies}
+\end{figure}
+
+\begin{figure}[ht]
+	\epsfysize=200mm
+	\center{\epsfbox{PrimaryUseCases.eps}}
+	\caption{Případy užití}
+	\label{PrimaryUseCases}
+\end{figure}
 
 \newpage
-\begin{thebibliography}{99}
+\begin{thebibliography}{10}
 
 	
 \bibitem{outr2008} Mgr. Jan Outrata, Ph.D.: \emph{Projekt - implementace},

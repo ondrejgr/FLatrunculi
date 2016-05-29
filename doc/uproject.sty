@@ -191,21 +191,19 @@
 \def\@afterheading{}
 
 %% colors, hyper links
-\def\@pdfsetcolor#1#2{\@inspdf{\special{pdf:bc #1}}%
-  #2\@inspdf{\special{pdf:ec}}}
+\def\@pdfsetcolor#1#2{\@inspdf{}%
+  #2\@inspdf{\special{}}}
 \def\@@pdflinkcolor{[0.2 0.3 0.6]}
 
 \def\@pdflink#1#2{\leavevmode%
-  \@inspdf{%
-    \special{pdf:bann << /Type /Annot /Subtype /Link /Border [ 0 0 0 ] /A
-      << /S /GoTo /D (#2) >> >>}}%
-  {\@pdfsetcolor{\@@pdflinkcolor}{#1}}\@inspdf{\special{pdf: eann}}\relax}
+  \@inspdf{}%
+  {\@pdfsetcolor{\@@pdflinkcolor}{#1}}\@inspdf{}\relax}
 
 \def\@pdfuri#1#2{\leavevmode%
   \@inspdf{%
     \special{pdf:bann << /Type /Annot /Subtype /Link /Border [ 0 0 0 ] /A
       << /S /URI /URI (#2) >> >>}}%
-  {\@pdfsetcolor{\@@pdflinkcolor}{#1}}\@inspdf{\special{pdf: eann}\relax}}
+  {\@pdfsetcolor{\@@pdflinkcolor}{#1}}\@inspdf{\relax}}
 
 \def\@pdfdest#1{\@inspdf{\special{pdf:dest (#1) [ @thispage /FitH @ypos ]}}}
 
