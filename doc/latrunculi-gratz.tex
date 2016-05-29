@@ -11,32 +11,59 @@
 
 \docinfo{Ondrej Gratz}{Latrunculi}
 
-\abstract{Implementace deskové hry Latrunculi v jazyku \texttt{C\#} pro Windows.}
+\abstract{Implementace deskové hry Latrunculi s~použitím \emph{.NET Framework} pro~operační systém \emph{Windows}.}
 
 \begin{document}
 \maketitle
 
 \newpage
-\section{Popis a analýza}
-Tetets rsaeaet aet.
-AEgojeaigjaegijegeagj i jgieg.
+\section{Zadání projektu}
+Cílem projektu je vytvoření hry pro desktopový operační systém s~grafickým uživatelským rozhraním (GUI) dle standardů.
+
+Požadavek na přenositelnost spustitelných souborů nebyl stanoven. Uživatelské rozhraní se~předpokládá objektově orientované s~použitím oken a~standardních prvků (hlavní nabídka, nástrojová lišta, tlačítka).
+
+\section{Volba technologie}
+\subsection{Výběr operačního systému}
+Já jsem pro vývoj i~běh hry (aplikace) zvolil operační systém \emph{Windows}, jelikož je~mi~dobře známý a~také proto, že je to s~podílem 52~\% (viz~\cite{wiki2016}) mezi uživateli i programátory nejpoužívanější operační systém pro osobní počítače.
+
+\subsection{Výběr vývojového prostředí}
+Pro vývoj byl zvolen nástroj \emph{Visual Studio} od firmy \emph{Microsoft}, jazyky \emph{C\#} a~\emph{F\#} a~pro vývoj uživatelského rozhraní \emph{Windows Presentation Framework} (WPF).
+
+Pro zvolený operační systém (\emph{Windows}) by~s~ohledem na~zadání bylo výhodné použít jeden z~následujících typů aplikací. 
+	\begin{itemize}  
+		\item Win32 (Visual C++ s použitím Windows API nebo MFC)
+		\item .NET Framework + WinForms
+		\item .NET Framework + WPF
+		\item Windows Runtime (C++/CX) 
+	\end{itemize}
+
+\emph{Win32} a \emph{Windows Runtime} poskytují nejmenší úroveň abstrakce. Vývoj tohoto typu aplikací vyžaduje větší znalosti a~zkušenosti programátora. \emph{Windows Runtime} aplikace je navíc možné spustit pouze pod~operačním systémem \emph{Windows~8} (nebo novějším). Výhodou je ale standardní vzhled výsledných aplikací a~nejlepší výpočetní výkon.
+
+Použití \emph{WinForms} by bylo výhodné, jelikož vývoj je jednoduchý (údálostmi řízený, objektově orientovaný). Výsledná aplikace má~vzhled v~souladu se~standardy operačního systému a~očekáváním uživatele. Nevýhodou je~strohý design, který se~příliš nepřizpůsobuje rozlišení obrazovky a~jehož vzhled se~může jevit zastaralý. Design je~navíc velmi svázán s~kódem, který má~na~starosti výpočty a~samotnou logiku aplikace.
+
+Naproti tomu u~\emph{WPF} je již při vývoji myšleno na responzivní design. Prvky uživatelského rozhraní mají velmi bohaté a~pro programátora snadno použitelné vlastnosti, které umožňují přízpůsobit aplikaci různým velikostem obrazovky a~různým způsobům vstupu od uživatele (dotykové obrazovky, přizpůsobení pro zrakově nebo tělesně hendikepované uživatele). Návrh uživatelského rozhraní je~navíc velmi dobře oddělen od samotného kódu a~umožňuje s~použitím nástroje \emph{Microsoft Blend} výrazně zasáhnout do designu aplikace i~grafikovi (bez nutnosti znalosti programování a~bez zásahu do~modelu aplikace).
+
 
 \newpage
-\begin{thebibliography}{10}
+\begin{thebibliography}{99}
 
 	
-\bibitem{outr1} Mgr. Jan Outrata, Ph.D.: \emph{Projekt - implementace},
+\bibitem{outr2008} Mgr. Jan Outrata, Ph.D.: \emph{Projekt - implementace},
  \url{http://outrata.inf.upol.cz/courses/ps/navrh.pdf},
 			listopad 2008.
 
 	
-\bibitem{outr2} Mgr. Jan Outrata, Ph.D.: \emph{Projekt - analýza a návrh},
+\bibitem{outr2010} Mgr. Jan Outrata, Ph.D.: \emph{Projekt - analýza a návrh},
  \url{http://outrata.inf.upol.cz/courses/ps/implementace.txt},
 			listopad 2010.
 
-\bibitem{kuhr3} Mgr. Tomáš Kühr, Ph.D.: \emph{Algoritmy realizující počítačového hráče},
+\bibitem{kuhr2011} Mgr. Tomáš Kühr, Ph.D.: \emph{Algoritmy realizující počítačového hráče},
  \url{http://www.inf.upol.cz/downloads/studium/PS/algoritmy.pdf},
 			říjen 2011.
+
+\bibitem{wiki2016}Wikipedia: \emph{Usage share of operating systems},
+ \url{https://en.wikipedia.org/wiki/Usage_share_of_operating_systems#Desktop_and_laptop_computers},
+			květen 2016.
 
 \end{thebibliography} 
 
