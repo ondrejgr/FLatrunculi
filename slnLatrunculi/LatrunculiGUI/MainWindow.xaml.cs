@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LatrunculiGUI
+namespace Latrunculi.GUI
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

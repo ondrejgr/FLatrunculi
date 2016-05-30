@@ -48,19 +48,31 @@ Naproti tomu u~\emph{WPF} je již při vývoji myšleno na responzivní design. 
 \subsection{Zvyklosti pro .NET aplikace}
 Při vývoji pro \emph{.NET Framework} je nutno veškerý kód umisťovat do metod tříd. Třídy musejí být povinně organizovány do jmenných prostorů. 
 
-Pro \emph{.NET} aplikace je~také typické rozdělení kódu do~několika binárních souborů. Rozdělení se~provádí na~základě jmenných prostorů (\texttt{namespaces}).
+Pro \emph{.NET} aplikace (s výjimkou aplikací v jazyku F\#) je~také typické rozdělení kódu do~několika binárních souborů. Rozdělení se~provádí na~základě jmenných prostorů (\texttt{namespaces}).
 
-Spustitelný (EXE) soubor pak obsahje jádro programu a~definice hlavních částí uživatelského rozhraní, ale komponenty uživatelského rozhraní i~třídy obsahující model domény, rozhodovací logiku a~třídy pro práci se soubory, databázemi či~síťovou komunikaci jsou umístěny v~tzv.~knihovnách tříd (DLL soubory).
+Spustitelný (EXE) soubor obsahje jádro programu a~definice hlavních částí uživatelského rozhraní, ale komponenty uživatelského rozhraní i~třídy obsahující model domény, rozhodovací logiku a~třídy pro práci se soubory, databázemi či~síťovou komunikaci jsou umístěny v~tzv.~knihovnách tříd (DLL soubory).
 
 DLL~i~EXE soubory poté obsahují překladačem vytvořený \emph{bytecode}, který je~poté při spuštění aplikace částečně kompilován do strojového kódu (just-in-time kompilace) a~částečně také interpretován běhovým prostředím \emph{.NET}.
 \subsection{Soubory projektu}
-Projekt je~rozdělen do~4~hlavních jmenných prostorů
+Třídy projektu jsou organizovány v~podprostorech jmenného prostoru \texttt{Latrunculi}. 
+
+Závislosti přeložených souborů (assemblies) jsou zobrazeny na~obr.\ref{Assemblies}. Tomu odpovídající~logické rozvrstvení aplikace na~obr.\ref{Layers}. Názvy souborů jsou shodné s~názvy jmenných prostorů, které jsou v~jednotlivých souborech obsaženy.
 
 \begin{figure}[ht]
-	\epsfysize=60mm
-	\center{\epsfbox{Assemblies.eps}}
-	\caption{Závislosti binárních souborů}
-	\label{Assemblies}
+  \centering
+  \begin{minipage}[b]{0.4\textwidth}
+		\epsfysize=60mm
+		\center{\epsfbox{Assemblies.eps}}
+		\caption{Závislosti souborů}
+		\label{Assemblies}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.4\textwidth}
+		\epsfysize=60mm
+		\center{\epsfbox{Assemblies.eps}}
+		\caption{Vrstvy aplikace}
+		\label{Layers}
+  \end{minipage}
 \end{figure}
 
 \begin{figure}[ht]

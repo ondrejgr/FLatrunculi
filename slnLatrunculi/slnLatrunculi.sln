@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{E4B80A77-515
 	ProjectSection(SolutionItems) = preProject
 		..\doc\Assemblies.eps = ..\doc\Assemblies.eps
 		..\doc\latrunculi-gratz.tex = ..\doc\latrunculi-gratz.tex
+		..\doc\Layers.svg = ..\doc\Layers.svg
 		..\doc\PrimaryUseCases.eps = ..\doc\PrimaryUseCases.eps
 		..\doc\upfigure.mp = ..\doc\upfigure.mp
 		..\doc\uplogo.mp = ..\doc\uplogo.mp
@@ -24,6 +25,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Latrunculi.ViewModel", "Latrunculi.ViewModel\Latrunculi.ViewModel.csproj", "{9C3ED707-E6B4-4BA9-BC11-33ABC897DFE8}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Latrunculi.Model", "Latrunculi.Model\Latrunculi.Model.fsproj", "{5E4837DA-98E5-467A-A62B-64D800E0F57A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LatrunculiConsole", "LatrunculiConsole\LatrunculiConsole.csproj", "{F62D7176-4C76-49EC-B01D-7C0F708BC059}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,6 +46,10 @@ Global
 		{5E4837DA-98E5-467A-A62B-64D800E0F57A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E4837DA-98E5-467A-A62B-64D800E0F57A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E4837DA-98E5-467A-A62B-64D800E0F57A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F62D7176-4C76-49EC-B01D-7C0F708BC059}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F62D7176-4C76-49EC-B01D-7C0F708BC059}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F62D7176-4C76-49EC-B01D-7C0F708BC059}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F62D7176-4C76-49EC-B01D-7C0F708BC059}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
