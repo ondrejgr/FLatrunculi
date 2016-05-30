@@ -44,6 +44,18 @@ Použití \emph{WinForms} by bylo výhodné, jelikož vývoj je jednoduchý (úd
 
 Naproti tomu u~\emph{WPF} je již při vývoji myšleno na responzivní design. Prvky uživatelského rozhraní mají velmi bohaté a~pro programátora snadno použitelné vlastnosti, které umožňují přízpůsobit aplikaci různým velikostem obrazovky a~různým způsobům vstupu od uživatele (dotykové obrazovky, přizpůsobení pro zrakově nebo tělesně hendikepované uživatele). Návrh uživatelského rozhraní je~navíc velmi dobře oddělen od samotného kódu a~umožňuje s~použitím nástroje \emph{Microsoft Blend} výrazně zasáhnout do designu aplikace i~grafikovi (bez nutnosti znalosti programování a~bez zásahu do~modelu aplikace).
 
+\section{Organizace kódu}
+\subsection{Zvyklosti pro .NET aplikace}
+Při vývoji pro \emph{.NET Framework} je nutno veškerý kód umisťovat do metod tříd. Třídy musejí být povinně organizovány do jmenných prostorů. 
+
+Pro \emph{.NET} aplikace je~také typické rozdělení kódu do~několika binárních souborů. Rozdělení se~provádí na~základě jmenných prostorů (\texttt{namespaces}).
+
+Spustitelný (EXE) soubor pak obsahje jádro programu a~definice hlavních částí uživatelského rozhraní, ale komponenty uživatelského rozhraní i~třídy obsahující model domény, rozhodovací logiku a~třídy pro práci se soubory, databázemi či~síťovou komunikaci jsou umístěny v~tzv.~knihovnách tříd (DLL soubory).
+
+DLL~i~EXE soubory poté obsahují překladačem vytvořený \emph{bytecode}, který je~poté při spuštění aplikace částečně kompilován do strojového kódu (just-in-time kompilace) a~částečně také interpretován běhovým prostředím \emph{.NET}.
+\subsection{Soubory projektu}
+Projekt je~rozdělen do~4~hlavních jmenných prostorů
+
 \begin{figure}[ht]
 	\epsfysize=60mm
 	\center{\epsfbox{Assemblies.eps}}
