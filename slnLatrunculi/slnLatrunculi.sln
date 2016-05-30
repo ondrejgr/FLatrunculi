@@ -8,8 +8,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{E4B80A77-5156-41AA-AB82-A79B47360784}"
 	ProjectSection(SolutionItems) = preProject
 		..\doc\Assemblies.eps = ..\doc\Assemblies.eps
+		..\doc\latrunculi-gratz.pdf = ..\doc\latrunculi-gratz.pdf
 		..\doc\latrunculi-gratz.tex = ..\doc\latrunculi-gratz.tex
 		..\doc\Layers.svg = ..\doc\Layers.svg
+		..\doc\Layers.tex = ..\doc\Layers.tex
 		..\doc\PrimaryUseCases.eps = ..\doc\PrimaryUseCases.eps
 		..\doc\upfigure.mp = ..\doc\upfigure.mp
 		..\doc\uplogo.mp = ..\doc\uplogo.mp

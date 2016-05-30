@@ -3,7 +3,7 @@
 \usepackage[figures]{uproject}
 \usepackage[utf8]{inputenc}
 \usepackage{epsfig}
- 
+
 \title{Projektový seminář}
 \subtitle{Latrunculi}
 \author{Ondřej Grätz}
@@ -46,34 +46,42 @@ Naproti tomu u~\emph{WPF} je již při vývoji myšleno na responzivní design. 
 
 \section{Organizace kódu}
 \subsection{Zvyklosti pro .NET aplikace}
-Při vývoji pro \emph{.NET Framework} je nutno veškerý kód umisťovat do metod tříd. Třídy musejí být povinně organizovány do jmenných prostorů. 
+Při vývoji pro \emph{.NET Framework} je nutno veškerý kód umisťovat do metod tříd. Třídy musejí být povinně organizovány do jmenných prostorů. Jmenné prostory je~vhodné stromově strukturovat dle~navržené architektury aplikace.
 
-Pro \emph{.NET} aplikace (s výjimkou aplikací v jazyku F\#) je~také typické rozdělení kódu do~několika binárních souborů. Rozdělení se~provádí na~základě jmenných prostorů (\texttt{namespaces}).
+Pro \emph{.NET} aplikace (s výjimkou aplikací v jazyku F\#) je~typické rozdělení zdrojového kódu do~několika projektů, které jsou přidány do~skupiny projektů (Solution). Rozdělení se~provádí na~základě jmenných prostorů (\texttt{namespaces}) tak, aby třídy patřící do stejného prostoru byly ve~stejném projektu. 
 
-Spustitelný (EXE) soubor obsahje jádro programu a~definice hlavních částí uživatelského rozhraní, ale komponenty uživatelského rozhraní i~třídy obsahující model domény, rozhodovací logiku a~třídy pro práci se soubory, databázemi či~síťovou komunikaci jsou umístěny v~tzv.~knihovnách tříd (DLL soubory).
+Spustitelný (EXE) soubor obsahje jádro programu a~definice hlavních částí uživatelského rozhraní, ale komponenty uživatelského rozhraní i~třídy obsahující doménový nebo datový model, rozhodovací logiku a~třídy pro práci se soubory, databázemi či~síťovou komunikaci jsou umístěny v~tzv.~knihovnách tříd (DLL soubory). Toto dělení poté představuje výhodu při požadavku na~změnu typu výsledné aplikace. Lze například textové rozhraní aplikace nahradit GUI. Nebo nahradit samostatně spustitelnou konzolovou aplikaci službou systému Windows. Společné součásti tak mohou být opětovně využívány (sdíleny).
 
 DLL~i~EXE soubory poté obsahují překladačem vytvořený \emph{bytecode}, který je~poté při spuštění aplikace částečně kompilován do strojového kódu (just-in-time kompilace) a~částečně také interpretován běhovým prostředím \emph{.NET}.
+
+\subsection{Prevence cyklických závislostí}
+Abstraktní rozdělení kódu na vrstvy pomáhá při vývoji předcházet cyklickým (rekurzivním) závislostem mezi třídami (respektive mezi jednotlivými knihovnami tříd). Nevhodné závislosti mezi třídami by~totiž mohly při dokončování aplikace způsobit komplikace, které by~v~krajním případě bránily překladu aplikace a~vyžadovaly by~refaktorování celého kódu. Jako prevence se~proto činnosti jednotlivých součástí seskupují tak, aby vyšší vrstvy byly závislé na nižších vrstvách. Nevhodné je naopak odkazovat se~z~nižších vrstev na~vyšší, ačkoliv i~tato možnost může být potřebná. V~případě potřeby se~ale namísto reference používají události tak, že nižší vrstva generuje událost a~vyšší vrstva událost zachytává. Bližší informace viz~\cite{wlaschin1}.
+
 \subsection{Soubory projektu}
 Třídy projektu jsou organizovány v~podprostorech jmenného prostoru \texttt{Latrunculi}. 
 
-Závislosti přeložených souborů (assemblies) jsou zobrazeny na~obr.\ref{Assemblies}. Tomu odpovídající~logické rozvrstvení aplikace na~obr.\ref{Layers}. Názvy souborů jsou shodné s~názvy jmenných prostorů, které jsou v~jednotlivých souborech obsaženy.
+Rozvrstvení aplikace je~zobrazeno na~obr.\ref{Layers}. Tomu odpovídající výsledné přeložené soubory (assemblies) a~jejich závislosti jsou zobrazeny na~obr.\ref{Assemblies}. Názvy souborů jsou shodné s~názvy jmenných prostorů, které jsou v~jednotlivých souborech obsaženy. Výjimku tvoří spustitelné soubory, u~kterých je záměrně oproti názvu jmenného prostoru, který obsahují, vynechána tečka, aby bylo případné spouštění z~příkazového řádku pohodlnější.
 
 \begin{figure}[ht]
   \centering
   \begin{minipage}[b]{0.4\textwidth}
-		\epsfysize=60mm
+		\center{\includegraphics[height=60mm]{Layers.pdf}}
+		\caption{Vrstvy aplikace}
+		\label{Layers}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.4\textwidth}
+		\epsfysize=70mm
 		\center{\epsfbox{Assemblies.eps}}
 		\caption{Závislosti souborů}
 		\label{Assemblies}
   \end{minipage}
-  \hfill
-  \begin{minipage}[b]{0.4\textwidth}
-		\epsfysize=60mm
-		\center{\epsfbox{Assemblies.eps}}
-		\caption{Vrstvy aplikace}
-		\label{Layers}
-  \end{minipage}
 \end{figure}
+
+\section{Rozvrstvení aplikace}
+\subsection{Vrstva uživatelského rozhraní}
+Nejvyšší vrstvou v našem diagramu z~obr.\ref{Layers} je \emph{User Interface}, tj. uživatelské rozhraní. Vrstva je~horizontálně rozdělena, jelikož naše aplikace má dva typy uživatelských rozhraní. Konzolové rozhraní (\texttt{Latrunculi.ConsoleUI}) a~grafické rozhraní (\texttt{Latrunculi.GUI}).
+
 
 \begin{figure}[ht]
 	\epsfysize=200mm
@@ -84,24 +92,32 @@ Závislosti přeložených souborů (assemblies) jsou zobrazeny na~obr.\ref{Asse
 
 \newpage
 \begin{thebibliography}{10}
-
 	
 \bibitem{outr2008} Mgr. Jan Outrata, Ph.D.: \emph{Projekt - implementace},
  \url{http://outrata.inf.upol.cz/courses/ps/navrh.pdf},
-			listopad 2008.
+			listopad~2008.
 
 	
 \bibitem{outr2010} Mgr. Jan Outrata, Ph.D.: \emph{Projekt - analýza a návrh},
  \url{http://outrata.inf.upol.cz/courses/ps/implementace.txt},
-			listopad 2010.
+			listopad~2010.
 
 \bibitem{kuhr2011} Mgr. Tomáš Kühr, Ph.D.: \emph{Algoritmy realizující počítačového hráče},
  \url{http://www.inf.upol.cz/downloads/studium/PS/algoritmy.pdf},
-			říjen 2011.
+			říjen~2011.
 
 \bibitem{wiki2016}Wikipedia: \emph{Usage share of operating systems},
  \url{https://en.wikipedia.org/wiki/Usage_share_of_operating_systems#Desktop_and_laptop_computers},
-			květen 2016.
+			květen~2016.
+
+\bibitem{wlaschin}Scott Wlaschin: \emph{F\# For Profit And Fun},
+ \url{https://fsharpforfunandprofit.com/},
+			květen~2016.
+
+\bibitem{wlaschin1}Scott Wlaschin: \emph{Dependency Cycles},
+ \url{https://fsharpforfunandprofit.com/series/dependency-cycles.html},
+			květen~2016.
+
 
 \end{thebibliography} 
 
