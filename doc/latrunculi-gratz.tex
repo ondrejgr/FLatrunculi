@@ -115,6 +115,10 @@ Doménový model reprezentuje samotnou hru Latrunculi. Jeho úkolem je modelovat
 
 Součástí této vrstvy je i~implementace mozku počítačového hráče (\texttt{AI}).
 
+\section{Návrh aplikace}
+\subsection{Případy užití}
+Případy užití vycházejí ze zadání a jsou zobrazeny v příloze na obr.\ref{PrimaryUseCases}
+
 \begin{figure}[ht]
 	\epsfysize=200mm
 	\center{\epsfbox{PrimaryUseCases.eps}}
@@ -122,12 +126,19 @@ Součástí této vrstvy je i~implementace mozku počítačového hráče (\text
 	\label{PrimaryUseCases}
 \end{figure}
 
+\subsection{Diagram tříd}
+Návržené třídy, jejich atributy a operace jsou uvedeny na obr.\ref{UIClassDiagram}
+
 \begin{figure}[ht]
 	\epsfysize=200mm
 	\center{\epsfbox{UIClassDiagram.eps}}
-	\caption{Diagram tříd uživatelského rozhraní}
+	\caption{Diagram tříd}
 	\label{UIClassDiagram}
 \end{figure}
+
+\section{Implementace}
+\subsection{Třída \texttt{Latrunculi.Model.GameModel}}
+
 
 \section{Systémové požadavky}
 Pro vývoj i~běh aplikace jsou na počítač kladeny tyto nároky:
