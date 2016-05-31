@@ -3,6 +3,7 @@
 \usepackage[figures]{uproject}
 \usepackage[utf8]{inputenc}
 \usepackage{epsfig}
+\usepackage{amsmath}
 
 \title{Projektový seminář}
 \subtitle{Latrunculi}
@@ -52,15 +53,19 @@ Pro \emph{.NET} aplikace (s výjimkou aplikací v jazyku F\#) je~typické rozdě
 
 Spustitelný (EXE) soubor obsahje jádro programu a~definice hlavních částí uživatelského rozhraní, ale komponenty uživatelského rozhraní i~třídy obsahující doménový nebo datový model, rozhodovací logiku a~třídy pro práci se soubory, databázemi či~síťovou komunikaci jsou umístěny v~tzv.~knihovnách tříd (DLL soubory). Toto dělení poté představuje výhodu při požadavku na~změnu typu výsledné aplikace. Lze například textové rozhraní aplikace nahradit GUI. Nebo nahradit samostatně spustitelnou konzolovou aplikaci službou systému Windows. Společné součásti tak mohou být opětovně využívány (sdíleny).
 
-DLL~i~EXE soubory poté obsahují překladačem vytvořený \emph{bytecode}, který je~poté při spuštění aplikace částečně kompilován do strojového kódu (just-in-time kompilace) a~částečně také interpretován běhovým prostředím \emph{.NET}.
+DLL~i~EXE soubory po sestavení obsahují překladačem vytvořený \emph{bytecode}, který je~poté při spuštění aplikace částečně kompilován do strojového kódu (just-in-time kompilace) a~částečně také interpretován běhovým prostředím \emph{.NET}.
 
 \subsection{Prevence cyklických závislostí}
-Abstraktní rozdělení kódu na vrstvy pomáhá při vývoji předcházet cyklickým (rekurzivním) závislostem mezi třídami (respektive mezi jednotlivými knihovnami tříd). Nevhodné závislosti mezi třídami by~totiž mohly při dokončování aplikace způsobit komplikace, které by~v~krajním případě bránily překladu aplikace a~vyžadovaly by~refaktorování celého kódu. Jako prevence se~proto činnosti jednotlivých součástí seskupují tak, aby vyšší vrstvy byly závislé na nižších vrstvách. Nevhodné je naopak odkazovat se~z~nižších vrstev na~vyšší, ačkoliv i~tato možnost může být potřebná. V~případě potřeby se~ale namísto reference používají události tak, že nižší vrstva generuje událost a~vyšší vrstva událost zachytává. Bližší informace viz~\cite{wlaschin1}.
+Abstraktní rozdělení kódu na vrstvy pomáhá při vývoji předcházet cyklickým (rekurzivním) závislostem mezi třídami (respektive mezi jednotlivými knihovnami tříd). Nevhodné závislosti mezi třídami by~totiž mohly při dokončování aplikace způsobit komplikace, které by~v~krajním případě bránily sestavení aplikace a~vyžadovaly by~refaktorování celého kódu.
+
+Jako prevence se~proto činnosti jednotlivých součástí seskupují tak, aby vyšší vrstvy byly závislé na nižších vrstvách. Nevhodné je naopak odkazovat se~z~nižších vrstev na~vyšší, ačkoliv i~tato možnost může být potřebná. V~případě potřeby se~ale namísto reference používají události tak, že nižší vrstva generuje událost a~vyšší vrstva událost zachytává. Bližší informace viz~\cite{wlaschin1}.
 
 \subsection{Soubory projektu}
 Třídy projektu jsou organizovány v~podprostorech jmenného prostoru \texttt{Latrunculi}. 
 
-Rozvrstvení aplikace je~zobrazeno na~obr.\ref{Layers}. Tomu odpovídající výsledné přeložené soubory (assemblies) a~jejich závislosti jsou zobrazeny na~obr.\ref{Assemblies}. Názvy souborů jsou shodné s~názvy jmenných prostorů, které jsou v~jednotlivých souborech obsaženy. Výjimku tvoří spustitelné soubory, u~kterých je záměrně oproti názvu jmenného prostoru, který obsahují, vynechána tečka, aby bylo případné spouštění z~příkazového řádku pohodlnější.
+Rozvrstvení aplikace je~zobrazeno na~obr.\ref{Layers} Výsledné soubory sestavení jednotlivých projektů (assemblies) a~jejich závislosti jsou zobrazeny na~obr.\ref{Assemblies} Rozdělení do~více projektů bylo provedeno s~ohledem na~výše uvedené zásady.
+
+Úlohy jednotlivých částí systému budou popsány v~další kapitole.
 
 \begin{figure}[ht]
   \centering
@@ -78,10 +83,37 @@ Rozvrstvení aplikace je~zobrazeno na~obr.\ref{Layers}. Tomu odpovídající vý
   \end{minipage}
 \end{figure}
 
-\section{Rozvrstvení aplikace}
-\subsection{Vrstva uživatelského rozhraní}
-Nejvyšší vrstvou v našem diagramu z~obr.\ref{Layers} je \emph{User Interface}, tj. uživatelské rozhraní. Vrstva je~horizontálně rozdělena, jelikož naše aplikace má dva typy uživatelských rozhraní. Konzolové rozhraní (\texttt{Latrunculi.ConsoleUI}) a~grafické rozhraní (\texttt{Latrunculi.GUI}).
+\section{Vrstvy aplikace}
+Rozvrstvení aplikace vychází z architektury \texttt{MVC} (\emph{Model-View-Controller}, viz \cite{mvc}). Pro vývoj \emph{WPF} aplikace jsem jej ale musel mírně modifikovat. Úlohu pohledu (\texttt{View}) zastává~konkrétní okno aplikace (instance třídy \texttt{System.Windows.Window}) nedělitelně spolu s~odpovídajícím pohledovým modelem (\texttt{ViewModel}), jehož instanci okno vytvoří ve~svém konstruktoru. Výsledkem je~\texttt{MWVmC}, tj.~\emph{Model-Window-ViewModel-Controller}.
 
+\subsection{Uživatelské rozhraní \texttt{(Latrunculi*.exe)}}
+Nejvyšší vrstvou v našem diagramu z~obr.\ref{Layers} je \emph{User Interfaces}, tj. uživatelská rozhraní. Vrstva je~horizontálně rozdělena, neboť naše aplikace má dva typy samostatně spustitelných uživatelských rozhraní. Konzolové rozhraní (\texttt{Latrunculi.ConsoleUI}) a~grafické rozhraní (\texttt{Latrunculi.GUI}).
+
+Uživatelské rozhraní zobrazuje stav hry uživateli a~poskytuje prvky pro ovládání hry. Neobsahuje ale samotnou logiku ani řízení hry. Požadavky od~uživatele jsou předávány nižší vrstvě - \texttt{GameController}.
+
+Konstruktoru hlavního okna aplikace je nutno předat vytvořené instance tříd z~nižších vrstev - \texttt{MainWindowViewModel}, \texttt{GameController}. Za~vytvoření jejich instancí zodpovídá třída, která okno vytváří. V~našem případě třída \texttt{App} (vstupní bod aplikace).
+
+\subsection{Pohledový model \texttt{(Latrunculi.ViewModel.dll)}}
+Použití pohledových modelů je typické pro WPF aplikace. Úlohou pohledového modelu je poskytnout uživatelskému rozhraní třídy, které obsahují vlastnosti (\emph{Properties}), jež mohou být přímo napojeny na~jednotlivé grafické komponenty uživatelského rozhraní. Takové třídy musejí implementovat rozhraní \texttt{INotifyPropertyChanged}, tj. implementovat událost \texttt{PropertyChanged}. Tato událost je~zachytávána uživatelským rozhraním. 
+
+Při zachycení události dojde automaticky  k~aktualizaci grafických komponent, které jsou navázány (\texttt{Binding})  na vlastnost třídy, jejíž hodnota byla změněna. Dodejme navíc, že~je~podporováno i~zachytávání změn v~generických kolekcích typu \texttt{ObservableCollection<T>}, což se~využívá pro aktualizaci komponent GUI typu List, ComboBox či tabulkového zobrazení.
+
+Podobný princip aktualizace komponent (využití Bindingu) existuje i~v~aplikacích \emph{WinForms} a~také i~v~jiných vývojových prostředích a~jazycích (Delphi, Java). Smyslem je odstranit nutnost psát kód, který nesouvisí přímo s~výpočetní logikou aplikace či~jejím doménovým modelem.
+
+Příkladem takového kódu je např. v události \texttt{Form.OnShow} kód \texttt{textBox1.Text = "Test"; }, kterým se zaktualizuje konkrétní komponenta. Pokud komponentu \texttt{textBox1} přejmenujeme nebo odstraníme, aplikace přestane fungovat a~daný řádek musíme upravit. Při použití pohledového modelu ve~\emph{WPF} aplikaci nemusí mít komponenta vůbec stanovený název a~navíc může být více komponent (i~různých typů) navázáno na stejnou vlastnost v~třídě pohledového modelu. Jakákoliv změna v~návrhu uživatelského rozhraní nerozbije funkčnost pohledového modelu.
+
+V pohledovém modelu se~zpravidla implementují třídy, které odpovídají třídám z~nižší vrstvy aplikace (z~doménového či datového modelu). Avšak implementují se~pouze ty~třídy, u kterých se~předpokládá nutnost grafické reprezentace. Tj. zobrazení uživateli ve formě odpovídajícího grafického prvku. Někdy může být výhodné sloučit vlastnosti z~různých tříd datového modelu do~jedné třídy pohledového modelu.
+
+Pohledový model si~načítá a~transformuje data z~doménového modelu. Konstruktoru pohledového modelu proto musí být předána platná instance třídy \texttt{GameModel}.
+
+\subsection{Kontrolér a doménový model \texttt{(Latrunculi.Model.dll)}}
+Tyto součásti jsou implementovány v~jazyku F\#, který jakožto ryze funkcionální jazyk poskytuje možnosti interaktivního prototypově či doménově řízeného vývoje. Také obsahuje některé prostředky (např. datové typy a~struktury), které usnadňují vývoj aplikací, a~přitom v~jazyku C\# nemají odpovídající náhradu. Skriptovací vlastnosti jazyka F\# navíc využijeme pro testování jednotlivých součástí aplikace.
+
+Kontrolér má na starosti~řízení hry. Jeho metody jsou volány z~uživatelského rozhraní. Kontrolér na~základě jejich volání provede příslušnou akci a~předá požadavek doménovému modelu. Toto zpravidla také povede ke~změně stavu modelu a~tudíž k~nutnosti aktualizovat pohledový model a~uživatelské rozhraní.
+
+Doménový model reprezentuje samotnou hru Latrunculi. Jeho úkolem je modelovat reálnou podobu hry, včetně jejích entit (deska, figurka, hráč, pravidla) a~jejich atributů a~metod. Doménový model musí zajistit, aby se~hra neocitla ve~stavu který odporuje pravidlům nebo je~v~rozporu s~očekáváným chováním deskové hry. Více obecně o~doménově řízeném vývoji viz \cite{wlaschin2}.
+
+Součástí této vrstvy je i~implementace mozku počítačového hráče (\texttt{AI}).
 
 \begin{figure}[ht]
 	\epsfysize=200mm
@@ -89,6 +121,47 @@ Nejvyšší vrstvou v našem diagramu z~obr.\ref{Layers} je \emph{User Interface
 	\caption{Případy užití}
 	\label{PrimaryUseCases}
 \end{figure}
+
+\begin{figure}[ht]
+	\epsfysize=200mm
+	\center{\epsfbox{UIClassDiagram.eps}}
+	\caption{Diagram tříd uživatelského rozhraní}
+	\label{UIClassDiagram}
+\end{figure}
+
+\section{Systémové požadavky}
+Pro vývoj i~běh aplikace jsou na počítač kladeny tyto nároky:
+	\begin{itemize}  
+		\item osobní počítač, notebook nebo tablet
+		\item 32bitový (x86) nebo 64bitový (x64) procesor s frekvencí 1 GHz nebo vyšší
+		\item operační systém Microsoft Windows 7 (64 bitový nebo 32 bitový)
+		\item 1 GB paměti RAM (32bitová verze) nebo 2 GB paměti RAM (64bitová verze)
+		\item 16 GB volného místa na disku (32bitová verze) nebo 20 GB (64bitová verze)
+		\item Grafická karta s podporou DirectX 9 s ovladačem WDDM 1.0 nebo novějším
+		\item Microsoft .NET Framework verze 4.5.2 (nebo novější)
+	\end{itemize}
+
+\section{Vytvoření aplikace}
+\subsection{Instalace vývojového prostředí}
+Pro sestavení aplikace nainstalujeme nejprve vývojové prostředí \emph{Microsoft Visual Studio}.
+
+Pro vývoj byla použita edice \emph{Community 2015}, která je zdarma ke~stažení na stránce \url{https://www.visualstudio.com/cs-cz/downloads/download-visual-studio-vs.aspx}. 
+
+Při instalaci zvolíme jazyk C\#. Po nainstalování zvolíme v menu File $\rightarrow$ New $\rightarrow$ Project... V zobrazeném dialogovém okně zvolíme ve~stromu vlevo položku Installed $\rightarrow$ Templates $\rightarrow$ Other Languages $\rightarrow$ Visual F\# a~poté v seznamu nabídnutých položek zvolíme Install F\# Tools a~provedeme instalaci nástrojů pro vývoj v~jazyku F\# (pokud máme již správně nainstalovánu podporu jazyku F\#, budou v~seznamu položky Console Application, Library a další).
+
+Lze použít i~jiné edice, případně starší verze \emph{Visual Studia}. Jediným požadavkem je, aby daná verze uměla cílit na~\emph{.NET Framework verze 4.5.2} a~aby podporovala jazyk F\# verze 4.0.
+\subsection{Sestavení aplikace}
+Jestliže nemáme soubory se zdrojovým kódem, tak v nabídce Team zvolíme Manage Connections. V~okně Team Explorer - Connect v části Local Git Repositories zvolíme příkaz Clone a~jako Repository URL zadáme \url{https://github.com/ondrejgr/FLatrunculi.git}. Případně změníme název složky, do které chceme zdrojové soubory stáhnout.
+
+Příkazem Build Solution v menu Build provedeme sestavení aplikace.
+
+\section{Spuštění aplikace}
+Aplikace se spouští spustitelným souborem \texttt{LatrunculiGUI.exe}. Ve~složce s~aplikací musejí být uloženy také následující soubory knihoven tříd:
+	\begin{itemize}  
+		\item \texttt{FSharp.Core.dll}
+		\item \texttt{Latrunculi.Model.dll}
+		\item \texttt{Latrunculi.ViewModel.dll}
+	\end{itemize}
 
 \newpage
 \begin{thebibliography}{10}
@@ -110,14 +183,21 @@ Nejvyšší vrstvou v našem diagramu z~obr.\ref{Layers} je \emph{User Interface
  \url{https://en.wikipedia.org/wiki/Usage_share_of_operating_systems#Desktop_and_laptop_computers},
 			květen~2016.
 
-\bibitem{wlaschin}Scott Wlaschin: \emph{F\# For Profit And Fun},
- \url{https://fsharpforfunandprofit.com/},
+\bibitem{mvc}Wikipedia: \emph{Model-view-controller},
+ \url{https://en.wikipedia.org/wiki/https://en.wikipedia.org/wiki/Model-view-controller},
 			květen~2016.
+
+%%\bibitem{wlaschin}Scott Wlaschin: \emph{F\# For Profit And Fun},
+ %%\url{https://fsharpforfunandprofit.com/},
+%%			květen~2016.
 
 \bibitem{wlaschin1}Scott Wlaschin: \emph{Dependency Cycles},
  \url{https://fsharpforfunandprofit.com/series/dependency-cycles.html},
 			květen~2016.
 
+\bibitem{wlaschin2}Scott Wlaschin: \emph{Domain Driven Design},
+ \url{https://fsharpforfunandprofit.com/ddd/},
+			květen~2016.
 
 \end{thebibliography} 
 

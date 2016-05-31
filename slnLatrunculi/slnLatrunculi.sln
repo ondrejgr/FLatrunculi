@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{E4B80A77-515
 		..\doc\Layers.svg = ..\doc\Layers.svg
 		..\doc\Layers.tex = ..\doc\Layers.tex
 		..\doc\PrimaryUseCases.eps = ..\doc\PrimaryUseCases.eps
+		..\doc\UIClassDiagram.eps = ..\doc\UIClassDiagram.eps
 		..\doc\upfigure.mp = ..\doc\upfigure.mp
 		..\doc\uplogo.mp = ..\doc\uplogo.mp
 		..\doc\uplogo.pdf = ..\doc\uplogo.pdf

@@ -9,18 +9,18 @@
                 stroke-width="2.0" stroke="black" fill="#99ff66"/>
         </g>
         <g latexdraw:type="rectangle" id="id639062867">
-            <rect x="1.0" y="41.0" width="198.0" height="58.0"
+            <rect x="1.0" y="31.0" width="198.0" height="68.0"
                 latexdraw:borderPos="outer" stroke-width="2.0"
                 stroke="black" fill="none"/>
         </g>
         <g latexdraw:type="text" id="id126291249" fill="black" latexdraw:position="bl">
-            <text x="39.0" y="76.0">Latrunculi.GUI</text>
+            <text x="34.0" y="71.0">LatrunculiGUI.exe</text>
         </g>
         <g latexdraw:type="text" id="id102530184" fill="black" latexdraw:position="bl">
-            <text x="214.0" y="76.0">Latrunculi.ConsoleUI</text>
+            <text x="208.0" y="72.0">LatrunculiConsole.exe</text>
         </g>
         <g latexdraw:type="text" id="id1092547007" fill="black" latexdraw:position="bl">
-            <text x="148.0" y="28.0">User Interface</text>
+            <text x="148.0" y="24.0">User Interfaces</text>
         </g>
         <g latexdraw:type="rectangle" id="id268602529">
             <rect x="1.0" y="99.0" width="388.0" height="98.0"
@@ -28,12 +28,12 @@
                 stroke="black" fill="#ffff66"/>
         </g>
         <g latexdraw:type="rectangle" id="id1918909473">
-            <rect x="199.0" y="41.0" width="190.0" height="58.0"
-                latexdraw:borderPos="outer" stroke-width="2.0"
-                stroke="black" fill="none"/>
+            <rect x="199.0" y="31.117647058823522" width="190.0"
+                height="67.88235294117648" latexdraw:borderPos="outer"
+                stroke-width="2.0" stroke="black" fill="none"/>
         </g>
         <g latexdraw:type="text" id="id1332147845" fill="black" latexdraw:position="bl">
-            <text x="109.0" y="151.0">Latrunculi.ViewModel</text>
+            <text x="106.0" y="152.0">Latrunculi.ViewModel.dll</text>
         </g>
         <g latexdraw:type="rectangle" id="id1007962748">
             <rect x="1.0" y="195.0" width="388.0" height="136.0"
@@ -41,7 +41,7 @@
                 stroke="black" fill="#ffcc33"/>
         </g>
         <g latexdraw:type="text" id="id1604051666" fill="black" latexdraw:position="bl">
-            <text x="33.0" y="269.0">Latrunculi.Model</text>
+            <text x="29.0" y="269.0">Latrunculi.Model.dll</text>
         </g>
         <g latexdraw:type="rectangle" id="id1103238391">
             <rect x="201.0" y="195.0" width="188.0" height="69.0"
@@ -54,10 +54,10 @@
                 stroke="black" fill="none"/>
         </g>
         <g latexdraw:type="text" id="id232191823" fill="black" latexdraw:position="bl">
-            <text x="255.0" y="237.0">Controller</text>
+            <text x="234.0" y="237.0">GameController</text>
         </g>
         <g latexdraw:type="text" id="id1644205534" fill="black" latexdraw:position="bl">
-            <text x="210.0" y="309.0">Model + Logic + AI</text>
+            <text x="221.0" y="306.0">GameModel + AI</text>
         </g>
     </g>
     <defs/>
@@ -77,8 +77,8 @@
                 <latexdraw:height>1063</latexdraw:height>
             </latexdraw:size>
             <latexdraw:position>
-                <latexdraw:x>0.0</latexdraw:x>
-                <latexdraw:y>0.0</latexdraw:y>
+                <latexdraw:x>1178.0</latexdraw:x>
+                <latexdraw:y>179.0</latexdraw:y>
             </latexdraw:position>
         </latexdraw:metadata>
     </metadata>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Latrunculi.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,14 @@ namespace Latrunculi.GUI
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        public MainWindowViewModel ViewModel
+        {
+            get
+            {
+                return (MainWindowViewModel)DataContext;
+            }            
         }
     }
 }

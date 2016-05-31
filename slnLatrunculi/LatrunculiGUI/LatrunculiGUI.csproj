@@ -103,6 +103,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Latrunculi.Model\Latrunculi.Model.fsproj">
+      <Project>{5e4837da-98e5-467a-a62b-64d800e0f57a}</Project>
+      <Name>Latrunculi.Model</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Latrunculi.ViewModel\Latrunculi.ViewModel.csproj">
       <Project>{9c3ed707-e6b4-4ba9-bc11-33abc897dfe8}</Project>
       <Name>Latrunculi.ViewModel</Name>
