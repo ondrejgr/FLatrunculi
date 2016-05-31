@@ -1,4 +1,4 @@
 ﻿namespace Latrunculi.Model
 
-type Class1() = 
+type GameModel() = 
     member this.X = "F#"

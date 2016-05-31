@@ -1,8 +1,11 @@
-﻿// Learn more about F# at http://fsharp.org. See the 'F# Tutorial' project
-// for more guidance on F# programming.
+﻿#load "Enumerations.fs"
+#load "Piece.fs"
+#load "Board.fs"
+#load "GameModel.fs"
+#load "GameController.fs"
 
-#load "Library1.fs"
 open Latrunculi.Model
+open Latrunculi.Controller
 
-// Define your library scripting code here
+
 
