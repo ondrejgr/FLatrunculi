@@ -10,4 +10,11 @@ open Latrunculi.Model
 open Latrunculi.Controller
 
 
+let whitePiece = Piece.Create PieceColors.White
+let blackPiece = Piece.Create PieceColors.Black
+
+let emptySquare = Square.CreateEmpty
+let squareWithWhitePiece = Square.CreateWithPiece whitePiece
+let squareWithBlackPiece = Square.CreateWithPiece blackPiece
+
 

@@ -31,6 +31,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Latrunculi.Model", "Latrunc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LatrunculiConsole", "LatrunculiConsole\LatrunculiConsole.csproj", "{F62D7176-4C76-49EC-B01D-7C0F708BC059}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Latrunculi.Model.Test", "Latrunculi.Model.Test\Latrunculi.Model.Test.fsproj", "{987F1F75-C149-4F9A-BDC8-E9A676FC21C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{F62D7176-4C76-49EC-B01D-7C0F708BC059}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F62D7176-4C76-49EC-B01D-7C0F708BC059}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F62D7176-4C76-49EC-B01D-7C0F708BC059}.Release|Any CPU.Build.0 = Release|Any CPU
+		{987F1F75-C149-4F9A-BDC8-E9A676FC21C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{987F1F75-C149-4F9A-BDC8-E9A676FC21C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{987F1F75-C149-4F9A-BDC8-E9A676FC21C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{987F1F75-C149-4F9A-BDC8-E9A676FC21C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
