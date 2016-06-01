@@ -45,10 +45,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Enumerations.fs" />
-    <Compile Include="Sequences.fs" />
+    <Compile Include="Common.fs" />
     <Compile Include="Piece.fs" />
     <Compile Include="Square.fs" />
+    <Compile Include="Coord.fs" />
     <Compile Include="Board.fs" />
     <Compile Include="GameModel.fs" />
     <Compile Include="GameController.fs" />

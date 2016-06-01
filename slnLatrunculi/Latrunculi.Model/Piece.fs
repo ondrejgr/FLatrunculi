@@ -1,10 +1,14 @@
 ﻿namespace Latrunculi.Model
 
 module Piece =
+    
+    type Colors = 
+        | White = 0
+        | Black = 1
 
     [<StructuralEquality;NoComparison>]
     type T = {
-        Color: PieceColors }
+        Color: Colors }
     
-    let Create color =
-        { Color = color }
+    let Create x =
+        { Color = x }
