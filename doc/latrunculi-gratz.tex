@@ -4,6 +4,30 @@
 \usepackage[utf8]{inputenc}
 \usepackage{epsfig}
 \usepackage{amsmath}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{bluekeywords}{rgb}{0.13,0.13,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{turqusnumbers}{rgb}{0.17,0.57,0.69}
+\definecolor{redstrings}{rgb}{0.5,0,0}
+
+\lstdefinelanguage{FSharp}
+                {morekeywords={let, new, match, with, rec, open, module, namespace, type, of, member, and, for, in, do, begin, end, fun, function, try, mutable, if, then, else},
+    keywordstyle=\color{bluekeywords},
+    sensitive=false,
+    morecomment=[l][\color{greencomments}]{///},
+    morecomment=[l][\color{greencomments}]{//},
+    morecomment=[s][\color{greencomments}]{{(*}{*)}},
+    morestring=[b]",
+    stringstyle=\color{redstrings}
+    }
+\lstset{
+      language=FSharp,
+      basicstyle=\ttfamily,
+      breaklines=true,
+      columns=fullflexible
+    }
 
 \title{Projektový seminář}
 \subtitle{Latrunculi}
@@ -117,7 +141,7 @@ Součástí této vrstvy je i~implementace mozku počítačového hráče (\text
 
 \section{Návrh aplikace}
 \subsection{Případy užití}
-Případy užití vycházejí ze zadání a jsou zobrazeny v příloze na obr.\ref{PrimaryUseCases}
+Případy užití vycházejí ze zadání a jsou zobrazeny v příloze na obr.\ref{PrimaryUseCases} Někteří aktéři poslouží jako základ pro objekty modelu. Jednotlivé případy užití potom poslouží při implementaci metod daných objektů.
 
 \begin{figure}[ht]
 	\epsfysize=200mm
@@ -127,7 +151,9 @@ Případy užití vycházejí ze zadání a jsou zobrazeny v příloze na obr.\r
 \end{figure}
 
 \subsection{Diagram tříd}
-Návržené třídy, jejich atributy a operace jsou uvedeny na obr.\ref{UIClassDiagram}
+Hlavní třídy používané pro uživatelské rozhraní a~jejich atributy a~relace jsou uvedeny na~obr.\ref{UIClassDiagram}. Třídy doménového modelu nejsou uvedeny v~diagramu tříd, protože kvůli konstrukci jazyka F\#, vypovídající hodnotě kódu v~F\# a~prototypově řízeném vývoji nemá tvoření diagramu tříd při návrhu téměř žádnou přidanou hodnotu.
+
+Třídy pohledového modelu nebudou v~textu probírány, protože jsou z~hlediska implementace nezajímavé (je~to~pouze ,,mechanický" kód  zapouzdřující data z~doménového modelu.
 
 \begin{figure}[ht]
 	\epsfysize=200mm
@@ -136,11 +162,126 @@ Návržené třídy, jejich atributy a operace jsou uvedeny na obr.\ref{UIClassD
 	\label{UIClassDiagram}
 \end{figure}
 
-\section{Implementace}
 \subsection{Unit Testy}
 Pro testování je použit framework \emph{NUnit 3.2.1}. Soubory s~testy doménového modelu jsou umístěny v~sestavení \texttt{Latrunculi.Model.Test.dll}.
 
+\section{Implementace}
+Po~vytvoření projektů \emph{Visual Studia} a nastavení jejich vzájemných referencí jsem započal implementaci. A~to~od~nejnižší vrstvy, tj. doménového modelu. Pro implementaci ve~vývojovém prostředí bylo využito okno \emph{F\# Interactive}, které zpřístupňuje \texttt{REPL} cyklus jazyka F\#. Bez nutnosti kompilace, spuštění či ladění nebo vytvoření zdrojového souboru umožňuje přímo zadat požadovanou definici objektu a~ihned objekt otestovat (vytvořit instanci), případně doupravit.
+
+\subsection{Entita \texttt{Piece}}
+Tato entita je implementována jako strukturovaný typ \texttt{Record} jazyka F\#. Reprezentuje herní kámen, který bude umísťován na~hrací desku. Ve~hře Latrunculi je~pouze jeden typ kamenů, a~proto jediným atributem bude barva (bílá nebo černá).
+Zdrojový kód:
+\begin{lstlisting}[language=FSharp]
+namespace Latrunculi.Model
+
+module Piece =
+
+    [<StructuralEquality;NoComparison>]
+    type T = {
+        Color: PieceColors }
+    
+    let Create color =
+        { Color = color }
+\end{lstlisting}
+Pro představu, jak velkou abstrakci umožňuje jazyk F\# proti jazykům C\# či .NET Basic uvádím i~kód v~jazyku C\#, který implementuje stejnou funkcionalitu (vyžadovali jsme přímo porovnatelný, nemutovatelný strukturovaný objekt).
+
+\begin{lstlisting}[language=C,basicstyle=\tiny]
+using System;
+using System.Collections;
+
+namespace Latrunculi.Model
+{
+	[Serializable]
+	public class Piece : IEquatable<Piece>, IStructuralEquatable
+	{
+		public Piece(PieceColors color)
+		{
+			Color = color;
+		}
+                    
+		internal PieceColors Color;
+		public PieceColors Color
+		{
+			get
+			{
+				return this.Color;
+			}
+		}
+                   
+		public override int GetHashCode(IEqualityComparer comp)
+		{
+			if (this != null)
+			{
+				int num = 0;
+				return (int)(-1640531527 + (this.Color + ((num << 6) + (num >> 2))));
+			}
+			return 0;
+		}
+			
+		public override int GetHashCode()
+		{
+			return this.GetHashCode(LanguagePrimitives.GenericEqualityComparer);
+		}
+		
+		public override bool Equals(object obj, IEqualityComparer comp)
+		{
+			if (this == null)
+			{
+				return obj == null;
+			}
+			Piece t = obj as Piece;
+			if (t != null)
+			{
+				Piece t2 = t;
+				return this.Color == t2.Color;
+			}
+			return false;
+		}
+		
+		public override bool Equals(Piece obj)
+		{
+			if (this != null)
+			{
+				return obj != null && this.Color == obj.Color;
+			}
+			return obj == null;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			Piece t = obj as Piece;
+			return t != null && this.Equals(t);
+		}
+	}
+}
+\end{lstlisting}
+
+Funkčně ekvivalentní kód v~jazyku C\# je výrazně delší.
+
+\subsection{Entita \texttt{Square}}
+Reprezentuje políčko na hrací desce. Je implementováno jako typ \texttt{discriminated union}. Políčko obsahuje buďto kámen nebo je prázdné.
+\begin{lstlisting}[language=FSharp]
+namespace Latrunculi.Model
+
+module Square =
+
+    type T =
+        | Piece of Piece.T
+        | Nothing
+
+    let CreateWithPiece piece =
+        Piece piece
+
+    let CreateEmpty =
+        Nothing
+\end{lstlisting}
+
+\subsection{Entita \texttt{Board}}
+Hrací deska (Board) provádí tahy (bez ověřování pravidel), uchovává rozmístění kamenů a~provedné tahy ukládá do~historie.
+
 \subsection{Třída \texttt{Latrunculi.Model.GameModel}}
+
+\subsection{Třída \texttt{Latrunculi.Controller.GameController}}
 
 
 \section{Systémové požadavky}
