@@ -281,8 +281,6 @@ Funkčně ekvivalentní kód v~jazyku C\# je výrazně delší.
 \subsection{Entita \texttt{Square}}
 Reprezentuje políčko na hrací desce. Je implementováno jako typ \texttt{discriminated union}. Políčko obsahuje buďto kámen nebo je prázdné.
 \begin{lstlisting}[language=FSharp]
-namespace Latrunculi.Model
-
 module Square =
 
     type T =
@@ -321,7 +319,42 @@ Jako ukázku uvádím kód vytvářející souřadnice z~řetězce.
 \end{lstlisting}
 
 \subsection{Entita \texttt{Move}}
-Struktura \texttt{Record}, která rezprezentuje tah a~obsahuje počáteční a~koncové souřadnice a~také nové stavy obou políček.
+Struktura \texttt{Record}, která reprezentuje tah a~obsahuje počáteční a~koncové souřadnice a~také nové stavy obou políček. Při~vytváření instance se~kontroluje, zda počáteční a~koncová souřadnice není shodná.
+\begin{lstlisting}[language=FSharp]
+module Move =
+    type Error =
+        | NoSourceCoordSpecified
+        | NoTargetCoordSpecified
+        | SourceAndTargetMayNotBeSame
+
+    type T = {
+        Source: Coord.T;
+        Target: Coord.T;
+        NewSourceSquare: Square.T;
+        NewTargetSquare: Square.T }
+
+    let tryCreate x y nx ny =
+        let getCoord (c: Result<Coord.T, Coord.Error>) (e: Error) =
+            match c with
+            | Success c -> Success c
+            | Error _ -> Error e
+
+        let checkSourceAndTarget src tar =
+            if src = tar then Error SourceAndTargetMayNotBeSame else Success ()
+
+        let maybe = new MaybeBuilder()
+        maybe {
+            let! source = getCoord x NoSourceCoordSpecified
+            let! target = getCoord y NoTargetCoordSpecified
+            let! newSourceSq = Success nx
+            let! newTargetSq = Success ny
+            do! checkSourceAndTarget source target
+            return Success { 
+                Source = source; 
+                Target = target;
+                NewSourceSquare = newSourceSq;
+                NewTargetSquare = newTargetSq }}
+\end{lstlisting}
 
 \subsection{Třída \texttt{Board}}
 Hrací deska (Board) provádí tahy (bez ověřování pravidel), uchovává rozmístění kamenů a~provedné tahy ukládá do~historie.
