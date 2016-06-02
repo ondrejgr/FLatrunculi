@@ -30,11 +30,23 @@ module Coord =
         maybe {
             let! col = tryCheckColumnNumberRange x
             let! row = tryCheckRowNumberRange y
-            return { Column = col; Row = row } } 
+            return Success { Column = col; Row = row } } 
 
-//    let tryCreateFromString (s: string) =
-
-//        match s with
-        //| null -> Error UnableToParseCoordFromString
-        //| _ when s.Length <> 2 -> Error UnableToParseCoordFromString
-        //| _ -> parseColumnNumber <| s.Chars 0
+    let tryCreateFromString (s: string) =
+        let tryParseColumnNumberFromChar (c: char) =
+            Success c
+        let tryParseRowNumberFromChar (c: char) =
+            match System.Int32.TryParse(string c) with
+            | (true,i) -> Success i
+            | _ -> Error UnableToParseCoordFromString     
+                               
+        match s with
+        | null -> Error UnableToParseCoordFromString
+        | _ when s.Length <> 2 -> Error UnableToParseCoordFromString
+        | _ -> 
+            let maybe = new MaybeBuilder()
+            maybe {
+                let! col = tryParseColumnNumberFromChar <| s.Chars 0
+                let! row = tryParseRowNumberFromChar <| s.Chars 1
+                let! coord = tryCreate col row
+                return Success coord }

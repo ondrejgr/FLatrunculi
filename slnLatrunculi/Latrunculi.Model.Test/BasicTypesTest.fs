@@ -13,35 +13,44 @@ let BasicTypesTest() =
     Assert.AreEqual(whitePiece.Color, Piece.Colors.White)
     Assert.AreEqual(blackPiece.Color, Piece.Colors.Black)
 
-    let emptySquare = Square.CreateEmpty
-    Assert.IsTrue(match emptySquare with
+    Assert.IsTrue(match Square.CreateEmpty with
                     | Square.Nothing -> true
                     | Square.Piece (_) -> false);
-
-    let squareWithWhitePiece = Square.CreateWithPiece whitePiece
-    Assert.IsTrue(match squareWithWhitePiece with
+    Assert.IsTrue(match Square.CreateWithPiece whitePiece with
                     | Square.Nothing -> false
                     | Square.Piece (p) -> p.Color = Piece.Colors.White);
-
-
-    let squareWithBlackPiece = Square.CreateWithPiece blackPiece
-    Assert.IsTrue(match squareWithBlackPiece with
+    Assert.IsTrue(match Square.CreateWithPiece blackPiece with
                     | Square.Nothing -> false
                     | Square.Piece (p) -> p.Color = Piece.Colors.Black);
 
-    let invalidColumnNumberCoord = Coord.tryCreate 'Z' 1
-    Assert.IsTrue(match invalidColumnNumberCoord with
+
+    Assert.IsTrue(match Coord.tryCreate 'Z' 1 with
                     | Error e -> e = Coord.InvalidColumnNumber
                     | _ -> false);
-
-    let invalidRowNumberCoord = Coord.tryCreate 'A' 0
-    Assert.IsTrue(match invalidRowNumberCoord with
+    Assert.IsTrue(match Coord.tryCreate 'A' 0 with
                     | Error e -> e = Coord.InvalidRowNumber
                     | _ -> false);
+    Assert.IsTrue(match Coord.tryCreate 'B' 3 with
+                    | Success s -> (s.Column = Coord.ColumnNumber 'B') && (s.Row = Coord.RowNumber 3)
+                    | _ -> false);
 
-    let coord = Coord.tryCreate 'A' 1
-    Assert.IsTrue(match coord with
-                    | Success s -> true
+    Assert.IsTrue(match Coord.tryCreateFromString null with
+                    | Error e -> e = Coord.UnableToParseCoordFromString
+                    | _ -> false);
+    Assert.IsTrue(match Coord.tryCreateFromString "ZZZ" with
+                    | Error e -> e = Coord.UnableToParseCoordFromString
+                    | _ -> false);
+    Assert.IsTrue(match Coord.tryCreateFromString "AA" with
+                    | Error e -> e = Coord.UnableToParseCoordFromString
+                    | _ -> false);
+    Assert.IsTrue(match Coord.tryCreateFromString "Z1" with
+                    | Error e -> e = Coord.InvalidColumnNumber
+                    | _ -> false);
+    Assert.IsTrue(match Coord.tryCreateFromString "B8" with
+                    | Error e -> e = Coord.InvalidRowNumber
+                    | _ -> false);
+    Assert.IsTrue(match Coord.tryCreate 'C' 4 with
+                    | Success s -> (s.Column = Coord.ColumnNumber 'C') && (s.Row = Coord.RowNumber 4)
                     | _ -> false);
 
 
