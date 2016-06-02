@@ -6,8 +6,13 @@ module Square =
         | Piece of Piece.T
         | Nothing
 
-    let CreateWithPiece piece =
+    let isEmpty x =
+        match x with
+        | Nothing -> true
+        | _ -> false
+
+    let createWithPiece piece =
         Piece piece
 
-    let CreateEmpty =
+    let createEmpty =
         Nothing

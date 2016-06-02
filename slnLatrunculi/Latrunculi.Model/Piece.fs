@@ -10,5 +10,11 @@ module Piece =
     type T = {
         Color: Colors }
     
-    let Create x =
+    let create x =
         { Color = x }
+
+    let createWhite =
+        create Colors.White
+
+    let createBlack =
+        create Colors.Black

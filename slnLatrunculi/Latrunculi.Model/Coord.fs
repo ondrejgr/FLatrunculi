@@ -1,7 +1,7 @@
 ﻿namespace Latrunculi.Model
 
 module Coord =
-    type ErrorMessage =
+    type Error =
         | InvalidColumnNumber
         | InvalidRowNumber
         | UnableToParseCoordFromString
