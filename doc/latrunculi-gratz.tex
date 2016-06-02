@@ -168,8 +168,10 @@ Pro testování je použit framework \emph{NUnit 3.2.1}. Soubory s~testy doméno
 \section{Implementace}
 Po~vytvoření projektů \emph{Visual Studia} a nastavení jejich vzájemných referencí jsem započal implementaci. A~to~od~nejnižší vrstvy, tj. doménového modelu. Pro implementaci ve~vývojovém prostředí bylo využito okno \emph{F\# Interactive}, které zpřístupňuje \texttt{REPL} cyklus jazyka F\#. Bez nutnosti kompilace, spuštění či ladění nebo vytvoření zdrojového souboru umožňuje přímo zadat požadovanou definici objektu a~ihned objekt otestovat (vytvořit instanci), případně doupravit.
 
+V~následujícím popisu jednotlivých součástí uvádím ve~zdrojovém kódu především názvy významných atributů a~významné funkce a~jejich parametry. Tedy ne~celý zdrojový kód (s~výjimkou entity \texttt{Piece}, jejíž kód je uveden pro ilustraci).
+
 \subsection{Modul \texttt{Common}}
-Obsahuje definice společné pro celý model a kontrolér. Např. podporu monád.
+Obsahuje definice společné pro celý model a kontrolér. Např. podporu návratových hodnot funkcí a~podporu výpočtových funkcí (monáda \texttt{Maybe}).
 \begin{lstlisting}[language=FSharp]
 [<AutoOpen>]
 module Common
@@ -177,6 +179,11 @@ module Common
     type Result<'TSuccess,'TError> = 
         | Success of 'TSuccess 
         | Error of 'TError
+
+    let getObjExn c =
+        match c with
+        | Success c -> c
+        | _ -> failwith "Unable to extract object instance from function result, because called function has failed."
 
     type MaybeBuilder() =
         member this.Bind(x, f) = 
@@ -195,13 +202,17 @@ Zdrojový kód:
 namespace Latrunculi.Model
 
 module Piece =
+    
+    type Colors = 
+        | White = 0
+        | Black = 1
 
     [<StructuralEquality;NoComparison>]
     type T = {
-        Color: PieceColors }
+        Color: Colors }
     
-    let Create color =
-        { Color = color }
+    let create x =
+        { Color = x }
 \end{lstlisting}
 Pro představu, jak velkou abstrakci umožňuje jazyk F\# proti jazykům C\# či .NET Basic uvádím i~kód v~jazyku C\#, který implementuje stejnou funkcionalitu (vyžadovali jsme přímo porovnatelný, nemutovatelný strukturovaný objekt).
 
@@ -287,73 +298,74 @@ module Square =
         | Piece of Piece.T
         | Nothing
 
-    let CreateWithPiece piece =
+    let isEmpty x =
+        match x with
+        | Nothing -> true
+        | _ -> false
+
+    let createWithPiece piece =
         Piece piece
 
-    let CreateEmpty =
+    let createEmpty =
         Nothing
 \end{lstlisting}
 
 \subsection{Entita \texttt{Coord}}
 Reprezentuje souřadnice. Obsahuje logiku pro kontrolu rozsahu souřadnic. Souřadnice je možné vytvořit z~řetězce (např. \texttt{"A1"}) nebo předání zvlášť písmene označující sloupec a~čísla řádku.
-Jako ukázku uvádím kód vytvářející souřadnice z~řetězce.
 \begin{lstlisting}[language=FSharp]
+module Coord =
+    type Error =
+        | InvalidColumnNumber
+        | InvalidRowNumber
+        | UnableToParseCoordFromString
+
+    type ColumnNumber = ColumnNumber of char
+    type RowNumber = RowNumber of int
+
+    let ColumnNumbers = seq {'A'..'H'}
+    let RowNumbers = seq {1..7}
+
+    type T = {
+        Column: ColumnNumber;
+        Row: RowNumber }
+        
+    let tryCreate x y =
     let tryCreateFromString (s: string) =
-        let tryParseColumnNumberFromChar (c: char) =
-            Success c
-        let tryParseRowNumberFromChar (c: char) =
-            match System.Int32.TryParse(string c) with
-            | (true,i) -> Success i
-            | _ -> Error UnableToParseCoordFromString     
-                               
-        match s with
-        | null -> Error UnableToParseCoordFromString
-        | _ when s.Length <> 2 -> Error UnableToParseCoordFromString
-        | _ -> 
-            let maybe = new MaybeBuilder()
-            maybe {
-                let! col = tryParseColumnNumberFromChar <| s.Chars 0
-                let! row = tryParseRowNumberFromChar <| s.Chars 1
-                let! coord = tryCreate col row
-                return Success coord }
+\end{lstlisting}
+
+\subsection{Entita \texttt{RemovedPiece}}
+Zajatý kámen. Musíme si zaznamenat druh i~souřadnice kamene, který bude odebrán (resp. přidán) při provedení tahu (resp. inverzního tahu).
+\begin{lstlisting}[language=FSharp]
+module RemovedPiece =
+
+    type T = {
+        Coord: Coord.T;
+        Piece: Piece.T }
+    
+    let create x y =
+        { Coord = x; Piece = y }
 \end{lstlisting}
 
 \subsection{Entita \texttt{Move}}
-Struktura \texttt{Record}, která reprezentuje tah a~obsahuje počáteční a~koncové souřadnice a~také nové stavy obou políček. Při~vytváření instance se~kontroluje, zda počáteční a~koncová souřadnice není shodná.
+Struktura \texttt{Record}, která reprezentuje tah a~obsahuje počáteční a~koncové souřadnice a~také nové stavy obou políček. Obsahuje také seznam zajatých kamenů a jejich souřadnic (kameny, které budou odstraněny z~hrací desky). Při~vytváření instance se~kontroluje, zda počáteční a~koncová souřadnice není shodná.
 \begin{lstlisting}[language=FSharp]
 module Move =
     type Error =
-        | NoSourceCoordSpecified
-        | NoTargetCoordSpecified
+        | InvalidSourceCoordSpecified
+        | InvalidTargetCoordSpecified
         | SourceAndTargetMayNotBeSame
 
     type T = {
         Source: Coord.T;
         Target: Coord.T;
         NewSourceSquare: Square.T;
-        NewTargetSquare: Square.T }
+        NewTargetSquare: Square.T;
+        RemovedPieces: RemovedPiece.T list }
+
+    let tryCreateWithRemovedPiecesList x y nx ny xys = ...
 
     let tryCreate x y nx ny =
-        let getCoord (c: Result<Coord.T, Coord.Error>) (e: Error) =
-            match c with
-            | Success c -> Success c
-            | Error _ -> Error e
-
-        let checkSourceAndTarget src tar =
-            if src = tar then Error SourceAndTargetMayNotBeSame else Success ()
-
-        let maybe = new MaybeBuilder()
-        maybe {
-            let! source = getCoord x NoSourceCoordSpecified
-            let! target = getCoord y NoTargetCoordSpecified
-            let! newSourceSq = Success nx
-            let! newTargetSq = Success ny
-            do! checkSourceAndTarget source target
-            return Success { 
-                Source = source; 
-                Target = target;
-                NewSourceSquare = newSourceSq;
-                NewTargetSquare = newTargetSq }}
+        tryCreateWithRemovedPiecesList x y nx ny []
 \end{lstlisting}
 
 \subsection{Třída \texttt{Board}}
