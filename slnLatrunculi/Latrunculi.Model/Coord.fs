@@ -17,6 +17,12 @@ module Coord =
         Column: ColumnNumber;
         Row: RowNumber }
         
+    let getColumnIndex c =
+        (Seq.findIndex (fun x -> ColumnNumber x = c ) ColumnNumbers)
+
+    let getRowIndex r =
+        (Seq.findIndex (fun x -> RowNumber x = r ) RowNumbers)
+
     let tryCreate x y =
         let tryCheckColumnNumberRange (col: char) = 
             match Seq.tryFind (fun x -> x = System.Char.ToUpper(col)) ColumnNumbers with

@@ -12,3 +12,8 @@ open Latrunculi.Model
 open Latrunculi.Controller
 
 
+let board = Board.create
+let coord = getObjExn (Coord.tryCreate 'B' 1)
+let square = Square.createWithPiece Piece.createWhite
+
+board.ChangeSquare coord square
