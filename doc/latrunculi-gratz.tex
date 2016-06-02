@@ -13,7 +13,7 @@
 \definecolor{redstrings}{rgb}{0.5,0,0}
 
 \lstdefinelanguage{FSharp}
-                {morekeywords={let, new, match, with, rec, open, module, namespace, type, of, member, and, for, in, do, begin, end, fun, function, try, mutable, if, then, else},
+                {morekeywords={new, match, with, rec, open, module, namespace, type, of, member, and, for, in, do, begin, end, fun, function, try, mutable, if, then, else, maybe, return, let},
     keywordstyle=\color{bluekeywords},
     sensitive=false,
     morecomment=[l][\color{greencomments}]{///},
@@ -168,6 +168,26 @@ Pro testování je použit framework \emph{NUnit 3.2.1}. Soubory s~testy doméno
 \section{Implementace}
 Po~vytvoření projektů \emph{Visual Studia} a nastavení jejich vzájemných referencí jsem započal implementaci. A~to~od~nejnižší vrstvy, tj. doménového modelu. Pro implementaci ve~vývojovém prostředí bylo využito okno \emph{F\# Interactive}, které zpřístupňuje \texttt{REPL} cyklus jazyka F\#. Bez nutnosti kompilace, spuštění či ladění nebo vytvoření zdrojového souboru umožňuje přímo zadat požadovanou definici objektu a~ihned objekt otestovat (vytvořit instanci), případně doupravit.
 
+\subsection{Modul \texttt{Common}}
+Obsahuje definice společné pro celý model a kontrolér. Např. podporu monád.
+\begin{lstlisting}[language=FSharp]
+[<AutoOpen>]
+module Common
+
+    type Result<'TSuccess,'TError> = 
+        | Success of 'TSuccess 
+        | Error of 'TError
+
+    type MaybeBuilder() =
+        member this.Bind(x, f) = 
+            match x with
+            | Success s -> f s
+            | Error e -> Error e
+
+        member this.Return(x) = 
+            x
+\end{lstlisting}
+
 \subsection{Entita \texttt{Piece}}
 Tato entita je implementována jako strukturovaný typ \texttt{Record} jazyka F\#. Reprezentuje herní kámen, který bude umísťován na~hrací desku. Ve~hře Latrunculi je~pouze jeden typ kamenů, a~proto jediným atributem bude barva (bílá nebo černá).
 Zdrojový kód:
@@ -276,7 +296,31 @@ module Square =
         Nothing
 \end{lstlisting}
 
-\subsection{Entita \texttt{Board}}
+\subsection{Entita \texttt{Coord}}
+Reprezentuje souřadnice. Obsahuje logiku pro kontrolu rozsahu souřadnic. Souřadnice je možné vytvořit z~řetězce (např. \texttt{"A1"}) nebo předání zvlášť písmene označující sloupec a~čísla řádku.
+Jako ukázku uvádím kód vytvářející souřadnice z~řetězce.
+\begin{lstlisting}[language=FSharp]
+    let tryCreateFromString (s: string) =
+        let tryParseColumnNumberFromChar (c: char) =
+            Success c
+        let tryParseRowNumberFromChar (c: char) =
+            match System.Int32.TryParse(string c) with
+            | (true,i) -> Success i
+            | _ -> Error UnableToParseCoordFromString     
+                               
+        match s with
+        | null -> Error UnableToParseCoordFromString
+        | _ when s.Length <> 2 -> Error UnableToParseCoordFromString
+        | _ -> 
+            let maybe = new MaybeBuilder()
+            maybe {
+                let! col = tryParseColumnNumberFromChar <| s.Chars 0
+                let! row = tryParseRowNumberFromChar <| s.Chars 1
+                let! coord = tryCreate col row
+                return Success coord }
+\end{lstlisting}
+
+\subsection{Třída \texttt{Board}}
 Hrací deska (Board) provádí tahy (bez ověřování pravidel), uchovává rozmístění kamenů a~provedné tahy ukládá do~historie.
 
 \subsection{Třída \texttt{Latrunculi.Model.GameModel}}
