@@ -6,13 +6,15 @@ module Move =
         | InvalidTargetCoordSpecified
         | SourceAndTargetMayNotBeSame
 
+    [<StructuralEquality;NoComparison>]
     type T = {
         Source: Coord.T;
         Target: Coord.T;
         NewSourceSquare: Square.T;
-        NewTargetSquare: Square.T }
+        NewTargetSquare: Square.T;
+        RemovedPieces: RemovedPiece.T list }
 
-    let tryCreate x y nx ny =
+    let tryCreateWithRemovedPiecesList x y nx ny xys =
         let getCoord (c: Result<Coord.T, Coord.Error>) (e: Error) =
             match c with
             | Success c -> Success c
@@ -32,4 +34,8 @@ module Move =
                 Source = source; 
                 Target = target;
                 NewSourceSquare = newSourceSq;
-                NewTargetSquare = newTargetSq }}
+                NewTargetSquare = newTargetSq;
+                RemovedPieces = xys }}
+
+    let tryCreate x y nx ny =
+        tryCreateWithRemovedPiecesList x y nx ny []

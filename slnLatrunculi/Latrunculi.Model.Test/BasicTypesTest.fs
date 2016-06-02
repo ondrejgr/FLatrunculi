@@ -75,7 +75,17 @@ let BasicTypesTest() =
                         (s.Source = getObjExn srcCoord) && 
                         (s.Target = getObjExn tarCoord) &&
                         (s.NewSourceSquare = squareEmpty) &&
-                        (s.NewTargetSquare = squareWithWhitePiece)
+                        (s.NewTargetSquare = squareWithWhitePiece) &&
+                        (List.length s.RemovedPieces = 0)
+                    | _ -> false)
+    let removedPiece = RemovedPiece.create (getObjExn srcCoord) whitePiece
+    Assert.IsTrue(match Move.tryCreateWithRemovedPiecesList srcCoord tarCoord squareEmpty squareWithWhitePiece [removedPiece] with
+                    | Success s -> 
+                        (s.Source = getObjExn srcCoord) && 
+                        (s.Target = getObjExn tarCoord) &&
+                        (s.NewSourceSquare = squareEmpty) &&
+                        (s.NewTargetSquare = squareWithWhitePiece) &&
+                        (List.head s.RemovedPieces = removedPiece)
                     | _ -> false)
 
 

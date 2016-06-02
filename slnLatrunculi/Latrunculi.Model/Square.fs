@@ -2,6 +2,7 @@
 
 module Square =
 
+    [<StructuralEquality;NoComparison>]
     type T =
         | Piece of Piece.T
         | Nothing

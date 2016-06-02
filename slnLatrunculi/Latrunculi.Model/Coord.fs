@@ -12,6 +12,7 @@ module Coord =
     let ColumnNumbers = seq {'A'..'H'}
     let RowNumbers = seq {1..7}
 
+    [<StructuralEquality;NoComparison>]
     type T = {
         Column: ColumnNumber;
         Row: RowNumber }

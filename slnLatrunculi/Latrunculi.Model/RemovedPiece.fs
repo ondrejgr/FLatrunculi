@@ -2,6 +2,7 @@
 
 module RemovedPiece =
 
+    [<StructuralEquality;NoComparison>]
     type T = {
         Coord: Coord.T;
         Piece: Piece.T }

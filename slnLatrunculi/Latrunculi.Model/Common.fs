@@ -8,7 +8,7 @@ module Common
     let getObjExn c =
         match c with
         | Success c -> c
-        | _ -> failwith "Unable to extract object instance from error function result."
+        | _ -> failwith "Unable to extract object instance from function result, because called function has failed."
 
     type MaybeBuilder() =
         member this.Bind(x, f) = 
