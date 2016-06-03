@@ -33,7 +33,6 @@ module Coord =
             | Some y -> Success (RowNumber y)
             | None -> Error InvalidRowNumber
 
-        let maybe = new MaybeBuilder()
         maybe {
             let! col = tryCheckColumnNumberRange x
             let! row = tryCheckRowNumberRange y
@@ -51,7 +50,6 @@ module Coord =
         | null -> Error UnableToParseCoordFromString
         | _ when s.Length <> 2 -> Error UnableToParseCoordFromString
         | _ -> 
-            let maybe = new MaybeBuilder()
             maybe {
                 let! col = tryParseColumnNumberFromChar <| s.Chars 0
                 let! row = tryParseRowNumberFromChar <| s.Chars 1

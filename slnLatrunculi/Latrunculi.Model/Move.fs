@@ -23,7 +23,6 @@ module Move =
         let checkSourceAndTarget src tar =
             if src = tar then Error SourceAndTargetMayNotBeSame else Success ()
 
-        let maybe = new MaybeBuilder()
         maybe {
             let! source = getCoord x InvalidSourceCoordSpecified
             let! target = getCoord y InvalidTargetCoordSpecified

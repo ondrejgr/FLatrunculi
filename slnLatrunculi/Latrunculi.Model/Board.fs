@@ -2,22 +2,38 @@
 
 module Board =
     type Error =
+        | InvalidCoordSpecified
         | InvalidMoveSpecified
 
     type T() = 
-        member this.Squares = Array.init (Seq.length Coord.RowNumbers) (fun _ -> 
+        let sq = Array.init (Seq.length Coord.RowNumbers) (fun _ -> 
             Array.create (Seq.length Coord.ColumnNumbers) Square.createEmpty)
+
+        member val Squares = sq
+
+        member this.GetSquare (c: Coord.T) =
+            let col = Coord.getColumnIndex c.Column
+            let row = Coord.getRowIndex c.Row
+            this.Squares.[row].[col]
         
         member this.ChangeSquare (c: Coord.T) (s: Square.T) =
             let col = Coord.getColumnIndex c.Column
             let row = Coord.getRowIndex c.Row
             Array.set this.Squares.[row] col s
-            this.Squares
+            ()
 
-//    let tryMove move =
-//        match move with
-//        | Error _ -> Error InvalidMoveSpecified
-//        | Success m -> 
+    let tryGetSquare (board: T) (coord: Result<Coord.T, Coord.Error>) =
+        match coord with
+        | Error _ -> Error InvalidCoordSpecified
+        | Success c -> Success (board.GetSquare c)
+
+    let tryMove (board: T) (move: Result<Move.T, Move.Error>) =
+        match move with
+        | Error _ -> Error InvalidMoveSpecified
+        | Success m -> 
+            board.ChangeSquare m.Source m.NewSourceSquare
+            board.ChangeSquare m.Target m.NewTargetSquare
+            Success ()
 
     let create =
         T()

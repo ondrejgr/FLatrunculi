@@ -19,4 +19,5 @@ module Common
         member this.Return(x) = 
             x
 
+    let maybe = new MaybeBuilder()
     
