@@ -10,7 +10,7 @@ module Coord =
     type RowNumber = RowNumber of int
 
     let ColumnNumbers = seq {'A'..'H'}
-    let RowNumbers = seq {1..7}
+    let RowNumbers = seq [7;6;5;4;3;2;1]
 
     [<StructuralEquality;NoComparison>]
     type T = {
