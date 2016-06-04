@@ -9,20 +9,25 @@ module Coord =
     type ColumnNumber = ColumnNumber of char
     type RowNumber = RowNumber of int
 
-    let ColumnNumbers = seq {'A'..'H'}
-    let RowNumbers = seq [7;6;5;4;3;2;1]
+    let ColumnNumbers = seq ['A'..'H']
+    let RowNumbers = Seq.init 7 (fun i -> 7 - i) // [7..1]
+
+    let ColIndex =
+        Seq.fold (fun (i, xs) x -> 
+                    (i + 1, (ColumnNumber x, i)::xs)) 
+            (0, []) ColumnNumbers 
+        |> snd |> List.rev |> Map.ofList
+    let RowIndex =
+        Seq.fold (fun (i, xs) x -> 
+                    (i + 1, (RowNumber x, i)::xs)) 
+            (0, []) RowNumbers 
+        |> snd |> List.rev |> Map.ofList
 
     [<StructuralEquality;NoComparison>]
     type T = {
         Column: ColumnNumber;
         Row: RowNumber }
         
-    let getColumnIndex c =
-        (Seq.findIndex (fun x -> ColumnNumber x = c ) ColumnNumbers)
-
-    let getRowIndex r =
-        (Seq.findIndex (fun x -> RowNumber x = r ) RowNumbers)
-
     let tryCreate x y =
         let tryCheckColumnNumberRange (col: char) = 
             match Seq.tryFind (fun x -> x = System.Char.ToUpper(col)) ColumnNumbers with

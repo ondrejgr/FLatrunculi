@@ -12,13 +12,13 @@ module Board =
         member val Squares = sq
 
         member this.GetSquare (c: Coord.T) =
-            let col = Coord.getColumnIndex c.Column
-            let row = Coord.getRowIndex c.Row
+            let col = Coord.ColIndex.[c.Column]
+            let row = Coord.RowIndex.[c.Row]
             this.Squares.[row].[col]
         
         member this.ChangeSquare (c: Coord.T) (s: Square.T) =
-            let col = Coord.getColumnIndex c.Column
-            let row = Coord.getRowIndex c.Row
+            let col = Coord.ColIndex.[c.Column]
+            let row = Coord.RowIndex.[c.Row]
             Array.set this.Squares.[row] col s
             ()
 
