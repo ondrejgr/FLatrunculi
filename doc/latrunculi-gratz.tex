@@ -322,8 +322,19 @@ module Coord =
     type ColumnNumber = ColumnNumber of char
     type RowNumber = RowNumber of int
 
-    let ColumnNumbers = seq {'A'..'H'}
-    let RowNumbers = seq [7;6;5;4;3;2;1]
+    let ColumnNumbers = seq ['A'..'H']
+    let RowNumbers = Seq.init 7 (fun i -> 7 - i) // [7..1]
+
+    let ColIndex =
+        Seq.fold (fun (i, xs) x -> 
+                    (i + 1, (ColumnNumber x, i)::xs)) 
+            (0, []) ColumnNumbers 
+        |> snd |> List.rev |> Map.ofList
+    let RowIndex =
+        Seq.fold (fun (i, xs) x -> 
+                    (i + 1, (RowNumber x, i)::xs)) 
+            (0, []) RowNumbers 
+        |> snd |> List.rev |> Map.ofList
 
     type T = {
         Column: ColumnNumber;
