@@ -168,8 +168,6 @@ Pro testování je použit framework \emph{NUnit 3.2.1}. Soubory s~testy doméno
 \section{Implementace}
 Po~vytvoření projektů \emph{Visual Studia} a nastavení jejich vzájemných referencí jsem započal implementaci. A~to~od~nejnižší vrstvy, tj. doménového modelu. Pro implementaci ve~vývojovém prostředí bylo využito okno \emph{F\# Interactive}, které zpřístupňuje \texttt{REPL} cyklus jazyka F\#. Bez nutnosti kompilace, spuštění či ladění nebo vytvoření zdrojového souboru umožňuje přímo zadat požadovanou definici objektu a~ihned objekt otestovat (vytvořit instanci), případně doupravit.
 
-V~následujícím popisu jednotlivých součástí uvádím ve~zdrojovém kódu především názvy významných atributů a~významné funkce a~jejich parametry. Tedy ne~celý zdrojový kód (s~výjimkou entity \texttt{Piece}, jejíž kód je uveden pro ilustraci).
-
 \subsection{Modul \texttt{Common}}
 Obsahuje definice společné pro celý model a kontrolér. Např. podporu návratových hodnot funkcí a~podporu výpočtových funkcí (monáda \texttt{Maybe}).
 \begin{lstlisting}[language=FSharp]
@@ -312,37 +310,7 @@ module Square =
 
 \subsection{Entita \texttt{Coord}}
 Reprezentuje souřadnice. Obsahuje logiku pro kontrolu rozsahu souřadnic. Souřadnice je možné vytvořit z~řetězce (např. \texttt{"A1"}) nebo předání zvlášť písmene označující sloupec a~čísla řádku.
-\begin{lstlisting}[language=FSharp]
-module Coord =
-    type Error =
-        | InvalidColumnNumber
-        | InvalidRowNumber
-        | UnableToParseCoordFromString
-
-    type ColumnNumber = ColumnNumber of char
-    type RowNumber = RowNumber of int
-
-    let ColumnNumbers = seq ['A'..'H']
-    let RowNumbers = Seq.init 7 (fun i -> 7 - i) // [7..1]
-
-    let ColIndex =
-        Seq.fold (fun (i, xs) x -> 
-                    (i + 1, (ColumnNumber x, i)::xs)) 
-            (0, []) ColumnNumbers 
-        |> snd |> List.rev |> Map.ofList
-    let RowIndex =
-        Seq.fold (fun (i, xs) x -> 
-                    (i + 1, (RowNumber x, i)::xs)) 
-            (0, []) RowNumbers 
-        |> snd |> List.rev |> Map.ofList
-
-    type T = {
-        Column: ColumnNumber;
-        Row: RowNumber }
-        
-    let tryCreate x y =
-    let tryCreateFromString (s: string) =
-\end{lstlisting}
+Umožňuje také iterovat přes všechny možné souřadnice.
 
 \subsection{Entita \texttt{RemovedPiece}}
 Zajatý kámen. Musíme si zaznamenat druh i~souřadnice kamene, který bude odebrán (resp. přidán) při provedení tahu (resp. inverzního tahu).
@@ -384,10 +352,14 @@ Hrací deska (Board) provádí tahy (bez ověřování pravidel), uchovává roz
 
 Rozmístění kamenů je dvojrozměrné pole objektů \texttt{Square}.
 
+\subsection{Modul \texttt{Rules}}
+Obsahuje herní pravidla včetně funkce vracející výchozí rezestavení kamenů.
+
 \subsection{Třída \texttt{Latrunculi.Model.GameModel}}
+Při vytvoření instance provede vytvoření herní desky a~inicializaci rozmístění kamenů dle pravidel.
 
 \subsection{Třída \texttt{Latrunculi.Controller.GameController}}
-
+Provádí řízení hry. Obsahuje odkaz na instanci třídy \texttt{Latrunculi.Model.GameModel}.
 
 \section{Systémové požadavky}
 Pro vývoj i~běh aplikace jsou na počítač kladeny tyto nároky:
