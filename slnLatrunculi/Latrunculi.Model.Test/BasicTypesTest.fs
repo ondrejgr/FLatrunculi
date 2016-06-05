@@ -107,5 +107,7 @@ let BasicTypesTest() =
                     | Success s -> s = squareWithWhitePiece
                     | _ -> false)
 
+    let gameModel = new GameModel()
+
     ()
  

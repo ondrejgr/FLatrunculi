@@ -27,7 +27,7 @@ module Coord =
     type T = {
         Column: ColumnNumber;
         Row: RowNumber }
-        
+
     let tryCreate x y =
         let tryCheckColumnNumberRange (col: char) = 
             match Seq.tryFind (fun x -> x = System.Char.ToUpper(col)) ColumnNumbers with
@@ -60,3 +60,12 @@ module Coord =
                 let! row = tryParseRowNumberFromChar <| s.Chars 1
                 let! coord = tryCreate col row
                 return Success coord }
+
+    let iter (x: T -> unit) = 
+        Seq.iter (fun row -> 
+                    Seq.iter (fun col ->
+                                let coord = tryCreate col row
+                                match coord with
+                                | Success c -> x c
+                                | _ -> failwith "Souřadnici se nepodařilo vytvořit.")
+                        ColumnNumbers) RowNumbers

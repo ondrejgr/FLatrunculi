@@ -5,6 +5,7 @@
 #load "RemovedPiece.fs"
 #load "Move.fs"
 #load "Board.fs"
+#load "Rules.fs"
 #load "GameModel.fs"
 #load "GameController.fs"
 

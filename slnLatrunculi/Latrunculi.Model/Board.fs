@@ -2,7 +2,7 @@
 
 module Board =
     type Error =
-        | NotImplemented
+        | UnableToIterateBoard
         | InvalidCoordSpecified
         | InvalidMoveSpecified
 
@@ -36,12 +36,13 @@ module Board =
             board.ChangeSquare m.Target m.NewTargetSquare
             Success ()
 
-    let tryInit (board: T) =
-        let xx =
-            Success ()
-        maybe {
-            do! xx
-            return Success board }
+    let tryInit (board: T) (getInitalSquare: Coord.T -> Square.T) =
+        try
+            Coord.iter (fun c ->
+                    board.ChangeSquare c <| getInitalSquare c)
+            Success board
+        with
+        | _ -> Error UnableToIterateBoard
 
     let create =
         T()
