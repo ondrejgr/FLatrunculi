@@ -55,6 +55,7 @@
     <Compile Include="GameModel.fs" />
     <Compile Include="GameController.fs" />
     <None Include="Script.fsx" />
+    <None Include="Latrunculi.snk" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

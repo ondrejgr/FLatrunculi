@@ -2,6 +2,7 @@
 
 module Board =
     type Error =
+        | NotImplemented
         | InvalidCoordSpecified
         | InvalidMoveSpecified
 
@@ -34,6 +35,13 @@ module Board =
             board.ChangeSquare m.Source m.NewSourceSquare
             board.ChangeSquare m.Target m.NewTargetSquare
             Success ()
+
+    let tryInit (board: T) =
+        let xx =
+            Success ()
+        maybe {
+            do! xx
+            return Success board }
 
     let create =
         T()
