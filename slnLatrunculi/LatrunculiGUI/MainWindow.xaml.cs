@@ -1,4 +1,5 @@
-﻿using Latrunculi.ViewModel;
+﻿using Latrunculi.Controller;
+using Latrunculi.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,12 +27,36 @@ namespace Latrunculi.GUI
             InitializeComponent();
         }
 
+        public MainWindow(MainWindowViewModel viewModel, GameController controller)
+        {
+            InitializeComponent();
+            ViewModel = viewModel;
+            Controller = controller;
+        }
+
         public MainWindowViewModel ViewModel
         {
             get
             {
                 return (MainWindowViewModel)DataContext;
             }            
+            private set
+            {
+                DataContext = value;
+            }
         }
+
+        private GameController _controller;
+        public GameController Controller
+        {
+            get
+            {
+                return _controller;
+            }
+            private set
+            {
+                _controller = value;
+            }
+        }        
     }
 }
