@@ -61,16 +61,39 @@ namespace Latrunculi.ViewModel
             OnNumberOfRowsOrColsChanged();
         }
                 
+        private void ApplySquareModelToViewModel(Latrunculi.Model.Square.T m, BoardSquareViewModel sq, SquareColors? sqColor = null)
+        {
+            if (sqColor.HasValue)
+                sq.SquareColor = sqColor.Value;
+
+            if (m.IsPiece)
+            {
+                Latrunculi.Model.Square.T.Piece p = (Latrunculi.Model.Square.T.Piece)m;
+                switch (p.Item.Color)
+                {
+                    case Model.Piece.Colors.Black:
+                        sq.PieceType = PieceTypes.ptBlack;
+                        break;
+                    case Model.Piece.Colors.White:
+                        sq.PieceType = PieceTypes.ptWhite;
+                        break;
+                }
+            }
+            else
+                sq.PieceType = PieceTypes.ptNone;
+
+        }
+
         public void Init(Latrunculi.Model.Board.T boardModel)
         {
             try
             {
-                Func<Color, Color> swapColor = new Func<Color, Color>(c => {
-                    return (c == Colors.Black) ? Colors.White : Colors.Black; });
-
                 Clear();
 
-                System.Windows.Media.Color color = System.Windows.Media.Colors.Black;
+                Func<SquareColors, SquareColors> swapColor = new Func<SquareColors, SquareColors>(c => {
+                    return (c == SquareColors.scBlack) ? SquareColors.scWhite : SquareColors.scBlack; });
+                SquareColors color = SquareColors.scBlack;
+
                 foreach (Latrunculi.Model.Square.T[] rows in boardModel.Squares)
                 {
                     BoardRowViewModel row = new BoardRowViewModel();
@@ -79,23 +102,8 @@ namespace Latrunculi.ViewModel
                     foreach (Latrunculi.Model.Square.T m in rows)
                     {
                         BoardSquareViewModel sq = new BoardSquareViewModel();
-                        sq.Color = color;
 
-                        if (m.IsPiece)
-                        {
-                            Latrunculi.Model.Square.T.Piece p = (Latrunculi.Model.Square.T.Piece)m;
-                            switch (p.Item.Color)
-                            {
-                                case Model.Piece.Colors.Black:
-                                    sq.PieceType = PieceType.ptBlack;
-                                    break;
-                                case Model.Piece.Colors.White:
-                                    sq.PieceType = PieceType.ptWhite;
-                                    break;
-                            }
-                        }
-                        else
-                            sq.PieceType = PieceType.ptNone;
+                        ApplySquareModelToViewModel(m, sq, color);
 
                         row.Squares.Add(sq);
                         color = swapColor(color);

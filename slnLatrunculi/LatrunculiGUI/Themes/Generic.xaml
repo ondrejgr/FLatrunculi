@@ -67,29 +67,7 @@
         <Style.Resources>
             <SolidColorBrush x:Key="scWhite" Color="WhiteSmoke"/>
             <SolidColorBrush x:Key="scBlack" Color="DarkGray"/>
-        </Style.Resources>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ctrls:Square}">
-                    <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
-                        <Grid>
-                            <Rectangle>
-                                <Rectangle.Fill>
-                                    <SolidColorBrush Color="{Binding Color}"/>
-                                </Rectangle.Fill>
-                            </Rectangle>
-                            <ctrls:Piece Content="{Binding}"/>
-                        </Grid>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
 
-    <Style TargetType="{x:Type ctrls:Piece}">
-        <Style.Resources>
             <DataTemplate x:Key="ptNone">
                 <Ellipse Stroke="Transparent" Margin="5,5,5,5">
                     <Ellipse.Fill>
@@ -111,11 +89,46 @@
                     </Ellipse.Fill>
                 </Ellipse>
             </DataTemplate>
+
+            <Style x:Key="sqStyle" TargetType="{x:Type Rectangle}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Path=SquareColor}" Value="scWhite">
+                        <Setter Property="Fill" Value="{StaticResource scWhite}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=SquareColor}" Value="scBlack">
+                        <Setter Property="Fill" Value="{StaticResource scBlack}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="ccStyle" TargetType="{x:Type ContentControl}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Path=PieceType}" Value="ptNone">
+                        <Setter Property="ContentTemplate" Value="{StaticResource ptNone}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PieceType}" Value="ptWhite">
+                        <Setter Property="ContentTemplate" Value="{StaticResource ptWhite}" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Path=PieceType}" Value="ptBlack">
+                        <Setter Property="ContentTemplate" Value="{StaticResource ptBlack}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
         </Style.Resources>
-        <Setter Property="ContentTemplateSelector">
+        <Setter Property="Template">
             <Setter.Value>
-                <ctrls:PieceDataTemplateSelector/>
+                <ControlTemplate TargetType="{x:Type ctrls:Square}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+                            <Rectangle Style="{StaticResource sqStyle}"/>
+                            <ContentControl Content="{Binding}" Style="{StaticResource ccStyle}"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
+
 </ResourceDictionary>

@@ -8,7 +8,8 @@ using System.Windows.Media;
 
 namespace Latrunculi.ViewModel
 {
-    public enum PieceType { ptNone, ptWhite, ptBlack };
+    public enum PieceTypes { ptNone, ptWhite, ptBlack };
+    public enum SquareColors { scWhite, scBlack }
 
     public class BoardSquareViewModel : INotifyPropertyChanged
     {
@@ -19,22 +20,22 @@ namespace Latrunculi.ViewModel
                 PropertyChanged(this, new PropertyChangedEventArgs(propName));
         }
 
-        private Color _color = Colors.Gray;
-        public Color Color
+        private SquareColors _squareColor = SquareColors.scWhite;
+        public SquareColors SquareColor
         {
             get
             {
-                return _color;
+                return _squareColor;
             }
             set
             {
-                _color = value;
-                OnPropertyChanged("Color");
+                _squareColor = value;
+                OnPropertyChanged("SquareColor");
             }
         }
 
-        private PieceType _pieceType = PieceType.ptNone;
-        public PieceType PieceType
+        private PieceTypes _pieceType = PieceTypes.ptNone;
+        public PieceTypes PieceType
         {
             get
             {
