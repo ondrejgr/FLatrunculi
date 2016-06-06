@@ -61,27 +61,26 @@ namespace Latrunculi.ViewModel
             OnNumberOfRowsOrColsChanged();
         }
                 
-        private void ApplySquareModelToViewModel(Latrunculi.Model.Square.T m, BoardSquareViewModel sq, SquareColors? sqColor = null)
+        private void ApplySquareModelToViewModel(Latrunculi.Model.Square.T model, BoardSquareViewModel viewModel, SquareColors? sqColor = null)
         {
             if (sqColor.HasValue)
-                sq.SquareColor = sqColor.Value;
+                viewModel.SquareColor = sqColor.Value;
 
-            if (m.IsPiece)
+            if (model.IsPiece)
             {
-                Latrunculi.Model.Square.T.Piece p = (Latrunculi.Model.Square.T.Piece)m;
+                Latrunculi.Model.Square.T.Piece p = (Latrunculi.Model.Square.T.Piece)model;
                 switch (p.Item.Color)
                 {
                     case Model.Piece.Colors.Black:
-                        sq.PieceType = PieceTypes.ptBlack;
+                        viewModel.PieceType = PieceTypes.ptBlack;
                         break;
                     case Model.Piece.Colors.White:
-                        sq.PieceType = PieceTypes.ptWhite;
+                        viewModel.PieceType = PieceTypes.ptWhite;
                         break;
                 }
             }
             else
-                sq.PieceType = PieceTypes.ptNone;
-
+                viewModel.PieceType = PieceTypes.ptNone;
         }
 
         public void Init(Latrunculi.Model.Board.T boardModel)
@@ -94,20 +93,22 @@ namespace Latrunculi.ViewModel
                     return (c == SquareColors.scBlack) ? SquareColors.scWhite : SquareColors.scBlack; });
                 SquareColors color = SquareColors.scBlack;
 
-                foreach (Latrunculi.Model.Square.T[] rows in boardModel.Squares)
+                foreach (int rowNumber in boardModel.GetRowNumbers)
                 {
                     BoardRowViewModel row = new BoardRowViewModel();
                     Rows.Add(row);
 
-                    foreach (Latrunculi.Model.Square.T m in rows)
+                    foreach (Tuple<Model.Coord.T, Model.Square.T> t in boardModel.GetCoordAndSquaresByRowNumber(rowNumber))
                     {
                         BoardSquareViewModel sq = new BoardSquareViewModel();
+                        sq.Coord = t.Item1;
 
-                        ApplySquareModelToViewModel(m, sq, color);
+                        ApplySquareModelToViewModel(t.Item2, sq, color);
 
                         row.Squares.Add(sq);
                         color = swapColor(color);
                     }
+
                     color = swapColor(color);
                 }
             }

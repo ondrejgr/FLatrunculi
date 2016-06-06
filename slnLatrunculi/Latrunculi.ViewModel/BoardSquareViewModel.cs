@@ -20,6 +20,20 @@ namespace Latrunculi.ViewModel
                 PropertyChanged(this, new PropertyChangedEventArgs(propName));
         }
 
+        private Model.Coord.T _coord;
+        public Model.Coord.T Coord
+        {
+            get
+            {
+                return _coord;
+            }
+            set
+            {
+                _coord = value;
+                OnPropertyChanged("Coord");
+            }
+        }
+
         private SquareColors _squareColor = SquareColors.scWhite;
         public SquareColors SquareColor
         {
