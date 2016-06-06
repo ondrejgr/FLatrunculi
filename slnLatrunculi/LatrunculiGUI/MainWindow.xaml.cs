@@ -2,6 +2,7 @@
 using Latrunculi.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,6 +58,43 @@ namespace Latrunculi.GUI
             {
                 _controller = value;
             }
-        }        
+        }
+
+        private bool MainWindowCommand_CanExecute
+        {
+            get
+            {
+                return !ViewModel.IsBusy;
+            }
+        }
+
+        private void ExitCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = MainWindowCommand_CanExecute;
+        }
+
+        private void ExitCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            CancelEventArgs cnl = new CancelEventArgs();
+            OnClosing(cnl);
+            if (!cnl.Cancel)
+                Close();
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            e.Handled = true;
+            if (WindowState == WindowState.Normal || WindowState == WindowState.Maximized)
+            {
+                int width = ((int)e.NewSize.Width - 300) / ViewModel.Board.NumberOfCols;
+                if (width < 16)
+                    width = 16;
+
+                if (board.SquareSize != width)
+                    board.SquareSize = width;
+            }
+        }
     }
 }

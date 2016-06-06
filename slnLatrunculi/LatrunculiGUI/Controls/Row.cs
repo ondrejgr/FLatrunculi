@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 
 namespace Latrunculi.GUI.Controls
 {
-    public class Board : ItemsControl
+    public class Row : ItemsControl
     {
-        static Board()
+        static Row()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(Board), new FrameworkPropertyMetadata(typeof(Board)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(Row), new FrameworkPropertyMetadata(typeof(Row)));
         }
 
         public int SquareSize
@@ -30,6 +30,6 @@ namespace Latrunculi.GUI.Controls
 
         // Using a DependencyProperty as the backing store for SquareSize.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SquareSizeProperty =
-            DependencyProperty.Register("SquareSize", typeof(int), typeof(Board), new PropertyMetadata(24));
+            DependencyProperty.Register("SquareSize", typeof(int), typeof(Row), new PropertyMetadata(24));
     }
 }

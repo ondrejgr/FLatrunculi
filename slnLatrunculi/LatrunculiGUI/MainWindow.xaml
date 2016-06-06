@@ -4,15 +4,43 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Latrunculi.GUI"
+        xmlns:ctrls="clr-namespace:Latrunculi.GUI.Controls"
         xmlns:vm="clr-namespace:Latrunculi.ViewModel;assembly=Latrunculi.ViewModel"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="{Binding Title}" Height="600" Width="800">
+        Title="{Binding Title}" 
+        MinHeight="260" MinWidth="260"
+        Height="600" Width="800"
+        SizeChanged="Window_SizeChanged">
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
+
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static local:MainWindowCommands.Exit}" CanExecute="ExitCommand_CanExecute" Executed="ExitCommand_Executed"/>
+    </Window.CommandBindings>
     
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Menu>
+            <MenuItem Header="_Soubor">
+                <MenuItem Command="{x:Static local:MainWindowCommands.Exit}"/>
+            </MenuItem>
+        </Menu>
+
+        <ctrls:Board x:Name="board" DataContext="{Binding Board}" Grid.Column="0" Grid.Row="1"/>
+
+        <StatusBar Grid.Row="2" Height="22">
+            <StatusBarItem Content="{Binding StatusBarText}"/>
+            <StatusBarItem/>
+        </StatusBar>
     </Grid>
 </Window>
