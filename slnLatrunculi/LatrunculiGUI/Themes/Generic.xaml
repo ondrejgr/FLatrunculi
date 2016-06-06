@@ -3,7 +3,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ctrls="clr-namespace:Latrunculi.GUI.Controls">
 
-
     <Style TargetType="{x:Type ctrls:Board}">
         <Setter Property="MinHeight" Value="192"/>
         <Setter Property="MinWidth" Value="192"/>
@@ -65,6 +64,10 @@
     </Style>
 
     <Style TargetType="{x:Type ctrls:Square}">
+        <Style.Resources>
+            <SolidColorBrush x:Key="scWhite" Color="WhiteSmoke"/>
+            <SolidColorBrush x:Key="scBlack" Color="DarkGray"/>
+        </Style.Resources>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ctrls:Square}">
@@ -72,12 +75,46 @@
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
                         <Grid>
-                            <Rectangle Fill="Aqua">
-                                
+                            <Rectangle>
+                                <Rectangle.Fill>
+                                    <SolidColorBrush Color="{Binding Color}"/>
+                                </Rectangle.Fill>
                             </Rectangle>
+                            <ctrls:Piece Content="{Binding}"/>
                         </Grid>
                     </Border>
                 </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ctrls:Piece}">
+        <Style.Resources>
+            <DataTemplate x:Key="ptNone">
+                <Ellipse Stroke="Transparent" Margin="5,5,5,5">
+                    <Ellipse.Fill>
+                        <SolidColorBrush Color="Transparent"/>
+                    </Ellipse.Fill>
+                </Ellipse>
+            </DataTemplate>
+            <DataTemplate x:Key="ptWhite">
+                <Ellipse Stroke="Black" Margin="5,5,5,5">
+                    <Ellipse.Fill>
+                        <SolidColorBrush Color="White"/>
+                    </Ellipse.Fill>
+                </Ellipse>
+            </DataTemplate>
+            <DataTemplate x:Key="ptBlack">
+                <Ellipse Stroke="White" Margin="5,5,5,5">
+                    <Ellipse.Fill>
+                        <SolidColorBrush Color="Black"/>
+                    </Ellipse.Fill>
+                </Ellipse>
+            </DataTemplate>
+        </Style.Resources>
+        <Setter Property="ContentTemplateSelector">
+            <Setter.Value>
+                <ctrls:PieceDataTemplateSelector/>
             </Setter.Value>
         </Setter>
     </Style>

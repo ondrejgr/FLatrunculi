@@ -89,8 +89,10 @@ namespace Latrunculi.GUI
             if (WindowState == WindowState.Normal || WindowState == WindowState.Maximized)
             {
                 int width = ((int)e.NewSize.Width - 300) / ViewModel.Board.NumberOfCols;
-                if (width < 16)
-                    width = 16;
+                if (width < 18)
+                    width = 18;
+                if (width > 100)
+                    width = 100;
 
                 if (board.SquareSize != width)
                     board.SquareSize = width;

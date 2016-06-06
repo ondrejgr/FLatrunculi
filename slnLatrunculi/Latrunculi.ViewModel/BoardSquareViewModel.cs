@@ -8,6 +8,8 @@ using System.Windows.Media;
 
 namespace Latrunculi.ViewModel
 {
+    public enum PieceType { ptNone, ptWhite, ptBlack };
+
     public class BoardSquareViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -28,6 +30,20 @@ namespace Latrunculi.ViewModel
             {
                 _color = value;
                 OnPropertyChanged("Color");
+            }
+        }
+
+        private PieceType _pieceType = PieceType.ptNone;
+        public PieceType PieceType
+        {
+            get
+            {
+                return _pieceType;
+            }
+            set
+            {
+                _pieceType = value;
+                OnPropertyChanged("PieceType");
             }
         }
     }

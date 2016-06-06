@@ -23,6 +23,7 @@ module Board =
             Array.set this.Squares.[row] col s
             ()
 
+
     let tryGetSquare (board: T) (coord: Result<Coord.T, Coord.Error>) =
         match coord with
         | Error _ -> Error InvalidCoordSpecified

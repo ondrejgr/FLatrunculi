@@ -15,7 +15,7 @@ using System.Windows.Shapes;
 
 namespace Latrunculi.GUI.Controls
 {
-    public class Square : Control
+    public class Square : ContentControl
     {
         static Square()
         {

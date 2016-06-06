@@ -6,6 +6,6 @@
              Startup="Application_Startup"
              DispatcherUnhandledException="Application_DispatcherUnhandledException">
     <Application.Resources>
-         
+
     </Application.Resources>
 </Application>

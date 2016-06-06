@@ -9,8 +9,8 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Title="{Binding Title}" 
-        MinHeight="260" MinWidth="260"
-        Height="600" Width="800"
+        MinHeight="300" MinWidth="600"
+        Height="700" Width="1000"
         SizeChanged="Window_SizeChanged">
     <Window.DataContext>
         <vm:MainWindowViewModel/>
