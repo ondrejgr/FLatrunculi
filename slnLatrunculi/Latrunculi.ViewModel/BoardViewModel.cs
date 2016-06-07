@@ -97,6 +97,7 @@ namespace Latrunculi.ViewModel
                 {
                     BoardRowViewModel row = new BoardRowViewModel();
                     Rows.Add(row);
+                    row.Squares.Add(new BoardSquareRowHeaderViewModel() { Content = string.Format("{0}", rowNumber) });
 
                     foreach (Tuple<Model.Coord.T, Model.Square.T> t in boardModel.GetCoordAndSquaresByRowNumber(rowNumber))
                     {
@@ -111,6 +112,14 @@ namespace Latrunculi.ViewModel
 
                     color = swapColor(color);
                 }
+
+                BoardRowViewModel columnHeaders = new BoardRowViewModel();
+                columnHeaders.Squares.Add(new BoardSquareBottomLeftHeaderViewModel());
+                foreach (char col in Model.Coord.ColumnNumbers)
+                {
+                    columnHeaders.Squares.Add(new BoardSquareColumnHeaderViewModel() { Content = string.Format("{0}", col) });
+                }
+                Rows.Add(columnHeaders);
             }
             finally
             {

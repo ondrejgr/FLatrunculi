@@ -11,15 +11,8 @@ namespace Latrunculi.ViewModel
     public enum PieceTypes { ptNone, ptWhite, ptBlack };
     public enum SquareColors { scWhite, scBlack }
 
-    public class BoardSquareViewModel : INotifyPropertyChanged
+    public class BoardSquareViewModel : BoardSquareBaseViewModel
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string propName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propName));
-        }
-
         private Model.Coord.T _coord;
         public Model.Coord.T Coord
         {

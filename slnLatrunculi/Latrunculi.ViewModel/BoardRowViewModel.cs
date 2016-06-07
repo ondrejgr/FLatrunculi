@@ -10,8 +10,8 @@ namespace Latrunculi.ViewModel
 {
     public class BoardRowViewModel : INotifyPropertyChanged
     {
-        private ObservableCollection<BoardSquareViewModel> _squares = new ObservableCollection<BoardSquareViewModel>();
-        public ObservableCollection<BoardSquareViewModel> Squares
+        private ObservableCollection<BoardSquareBaseViewModel> _squares = new ObservableCollection<BoardSquareBaseViewModel>();
+        public ObservableCollection<BoardSquareBaseViewModel> Squares
         {
             get
             {

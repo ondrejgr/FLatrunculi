@@ -48,6 +48,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BoardRowViewModel.cs" />
+    <Compile Include="BoardHeaders\BoardSquareBottomLeftHeaderViewModel.cs" />
+    <Compile Include="BoardHeaders\BoardSquareRowHeaderViewModel.cs" />
+    <Compile Include="BoardHeaders\BoardSquareColumnHeaderViewModel.cs" />
+    <Compile Include="BoardHeaders\BoardSquareHeaderViewModel.cs" />
+    <Compile Include="BoardSquareBaseViewModel.cs" />
     <Compile Include="BoardSquareViewModel.cs" />
     <Compile Include="BoardViewModel.cs" />
     <Compile Include="Common.cs" />

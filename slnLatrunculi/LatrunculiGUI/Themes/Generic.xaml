@@ -43,17 +43,24 @@
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
-        <Setter Property="ItemTemplate">
-            <Setter.Value>
-                <DataTemplate>
-                    <ctrls:Square Height="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Row}, Path=SquareSize}"
-                                  Width="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Row}, Path=SquareSize}"/>
-                </DataTemplate>
-            </Setter.Value>
-        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ctrls:Row}">
+                    <ControlTemplate.Resources>
+                        <DataTemplate DataType="{x:Type vm:BoardSquareBottomLeftHeaderViewModel}">
+                            <ctrls:Square Height="15" Width="15"/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:BoardSquareRowHeaderViewModel}">
+                            <ctrls:Square Height="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Row}, Path=SquareSize}" Width="15"/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:BoardSquareColumnHeaderViewModel}">
+                            <ctrls:Square Height="15" Width="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Row}, Path=SquareSize}"/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:BoardSquareViewModel}">
+                            <ctrls:Square Height="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Row}, Path=SquareSize}"
+                                  Width="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Row}, Path=SquareSize}"/>
+                        </DataTemplate>
+                    </ControlTemplate.Resources>
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
@@ -85,6 +92,15 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ctrls:Square}">
                     <ControlTemplate.Resources>
+                        <DataTemplate DataType="{x:Type vm:BoardSquareBottomLeftHeaderViewModel}">
+                            <TextBlock Text="{Binding Content}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:BoardSquareRowHeaderViewModel}">
+                           <TextBlock Text="{Binding Content}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vm:BoardSquareColumnHeaderViewModel}">
+                            <TextBlock Text="{Binding Content}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </DataTemplate>
                         <DataTemplate DataType="{x:Type vm:BoardSquareViewModel}">
                             <Ellipse x:Name="ellipse" Stroke="Transparent" Margin="5,5,5,5">
                                 <Ellipse.Fill>
