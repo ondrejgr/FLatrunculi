@@ -41,5 +41,17 @@ namespace Latrunculi.GUI
         {
             DialogResult = true;
         }
+
+        private void Help_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = MainWindowCommands.Navigate.CanExecute("docPlayerSettings", Owner);
+        }
+
+        private void Help_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            MainWindowCommands.Navigate.Execute("docPlayerSettings", Owner);
+        }
     }
 }

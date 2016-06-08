@@ -55,6 +55,15 @@ namespace Latrunculi.GUI
             }
         }
 
+        static private MainWindowCommand _navigate = new MainWindowCommand("Zobrazit _nápovědu", "Navigate", null, true);
+        static public MainWindowCommand Navigate
+        {
+            get
+            {
+                return _navigate;
+            }
+        }
+
         static private MainWindowCommand _settings = new MainWindowCommand("_Nastavení hry", "Settings", new KeyGesture(Key.F4));
         static public MainWindowCommand Settings
         {

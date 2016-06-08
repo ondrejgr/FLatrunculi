@@ -168,5 +168,23 @@ namespace Latrunculi.GUI
         {
             e.Handled = true;
         }
+
+        private void Navigate_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = MainWindowCommand_CanExecute;
+        }
+
+        private void Navigate_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (HelpWindow.Current == null)
+                HelpWindow.Current = new HelpWindow() { Owner = this };
+
+            HelpItem item = HelpWindow.Current.ViewModel.Items.FirstOrDefault(i => i.Key == (string)e.Parameter);
+            if (item == null)
+                item = HelpWindow.Current.ViewModel.Items[0];
+            HelpWindow.Current.ViewModel.GoTo(item);
+            HelpWindow.Current.Show();
+        }
     }
 }

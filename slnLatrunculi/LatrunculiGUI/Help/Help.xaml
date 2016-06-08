@@ -75,4 +75,10 @@
         </List>
     </FlowDocument>
 
+    <FlowDocument x:Key="docPlayerSettings">
+        <Paragraph Style="{StaticResource title}">Nastavení hry</Paragraph>
+        <Paragraph>Okno Nastavení hry umožňuje kdykoliv změnit obtížnost a typ hráče.</Paragraph>
+        <Paragraph>Každý hráč může být buďto člověk nebo počítač.</Paragraph>
+    </FlowDocument>
+
 </ResourceDictionary>

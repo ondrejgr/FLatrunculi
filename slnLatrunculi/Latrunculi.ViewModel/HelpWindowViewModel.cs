@@ -16,6 +16,7 @@ namespace Latrunculi.ViewModel
         public HelpItem(string title, string documentKey)
         {
             Title = title;
+            Key = documentKey;
             if (!string.IsNullOrEmpty(documentKey))
                 LoadDocument(documentKey);
         }
@@ -31,6 +32,20 @@ namespace Latrunculi.ViewModel
         {
             FlowDocument doc = Application.Current.TryFindResource(key) as FlowDocument;
             Document = doc;
+        }
+
+        private string _key;
+        public string Key
+        {
+            get
+            {
+                return _key;
+            }
+            private set
+            {
+                _key = value;
+                OnPropertyChanged("Key");
+            }
         }
 
         private FlowDocument _document;
@@ -68,6 +83,7 @@ namespace Latrunculi.ViewModel
         {
             Items.Add(new HelpItem("O hře Latrunculi", "docAbout"));
             Items.Add(new HelpItem("Pravidla hry", "docRules"));
+            Items.Add(new HelpItem("Nastavení hry", "docPlayerSettings"));
 
             CurrentItem = Items[0];
         }

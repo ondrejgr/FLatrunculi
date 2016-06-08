@@ -20,6 +20,7 @@
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static local:MainWindowCommands.Exit}" CanExecute="ExitCommand_CanExecute" Executed="ExitCommand_Executed"/>
         <CommandBinding Command="{x:Static local:MainWindowCommands.Help}" CanExecute="Help_CanExecute" Executed="Help_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindowCommands.Navigate}" CanExecute="Navigate_CanExecute" Executed="Navigate_Executed" />
         <CommandBinding Command="{x:Static local:MainWindowCommands.Settings}" CanExecute="Settings_CanExecute" Executed="Settings_Executed"/>
         <CommandBinding Command="{x:Static local:MainWindowCommands.New}" CanExecute="New_CanExecute" Executed="New_Executed"/>
         <CommandBinding Command="{x:Static local:MainWindowCommands.Load}" CanExecute="Load_CanExecute" Executed="Load_Executed"/>

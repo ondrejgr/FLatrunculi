@@ -14,6 +14,9 @@
     <Window.DataContext>
         <vm:PlayerSettingsViewModel/>
     </Window.DataContext>
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static local:MainWindowCommands.Help}" CanExecute="Help_CanExecute" Executed="Help_Executed"/>
+    </Window.CommandBindings>
     <Window.Resources>
         <local:EnumToBooleanConverter x:Key="bconv"/>
 
