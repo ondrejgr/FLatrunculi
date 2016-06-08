@@ -16,6 +16,8 @@ namespace Latrunculi.ViewModel
                 Model = new GameModel();
 
             Board.Init(Model.Board);
+            Board.RefreshFromModel(Model.Board);
+            Settings.RefreshFromModel(Model.PlayerSettings);
         }
 
         public MainWindowViewModel(GameModel model): this()
@@ -58,6 +60,22 @@ namespace Latrunculi.ViewModel
             get
             {
                 return _settings;
+            }
+        }
+
+        public PlayerViewModel WhitePlayer
+        {
+            get
+            {
+                return Settings.WhitePlayer;
+            }
+        }
+
+        public PlayerViewModel BlackPlayer
+        {
+            get
+            {
+                return Settings.BlackPlayer;
             }
         }
 

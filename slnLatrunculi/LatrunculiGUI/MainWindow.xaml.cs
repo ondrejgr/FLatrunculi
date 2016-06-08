@@ -128,7 +128,7 @@ namespace Latrunculi.GUI
         private void Settings_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
-            SettingsWindow win = new SettingsWindow() { Owner = this };
+            SettingsWindow win = new SettingsWindow() { Owner = this, ViewModel = ViewModel.Settings };
             win.ShowDialog();
         }
 

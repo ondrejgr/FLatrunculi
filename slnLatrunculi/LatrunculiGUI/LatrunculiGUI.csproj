@@ -61,9 +61,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\UserLevelControl.xaml.cs">
+      <DependentUpon>UserLevelControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EnumToBooleanConverter.cs" />
     <Compile Include="Windows\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\UserLevelControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\HelpWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -168,6 +176,21 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="CommandIcons\New.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="CommandIcons\Computer.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="CommandIcons\Human.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="CommandIcons\LevelEasy.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="CommandIcons\LevelMedium.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="CommandIcons\LevelHard.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

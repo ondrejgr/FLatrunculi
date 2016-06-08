@@ -14,9 +14,40 @@
         <vm:PlayerSettingsViewModel/>
     </Window.DataContext>
     <Window.Resources>
-        <DataTemplate DataType="{x:Type vm:PlayerSettingsViewModel}">
-            <GroupBox x:Name="grpPlayer" Margin="5,5,5,5">
+        <local:EnumToBooleanConverter x:Key="bconv"/>
 
+        <DataTemplate DataType="{x:Type vm:PlayerViewModel}">
+            <GroupBox x:Name="grpPlayer" Margin="5,5,5,5">
+                <GroupBox.Resources>
+                    <Style TargetType="{x:Type Label}">
+                        <Setter Property="Margin" Value="0,0,0,0"/>
+                    </Style>
+                    <Style TargetType="{x:Type RadioButton}">
+                        <Setter Property="Margin" Value="0,0,10,0"/>
+                    </Style>
+                    <Style TargetType="{x:Type GroupBox}">
+                        <Setter Property="Padding" Value="5,5,5,5"/>
+                    </Style>
+                    <Style TargetType="{x:Type TextBox}">
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                    </Style>
+                </GroupBox.Resources>
+                <StackPanel Orientation="Vertical">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Label Target="{Binding ElementName=name}" Content="Jméno:"/>
+                        <TextBox x:Name="name" Text="{Binding Name}" Grid.Column="1"/>
+                    </Grid>
+                    <GroupBox Header="Typ hráče">
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton Content="člověk" IsChecked="{Binding HumanType, Converter={StaticResource bconv}}" />
+                            <RadioButton Content="počítač" IsChecked="{Binding HumanType, Converter={StaticResource bconv}}" />
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
             </GroupBox>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding Color}" Value="pcWhite">

@@ -31,6 +31,10 @@ namespace Latrunculi.GUI
             {
                 return (PlayerSettingsViewModel)DataContext;
             }
+            set
+            {
+                DataContext = value;
+            }
         }
     }
 }

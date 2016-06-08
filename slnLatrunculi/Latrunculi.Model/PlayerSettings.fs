@@ -26,6 +26,6 @@ module PlayerSettings =
         { WhitePlayer = x; BlackPlayer = y}
 
     let createDefault =
-        let whitePlayer = HumanPlayer { Name = "Bílý hráč"; Level = Levels.Medium }
-        let blackPlayer = HumanPlayer { Name = "Černý hráč"; Level = Levels.Medium }
+        let whitePlayer = HumanPlayer { Name = "Bílý"; Level = Levels.Medium }
+        let blackPlayer = HumanPlayer { Name = "Černý"; Level = Levels.Medium }
         create whitePlayer blackPlayer

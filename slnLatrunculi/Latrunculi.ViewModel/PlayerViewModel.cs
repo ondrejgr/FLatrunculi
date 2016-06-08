@@ -9,6 +9,7 @@ namespace Latrunculi.ViewModel
 {
     public enum PlayerTypes { ptHuman, ptComputer };
     public enum PlayerColors { pcWhite, pcBlack };
+    public enum PlayerLevels { plEasy, plMedium, plHard };
 
     public class PlayerViewModel : INotifyPropertyChanged
     {
@@ -52,6 +53,20 @@ namespace Latrunculi.ViewModel
             }
         }
 
+        private PlayerLevels _level;
+        public PlayerLevels Level
+        {
+            get
+            {
+                return _level;
+            }
+            set
+            {
+                _level = value;
+                OnPropertyChanged("Level");
+            }
+        }
+
         private string _name;
         public string Name
         {
@@ -64,6 +79,27 @@ namespace Latrunculi.ViewModel
                 _name = value;
                 OnPropertyChanged("Name");
             }
+        }
+        
+        public void RefreshFromModel(Model.PlayerSettings.Player player)
+        {
+            Model.PlayerSettings.PlayerInfo info;
+
+            if (player.IsComputerPlayer)
+            {
+                PlayerType = PlayerTypes.ptComputer;
+                info = (player as Model.PlayerSettings.Player.ComputerPlayer).Item;
+            }
+            else if (player.IsHumanPlayer)
+            {
+                PlayerType = PlayerTypes.ptHuman;
+                info = (player as Model.PlayerSettings.Player.HumanPlayer).Item;
+            }
+            else
+                throw new NotImplementedException();
+
+            Name = info.Name;
+            Level = (PlayerLevels)(int)info.Level;
         }
     }
 }

@@ -112,7 +112,6 @@ namespace Latrunculi.ViewModel
             finally
             {
                 OnNumberOfRowsOrColsChanged();
-                RefreshFromModel(boardModel);
             }
         }
     }

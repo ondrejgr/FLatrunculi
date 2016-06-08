@@ -33,5 +33,11 @@ namespace Latrunculi.ViewModel
                 return _whitePlayer;
             }
         }
+
+        public void RefreshFromModel(Model.PlayerSettings.T model)
+        {
+            BlackPlayer.RefreshFromModel(model.BlackPlayer);
+            WhitePlayer.RefreshFromModel(model.WhitePlayer);
+        }
     }
 }
