@@ -64,6 +64,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\ControlCommands.cs" />
     <Compile Include="Controls\PlayerLevelControl.xaml.cs">
       <DependentUpon>PlayerLevelControl.xaml</DependentUpon>
     </Compile>

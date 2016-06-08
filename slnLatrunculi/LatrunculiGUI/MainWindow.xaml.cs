@@ -40,7 +40,7 @@ namespace Latrunculi.GUI
             get
             {
                 return (MainWindowViewModel)DataContext;
-            }            
+            }
             private set
             {
                 DataContext = value;
@@ -75,7 +75,7 @@ namespace Latrunculi.GUI
                     board.SquareSize = width;
             }
         }
-        
+
         private bool MainWindowCommand_CanExecute
         {
             get
@@ -207,6 +207,11 @@ namespace Latrunculi.GUI
         private void Resume_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
+        }
+
+        private void board_BoardSquareClicked(object sender, Controls.BoardSquareClickedEventArgs e)
+        {
+
         }
     }
 }

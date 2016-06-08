@@ -126,14 +126,23 @@
                                 </DataTrigger>
                             </DataTemplate.Triggers>
                         </DataTemplate>
+                        <Style TargetType="{x:Type Button}">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type Button}">
+                                        <Grid>
+                                            <Rectangle Style="{StaticResource sqStyle}"/>
+                                            <ContentControl Content="{Binding}" />
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
                     </ControlTemplate.Resources>
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
-                        <Grid>
-                            <Rectangle Style="{StaticResource sqStyle}"/>
-                            <ContentControl Content="{Binding}" />
-                        </Grid>
+                        <Button Command="{x:Static ctrls:ControlCommands.BoardSquareClick}" CommandParameter="{Binding}" CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
