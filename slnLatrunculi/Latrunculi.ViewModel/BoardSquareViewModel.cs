@@ -20,7 +20,7 @@ namespace Latrunculi.ViewModel
             {
                 return _coord;
             }
-            set
+            private set
             {
                 _coord = value;
                 OnPropertyChanged("Coord");
@@ -34,7 +34,7 @@ namespace Latrunculi.ViewModel
             {
                 return _squareColor;
             }
-            set
+            private set
             {
                 _squareColor = value;
                 OnPropertyChanged("SquareColor");
@@ -53,6 +53,31 @@ namespace Latrunculi.ViewModel
                 _pieceType = value;
                 OnPropertyChanged("PieceType");
             }
+        }
+
+        public void Init(Model.Coord.T coord, SquareColors sqColor)
+        {
+            Coord = coord;
+            SquareColor = sqColor;
+        }
+
+        public void RefreshFromModel(Latrunculi.Model.Square.T model)
+        {
+            if (model.IsPiece)
+            {
+                Latrunculi.Model.Square.T.Piece p = (Latrunculi.Model.Square.T.Piece)model;
+                switch (p.Item.Color)
+                {
+                    case Model.Piece.Colors.Black:
+                        PieceType = PieceTypes.ptBlack;
+                        break;
+                    case Model.Piece.Colors.White:
+                        PieceType = PieceTypes.ptWhite;
+                        break;
+                }
+            }
+            else
+                PieceType = PieceTypes.ptNone;
         }
     }
 }

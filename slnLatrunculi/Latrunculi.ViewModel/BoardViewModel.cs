@@ -60,27 +60,17 @@ namespace Latrunculi.ViewModel
             Rows.Clear();
             OnNumberOfRowsOrColsChanged();
         }
-                
-        private void ApplySquareModelToViewModel(Latrunculi.Model.Square.T model, BoardSquareViewModel viewModel, SquareColors? sqColor = null)
-        {
-            if (sqColor.HasValue)
-                viewModel.SquareColor = sqColor.Value;
 
-            if (model.IsPiece)
+        public void RefreshFromModel(Latrunculi.Model.Board.T boardModel)
+        {
+            foreach (BoardRowViewModel rowVM in Rows)
             {
-                Latrunculi.Model.Square.T.Piece p = (Latrunculi.Model.Square.T.Piece)model;
-                switch (p.Item.Color)
+                foreach (BoardSquareViewModel sqVM in rowVM.Squares.OfType<BoardSquareViewModel>())
                 {
-                    case Model.Piece.Colors.Black:
-                        viewModel.PieceType = PieceTypes.ptBlack;
-                        break;
-                    case Model.Piece.Colors.White:
-                        viewModel.PieceType = PieceTypes.ptWhite;
-                        break;
+                    Model.Square.T sq = boardModel.GetSquare(sqVM.Coord);
+                    sqVM.RefreshFromModel(sq);
                 }
             }
-            else
-                viewModel.PieceType = PieceTypes.ptNone;
         }
 
         public void Init(Latrunculi.Model.Board.T boardModel)
@@ -102,9 +92,7 @@ namespace Latrunculi.ViewModel
                     foreach (Tuple<Model.Coord.T, Model.Square.T> t in boardModel.GetCoordAndSquaresByRowNumber(rowNumber))
                     {
                         BoardSquareViewModel sq = new BoardSquareViewModel();
-                        sq.Coord = t.Item1;
-
-                        ApplySquareModelToViewModel(t.Item2, sq, color);
+                        sq.Init(t.Item1, color);
 
                         row.Squares.Add(sq);
                         color = swapColor(color);
@@ -124,6 +112,7 @@ namespace Latrunculi.ViewModel
             finally
             {
                 OnNumberOfRowsOrColsChanged();
+                RefreshFromModel(boardModel);
             }
         }
     }
