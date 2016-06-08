@@ -19,7 +19,7 @@ namespace Latrunculi.GUI
             }
         }
 
-        static private MainWindowCommand _back = new MainWindowCommand("_Zpět", "Back", null, "Back.png");
+        static private MainWindowCommand _back = new MainWindowCommand("_Zpět", "Back");
         static public MainWindowCommand Back
         {
             get
@@ -28,7 +28,7 @@ namespace Latrunculi.GUI
             }
         }
 
-        static private MainWindowCommand _forward = new MainWindowCommand("_Vpřed", "Forward", null, "Forward.png");
+        static private MainWindowCommand _forward = new MainWindowCommand("_Vpřed", "Forward";
         static public MainWindowCommand Forward
         {
             get
@@ -37,7 +37,7 @@ namespace Latrunculi.GUI
             }
         }
 
-        static private MainWindowCommand _home = new MainWindowCommand("_Domů", "Home", new KeyGesture(Key.Home, ModifierKeys.Alt), "Home.png");
+        static private MainWindowCommand _home = new MainWindowCommand("_Domů", "Home", new KeyGesture(Key.Home, ModifierKeys.Alt));
         static public MainWindowCommand Home
         {
             get
@@ -46,7 +46,7 @@ namespace Latrunculi.GUI
             }
         }
 
-        static private MainWindowCommand _help = new MainWindowCommand("Zobrazit _nápovědu", "Help", new KeyGesture(Key.F1), "Help.png");
+        static private MainWindowCommand _help = new MainWindowCommand("Zobrazit _nápovědu", "Help", new KeyGesture(Key.F1));
         static public MainWindowCommand Help
         {
             get
@@ -55,12 +55,39 @@ namespace Latrunculi.GUI
             }
         }
 
-        static private MainWindowCommand _settings = new MainWindowCommand("_Nastavení hry", "Settings", new KeyGesture(Key.F4), "Settings.png");
+        static private MainWindowCommand _settings = new MainWindowCommand("_Nastavení hry", "Settings", new KeyGesture(Key.F4));
         static public MainWindowCommand Settings
         {
             get
             {
                 return _settings;
+            }
+        }
+
+        static private MainWindowCommand _load = new MainWindowCommand("N_ačíst hru", "Load", new KeyGesture(Key.O, ModifierKeys.Control));
+        static public MainWindowCommand Load
+        {
+            get
+            {
+                return _load;
+            }
+        }
+
+        static private MainWindowCommand _save = new MainWindowCommand("_Uložit hru", "Save", new KeyGesture(Key.S, ModifierKeys.Control));
+        static public MainWindowCommand Save
+        {
+            get
+            {
+                return _save;
+            }
+        }
+
+        static private MainWindowCommand _new = new MainWindowCommand("_Nová hra", "New", new KeyGesture(Key.N, ModifierKeys.Control));
+        static public MainWindowCommand New
+        {
+            get
+            {
+                return _new;
             }
         }
     }

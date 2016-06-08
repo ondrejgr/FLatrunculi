@@ -11,13 +11,13 @@ namespace Latrunculi.GUI
 {
     public class MainWindowCommand: RoutedUICommand
     {
-        public MainWindowCommand(string text, string name, InputGesture gesture=null, string image=null): base(text, name, typeof(MainWindow))
+        public MainWindowCommand(string text, string name, InputGesture gesture=null): base(text, name, typeof(MainWindow))
         {
             if (gesture != null)
                 InputGestures.Add(gesture);
-            if (!string.IsNullOrEmpty(image))
+            if (!string.IsNullOrEmpty(name))
             {
-                string packUri = string.Format("pack://application:,,,/CommandIcons/{0}", image);
+                string packUri = string.Format("pack://application:,,,/CommandIcons/{0}", name);
                 ImageSource = new ImageSourceConverter().ConvertFromString(packUri) as ImageSource;
             }
         }
