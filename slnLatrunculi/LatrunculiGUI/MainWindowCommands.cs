@@ -91,6 +91,15 @@ namespace Latrunculi.GUI
             }
         }
 
+        static private MainWindowCommand _saveAs = new MainWindowCommand("_Uložit jako...", "SaveAs");
+        static public MainWindowCommand SaveAs
+        {
+            get
+            {
+                return _saveAs;
+            }
+        }
+
         static private MainWindowCommand _new = new MainWindowCommand("_Nová hra", "New", new KeyGesture(Key.N, ModifierKeys.Control));
         static public MainWindowCommand New
         {

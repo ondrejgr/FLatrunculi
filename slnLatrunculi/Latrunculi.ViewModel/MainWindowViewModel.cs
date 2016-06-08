@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Latrunculi.ViewModel
 {
@@ -14,6 +15,8 @@ namespace Latrunculi.ViewModel
         {
             if (Model == null)
                 Model = new GameModel();
+
+            Model.StatusChanged += Model_StatusChanged;
 
             Board.Init(Model.Board);
             Board.RefreshFromModel(Model.Board);
@@ -25,11 +28,59 @@ namespace Latrunculi.ViewModel
             Model = model;
         }
 
+        private void Model_StatusChanged(object sender, StatusChangedEventArgs e)
+        {
+            CommandManager.InvalidateRequerySuggested();
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propName)
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propName));
+        }
+
+        public Model.GameStatus Status
+        {
+            get
+            {
+                return Model.Status;
+            }
+        }
+
+        private string _fileName = string.Empty;
+        public string FileName
+        {
+            get
+            {
+                return _fileName;
+            }
+            private set
+            {
+                _fileName = value;
+                OnPropertyChanged("FileName");
+            }
+        }
+
+        private string _fileTitle = string.Empty;
+        public string FileTitle
+        {
+            get
+            {
+                return _fileTitle;
+            }
+            private set
+            {
+                _fileTitle = value;
+                OnPropertyChanged("FileTitle");
+                OnPropertyChanged("Title");
+            }
+        }
+
+        public void SetFileName(string fileName, string fileTitle)
+        {
+            FileName = fileName;
+            FileTitle = fileTitle;
         }
 
         private GameModel _model;
@@ -112,7 +163,10 @@ namespace Latrunculi.ViewModel
         {
             get
             {
-                return "Latrunculi";
+                if (string.IsNullOrEmpty(FileTitle))
+                    return "Latrunculi";
+                else
+                    return string.Format("{0} - [{1}]", "Latrunculi", FileTitle);
             }
         }
     }

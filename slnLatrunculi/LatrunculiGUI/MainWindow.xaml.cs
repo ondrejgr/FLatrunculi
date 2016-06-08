@@ -1,5 +1,6 @@
 ﻿using Latrunculi.Controller;
 using Latrunculi.ViewModel;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -93,10 +94,7 @@ namespace Latrunculi.GUI
         private void ExitCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
-            CancelEventArgs cnl = new CancelEventArgs();
-            OnClosing(cnl);
-            if (!cnl.Cancel)
-                Close();
+            Close();
         }
 
         private void Help_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -116,7 +114,106 @@ namespace Latrunculi.GUI
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             e.Cancel = ViewModel.IsBusy;
+            if (!e.Cancel && (ViewModel.Status != Model.GameStatus.Created))
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("Chcete před ukončením aplikace uložit stávající hru ?");
+                sb.AppendLine();
+                switch (MessageBox.Show(this, sb.ToString(), "Ukončit hru ?", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning))
+                {
+                    case MessageBoxResult.Cancel:
+                        e.Cancel = true;
+                        break;
+                    case MessageBoxResult.Yes:
+                        e.Cancel = !TrySaveGame(false, false);
+                        break;
+                    case MessageBoxResult.No:
+                        break;
+                }
+            }
+        }
 
+        private bool GetFileNameToViewModel(bool isSaveDialog, bool isSaveAsDialog)
+        {
+            if (isSaveDialog && !isSaveAsDialog && !string.IsNullOrEmpty(ViewModel.FileName))
+                return true;
+
+            FileDialog dialog;
+            if (isSaveDialog)
+                dialog = new SaveFileDialog();
+            else
+                dialog = new OpenFileDialog();
+
+            dialog.AddExtension = true;
+            dialog.CheckPathExists = true;
+            if (isSaveDialog)
+                ((SaveFileDialog)dialog).OverwritePrompt = true;
+            else
+                dialog.CheckFileExists = true;
+            dialog.DefaultExt = "lat";
+            dialog.Title = isSaveDialog ? "Uložit hru" : "Načíst hru";
+            dialog.Filter = "Hra|*.lat|Všechny soubory|*.*";
+            if (!(dialog.ShowDialog(this) ?? false))
+                return false;
+            else
+            {
+                ViewModel.SetFileName(dialog.FileName, dialog.SafeFileName);
+                return true;
+            }
+        }
+
+        private bool TrySaveGame(bool showSuccess, bool isSaveAsDialog)
+        {
+            try
+            {
+                if (!GetFileNameToViewModel(true, isSaveAsDialog))
+                    return false;
+
+                SaveGame(ViewModel.FileName);
+
+                if (showSuccess)
+                    MessageBox.Show(this, "Hra byla uložena.", "Informace", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                return true;
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(this, "Soubor se nepodařilo uložit." + Environment.NewLine + Common.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+        }
+
+        private void SaveGame(string fileName)
+        {
+            throw new NotImplementedException();
+        }
+
+        private bool TryLoadGame(bool showSuccess)
+        {
+            string oldFileName = ViewModel.FileName, oldFileTitle = ViewModel.FileTitle;
+            try
+            {
+                if (!GetFileNameToViewModel(false, false))
+                    return false;
+
+                LoadGame(ViewModel.FileName);
+
+                if (showSuccess)
+                    MessageBox.Show(this, "Hra byla načtena.", "Informace", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                return true;
+            }
+            catch (Exception exc)
+            {
+                ViewModel.SetFileName(oldFileName, oldFileTitle);
+                MessageBox.Show(this, "Soubor se nepodařilo načíst." + Environment.NewLine + Common.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+        }
+
+        private void LoadGame(string fileName)
+        {
+            throw new NotImplementedException();
         }
 
         private void Settings_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -156,6 +253,7 @@ namespace Latrunculi.GUI
         private void Load_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
+            TryLoadGame(true);
         }
 
         private void Save_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -167,6 +265,19 @@ namespace Latrunculi.GUI
         private void Save_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
+            TrySaveGame(true, false);
+        }
+
+        private void SaveAs_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = MainWindowCommand_CanExecute;
+        }
+
+        private void SaveAs_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            TrySaveGame(true, true);
         }
 
         private void Navigate_CanExecute(object sender, CanExecuteRoutedEventArgs e)
