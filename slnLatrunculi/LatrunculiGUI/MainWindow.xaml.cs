@@ -118,8 +118,7 @@ namespace Latrunculi.GUI
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine("Chcete před ukončením aplikace uložit stávající hru ?");
-                sb.AppendLine();
-                switch (MessageBox.Show(this, sb.ToString(), "Ukončit hru ?", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning))
+                switch (MessageBox.Show(this, sb.ToString(), "Uložit hru ?", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning))
                 {
                     case MessageBoxResult.Cancel:
                         e.Cancel = true;
@@ -183,11 +182,6 @@ namespace Latrunculi.GUI
             }
         }
 
-        private void SaveGame(string fileName)
-        {
-            throw new NotImplementedException();
-        }
-
         private bool TryLoadGame(bool showSuccess)
         {
             string oldFileName = ViewModel.FileName, oldFileTitle = ViewModel.FileTitle;
@@ -209,11 +203,6 @@ namespace Latrunculi.GUI
                 MessageBox.Show(this, "Soubor se nepodařilo načíst." + Environment.NewLine + Common.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
-        }
-
-        private void LoadGame(string fileName)
-        {
-            throw new NotImplementedException();
         }
 
         private void Settings_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -242,6 +231,32 @@ namespace Latrunculi.GUI
         private void New_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
+            try
+            {
+                bool cancel = false;
+                if (ViewModel.Status != Model.GameStatus.Created)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("Chcete před spuštěním nové hry uložit stávající hru ?");
+                    switch (MessageBox.Show(this, sb.ToString(), "Uložit hru ?", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning))
+                    {
+                        case MessageBoxResult.Cancel:
+                            cancel = true;
+                            break;
+                        case MessageBoxResult.Yes:
+                            cancel = !TrySaveGame(false, false);
+                            break;
+                        case MessageBoxResult.No:
+                            break;
+                    }
+                }
+                if (!cancel)
+                    NewGame();
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(this, "Novou hru se nepodařilo vytvořit." + Environment.NewLine + Common.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Load_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -323,6 +338,21 @@ namespace Latrunculi.GUI
         private void board_BoardSquareClicked(object sender, Controls.BoardSquareClickedEventArgs e)
         {
 
+        }
+
+        private void NewGame()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void LoadGame(string fileName)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void SaveGame(string fileName)
+        {
+            throw new NotImplementedException();
         }
     }
 }
