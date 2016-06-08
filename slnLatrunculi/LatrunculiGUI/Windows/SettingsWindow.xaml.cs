@@ -25,11 +25,11 @@ namespace Latrunculi.GUI
             InitializeComponent();
         }
 
-        public SettingsWindowViewModel ViewModel
+        public PlayerSettingsViewModel ViewModel
         {
             get
             {
-                return (SettingsWindowViewModel)DataContext;
+                return (PlayerSettingsViewModel)DataContext;
             }
         }
     }

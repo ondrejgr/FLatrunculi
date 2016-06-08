@@ -50,7 +50,16 @@ namespace Latrunculi.ViewModel
             {
                 return _board;
             }
-        }        
+        }
+
+        private PlayerSettingsViewModel _settings = new PlayerSettingsViewModel();
+        public PlayerSettingsViewModel Settings
+        {
+            get
+            {
+                return _settings;
+            }
+        }
 
         private bool _isBusy = false;
         public bool IsBusy

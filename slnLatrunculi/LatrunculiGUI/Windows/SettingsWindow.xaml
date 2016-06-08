@@ -11,7 +11,7 @@
         ShowInTaskbar="False"
         Title="Nastavení hry" Height="500" Width="500">
     <Window.DataContext>
-        <vm:SettingsWindowViewModel/>
+        <vm:PlayerSettingsViewModel/>
     </Window.DataContext>
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:PlayerSettingsViewModel}">

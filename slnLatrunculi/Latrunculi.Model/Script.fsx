@@ -6,6 +6,7 @@
 #load "Move.fs"
 #load "Board.fs"
 #load "Rules.fs"
+#load "PlayerSettings.fs"
 #load "GameModel.fs"
 #load "GameController.fs"
 

@@ -7,16 +7,8 @@ using System.Threading.Tasks;
 
 namespace Latrunculi.ViewModel
 {
-    public enum PlayerTypes { ptHuman, ptComputer };
-    public enum PlayerColors { pcWhite, pcBlack };
-
     public class PlayerSettingsViewModel : INotifyPropertyChanged
     {
-        public PlayerSettingsViewModel(PlayerColors color)
-        {
-            Color = color;
-        }
-
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propName)
         {
@@ -24,31 +16,21 @@ namespace Latrunculi.ViewModel
                 PropertyChanged(this, new PropertyChangedEventArgs(propName));
         }
 
-        private PlayerColors _color;
-        public PlayerColors Color
+        private PlayerViewModel _blackPlayer = new PlayerViewModel(PlayerColors.pcBlack);
+        public PlayerViewModel BlackPlayer
         {
             get
             {
-                return _color;
-            }
-            set
-            {
-                _color = value;
-                OnPropertyChanged("Color");
+                return _blackPlayer;
             }
         }
 
-        private PlayerTypes _playerType = PlayerTypes.ptHuman;
-        public PlayerTypes PlayerType
+        private PlayerViewModel _whitePlayer = new PlayerViewModel(PlayerColors.pcWhite);
+        public PlayerViewModel WhitePlayer
         {
             get
             {
-                return _playerType;
-            }
-            set
-            {
-                _playerType = value;
-                OnPropertyChanged("PlayerType");
+                return _whitePlayer;
             }
         }
     }

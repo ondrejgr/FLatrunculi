@@ -6,6 +6,7 @@ type GameModel() =
                 | Error e -> failwith (sprintf "Desku se nepodařilo zinicializovat: %A" e)
                 | Success s -> s
        
+    let playerSettings = PlayerSettings.createDefault
 
     member val Board = board
-    member val IsGameRunning = false
+    member val PlayerSettings = playerSettings

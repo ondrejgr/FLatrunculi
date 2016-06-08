@@ -53,6 +53,7 @@
     <Compile Include="Move.fs" />
     <Compile Include="Board.fs" />
     <Compile Include="Rules.fs" />
+    <Compile Include="PlayerSettings.fs" />
     <Compile Include="GameModel.fs" />
     <Compile Include="GameController.fs" />
     <None Include="Script.fsx" />
