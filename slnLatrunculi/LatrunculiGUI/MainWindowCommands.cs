@@ -99,5 +99,23 @@ namespace Latrunculi.GUI
                 return _new;
             }
         }
-    } 
+
+        static private MainWindowCommand _resume = new MainWindowCommand("Pok_račovat", "Resume", new KeyGesture(Key.F5));
+        static public MainWindowCommand Resume
+        {
+            get
+            {
+                return _resume;
+            }
+        }
+
+        static private MainWindowCommand _pause = new MainWindowCommand("Poza_stavit", "Pause", new KeyGesture(Key.F5, ModifierKeys.Shift));
+        static public MainWindowCommand Pause
+        {
+            get
+            {
+                return _pause;
+            }
+        }
+    }
 }

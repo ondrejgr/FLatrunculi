@@ -186,5 +186,27 @@ namespace Latrunculi.GUI
             HelpWindow.Current.ViewModel.GoTo(item);
             HelpWindow.Current.Show();
         }
+
+        private void Pause_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = MainWindowCommand_CanExecute;
+        }
+
+        private void Pause_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void Resume_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = MainWindowCommand_CanExecute;
+        }
+
+        private void Resume_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
 }
