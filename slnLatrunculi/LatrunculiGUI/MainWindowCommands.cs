@@ -10,7 +10,7 @@ namespace Latrunculi.GUI
 {
     static class MainWindowCommands
     {
-        static private MainWindowCommand _exit = new MainWindowCommand("_Konec", "Exit", new KeyGesture(Key.F4, ModifierKeys.Alt));
+        static private MainWindowCommand _exit = new MainWindowCommand("_Konec", "Exit", new KeyGesture(Key.F4, ModifierKeys.Alt), true);
         static public MainWindowCommand Exit
         {
             get
@@ -28,7 +28,7 @@ namespace Latrunculi.GUI
             }
         }
 
-        static private MainWindowCommand _forward = new MainWindowCommand("_Vpřed", "Forward";
+        static private MainWindowCommand _forward = new MainWindowCommand("_Vpřed", "Forward");
         static public MainWindowCommand Forward
         {
             get
@@ -90,5 +90,5 @@ namespace Latrunculi.GUI
                 return _new;
             }
         }
-    }
+    } 
 }

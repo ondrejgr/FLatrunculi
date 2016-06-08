@@ -131,5 +131,38 @@ namespace Latrunculi.GUI
             SettingsWindow win = new SettingsWindow() { Owner = this };
             win.ShowDialog();
         }
+
+        private void New_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = MainWindowCommand_CanExecute;
+        }
+
+        private void New_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void Load_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = MainWindowCommand_CanExecute;
+        }
+
+        private void Load_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void Save_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = MainWindowCommand_CanExecute;
+        }
+
+        private void Save_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
 }
