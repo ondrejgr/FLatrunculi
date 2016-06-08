@@ -54,5 +54,14 @@ namespace Latrunculi.GUI
                 return _help;
             }
         }
+
+        static private MainWindowCommand _settings = new MainWindowCommand("_Nastavení hry", "Settings", new KeyGesture(Key.F4), "Settings.png");
+        static public MainWindowCommand Settings
+        {
+            get
+            {
+                return _settings;
+            }
+        }
     }
 }

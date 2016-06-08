@@ -8,4 +8,4 @@ type GameModel() =
        
 
     member val Board = board
-
+    member val IsGameRunning = false

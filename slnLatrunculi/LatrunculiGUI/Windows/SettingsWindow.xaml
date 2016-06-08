@@ -1,0 +1,56 @@
+﻿<Window x:Class="Latrunculi.GUI.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Latrunculi.GUI"
+        xmlns:vm="clr-namespace:Latrunculi.ViewModel;assembly=Latrunculi.ViewModel"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Title="Nastavení hry" Height="500" Width="500">
+    <Window.DataContext>
+        <vm:SettingsWindowViewModel/>
+    </Window.DataContext>
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:PlayerSettingsViewModel}">
+            <GroupBox x:Name="grpPlayer" Margin="5,5,5,5">
+
+            </GroupBox>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Color}" Value="pcWhite">
+                    <Setter TargetName="grpPlayer" Property="Header" Value="Bílý hráč"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Color}" Value="pcBlack">
+                    <Setter TargetName="grpPlayer" Property="Header" Value="Černý hráč"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <ContentControl Content="{Binding WhitePlayer}"/>
+            <ContentControl Grid.Column="1" Content="{Binding BlackPlayer}"/>
+        </Grid>
+        
+        <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Center" Margin="10,10,10,10">
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+                    <Setter Property="Padding" Value="5,5,5,5"/>
+                    <Setter Property="MinWidth" Value="90"/>
+                </Style>
+            </StackPanel.Resources>
+            <Button Content="OK" Margin="0,0,50,0" IsDefault="True"/>
+            <Button Content="Storno" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

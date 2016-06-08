@@ -112,5 +112,24 @@ namespace Latrunculi.GUI
                 HelpWindow.Current = new HelpWindow() { Owner = this };
             HelpWindow.Current.Show();
         }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            e.Cancel = ViewModel.IsBusy;
+
+        }
+
+        private void Settings_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = MainWindowCommand_CanExecute;
+        }
+
+        private void Settings_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            SettingsWindow win = new SettingsWindow() { Owner = this };
+            win.ShowDialog();
+        }
     }
 }

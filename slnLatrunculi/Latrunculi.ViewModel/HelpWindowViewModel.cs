@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 
-namespace Latrunculi.GUI
+namespace Latrunculi.ViewModel
 {
     public class HelpItem: INotifyPropertyChanged
     {
