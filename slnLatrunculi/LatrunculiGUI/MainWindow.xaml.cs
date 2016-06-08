@@ -128,8 +128,12 @@ namespace Latrunculi.GUI
         private void Settings_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
-            SettingsWindow win = new SettingsWindow() { Owner = this, ViewModel = ViewModel.Settings };
-            win.ShowDialog();
+            PlayerSettingsViewModel vm = (PlayerSettingsViewModel)ViewModel.Settings.Clone();
+            SettingsWindow win = new SettingsWindow() { Owner = this, ViewModel = vm };
+            if (win.ShowDialog() ?? false)
+            {
+                ViewModel.Settings.RefreshFromModel(Controller.changePlayerSettings(vm.WhitePlayer.GetPlayerForModel(), vm.BlackPlayer.GetPlayerForModel()));
+            }
         }
 
         private void New_CanExecute(object sender, CanExecuteRoutedEventArgs e)

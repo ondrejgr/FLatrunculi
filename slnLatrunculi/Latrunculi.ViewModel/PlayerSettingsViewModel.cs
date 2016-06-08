@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Latrunculi.ViewModel
 {
-    public class PlayerSettingsViewModel : INotifyPropertyChanged
+    public class PlayerSettingsViewModel : INotifyPropertyChanged, ICloneable
     {
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propName)
@@ -38,6 +38,15 @@ namespace Latrunculi.ViewModel
         {
             BlackPlayer.RefreshFromModel(model.BlackPlayer);
             WhitePlayer.RefreshFromModel(model.WhitePlayer);
+        }
+
+        public object Clone()
+        {
+            PlayerSettingsViewModel result = new PlayerSettingsViewModel();
+            result._blackPlayer = (PlayerViewModel)BlackPlayer.Clone();
+            result._whitePlayer = (PlayerViewModel)WhitePlayer.Clone();
+
+            return result;
         }
     }
 }

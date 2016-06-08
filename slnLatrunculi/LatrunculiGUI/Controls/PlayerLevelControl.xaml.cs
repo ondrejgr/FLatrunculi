@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace Latrunculi.GUI.Controls
 {
     /// <summary>
-    /// Interaction logic for UserLevelControl.xaml
+    /// Interaction logic for PlayerLevelControl.xaml
     /// </summary>
-    public partial class UserLevelControl : UserControl
+    public partial class PlayerLevelControl : UserControl
     {
-        public UserLevelControl()
+        public PlayerLevelControl()
         {
             InitializeComponent();
         }

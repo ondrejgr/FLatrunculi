@@ -11,7 +11,7 @@ namespace Latrunculi.ViewModel
     public enum PlayerColors { pcWhite, pcBlack };
     public enum PlayerLevels { plEasy, plMedium, plHard };
 
-    public class PlayerViewModel : INotifyPropertyChanged
+    public class PlayerViewModel : INotifyPropertyChanged, ICloneable
     {
         public PlayerViewModel(PlayerColors color)
         {
@@ -99,7 +99,26 @@ namespace Latrunculi.ViewModel
                 throw new NotImplementedException();
 
             Name = info.Name;
-            Level = (PlayerLevels)(int)info.Level;
+            Level = (PlayerLevels)info.Level;
+        }
+
+        public Model.PlayerSettings.Player GetPlayerForModel()
+        {
+            if (PlayerType == PlayerTypes.ptComputer)
+                return Model.PlayerSettings.createComputerPlayer(Name, (Model.PlayerSettings.Levels)Level);
+            else if (PlayerType == PlayerTypes.ptHuman)
+                return Model.PlayerSettings.createHumanPlayer(Name, (Model.PlayerSettings.Levels)Level);
+            else
+                throw new NotImplementedException();
+        }
+
+        public object Clone()
+        {
+            PlayerViewModel result = new PlayerViewModel(Color);
+            result.PlayerType = PlayerType;
+            result.Level = Level;
+            result.Name = Name;
+            return result;
         }
     }
 }

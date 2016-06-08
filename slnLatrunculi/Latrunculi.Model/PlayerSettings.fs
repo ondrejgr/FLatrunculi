@@ -22,6 +22,12 @@ module PlayerSettings =
         WhitePlayer: Player;
         BlackPlayer: Player }
 
+    let createHumanPlayer name level =
+        HumanPlayer { Name = name; Level = level }
+
+    let createComputerPlayer name level =
+        ComputerPlayer { Name = name; Level = level }
+
     let create x y =
         { WhitePlayer = x; BlackPlayer = y}
 

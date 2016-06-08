@@ -61,14 +61,21 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Controls\UserLevelControl.xaml.cs">
-      <DependentUpon>UserLevelControl.xaml</DependentUpon>
+    <Compile Include="Controls\PlayerLevelControl.xaml.cs">
+      <DependentUpon>PlayerLevelControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PlayerTypeControl.xaml.cs">
+      <DependentUpon>PlayerTypeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="EnumToBooleanConverter.cs" />
     <Compile Include="Windows\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
-    <Page Include="Controls\UserLevelControl.xaml">
+    <Page Include="Controls\PlayerLevelControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\PlayerTypeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

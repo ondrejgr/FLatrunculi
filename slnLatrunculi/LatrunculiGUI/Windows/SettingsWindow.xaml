@@ -4,12 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Latrunculi.GUI"
+        xmlns:ctrls="clr-namespace:Latrunculi.GUI.Controls"
         xmlns:vm="clr-namespace:Latrunculi.ViewModel;assembly=Latrunculi.ViewModel"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
-        Title="Nastavení hry" Height="500" Width="500">
+        Title="Nastavení hry" SizeToContent="Height" Width="500">
     <Window.DataContext>
         <vm:PlayerSettingsViewModel/>
     </Window.DataContext>
@@ -43,9 +44,24 @@
                     </Grid>
                     <GroupBox Header="Typ hráče">
                         <StackPanel Orientation="Horizontal">
-                            <RadioButton Content="člověk" IsChecked="{Binding HumanType, Converter={StaticResource bconv}}" />
-                            <RadioButton Content="počítač" IsChecked="{Binding HumanType, Converter={StaticResource bconv}}" />
+                            <RadioButton Content="člověk" IsChecked="{Binding PlayerType, Converter={StaticResource bconv}, ConverterParameter={x:Static vm:PlayerTypes.ptHuman}}" />
+                            <RadioButton Content="počítač" IsChecked="{Binding PlayerType, Converter={StaticResource bconv}, ConverterParameter={x:Static vm:PlayerTypes.ptComputer}}" />
+                            <ctrls:PlayerTypeControl DataContext="{Binding PlayerType}"/>
                         </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Obtížnost/kvalita nápovědy">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Vertical">
+                                <RadioButton Content="lehká" IsChecked="{Binding Level, Converter={StaticResource bconv}, ConverterParameter={x:Static vm:PlayerLevels.plEasy}}" />
+                                <RadioButton Content="střední" IsChecked="{Binding Level, Converter={StaticResource bconv}, ConverterParameter={x:Static vm:PlayerLevels.plMedium}}" />
+                                <RadioButton Content="težká" IsChecked="{Binding Level, Converter={StaticResource bconv}, ConverterParameter={x:Static vm:PlayerLevels.plHard}}" />
+                            </StackPanel>
+                            <ctrls:PlayerLevelControl DataContext="{Binding Level}" Grid.Column="1"/>
+                        </Grid>
                     </GroupBox>
                 </StackPanel>
             </GroupBox>
@@ -81,7 +97,7 @@
                     <Setter Property="MinWidth" Value="90"/>
                 </Style>
             </StackPanel.Resources>
-            <Button Content="OK" Margin="0,0,50,0" IsDefault="True"/>
+            <Button Content="OK" Margin="0,0,50,0" IsDefault="True" Click="Button_Click" />
             <Button Content="Storno" IsCancel="True"/>
         </StackPanel>
     </Grid>

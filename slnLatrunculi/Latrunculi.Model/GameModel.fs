@@ -9,4 +9,8 @@ type GameModel() =
     let playerSettings = PlayerSettings.createDefault
 
     member val Board = board
-    member val PlayerSettings = playerSettings
+    member val PlayerSettings = playerSettings with get, set
+
+    member this.changePlayerSettings (white, black) =
+        this.PlayerSettings <- PlayerSettings.create white black
+        this.PlayerSettings

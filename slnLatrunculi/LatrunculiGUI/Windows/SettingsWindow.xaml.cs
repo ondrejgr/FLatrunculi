@@ -36,5 +36,10 @@ namespace Latrunculi.GUI
                 DataContext = value;
             }
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+        }
     }
 }
