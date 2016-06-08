@@ -21,6 +21,8 @@ namespace Latrunculi.ViewModel
             Board.Init(Model.Board);
             Board.RefreshFromModel(Model.Board);
             Settings.RefreshFromModel(Model.PlayerSettings);
+
+            OnStatusChanged(Model.Status);
         }
 
         public MainWindowViewModel(GameModel model): this()
@@ -31,6 +33,15 @@ namespace Latrunculi.ViewModel
         private void Model_StatusChanged(object sender, StatusChangedEventArgs e)
         {
             CommandManager.InvalidateRequerySuggested();
+        }
+
+        private void OnStatusChanged(Model.GameStatus status)
+        {
+            if (status == GameStatus.Created)
+            {
+                Error = string.Empty;
+                Info = "Vytvořte novou hru nebo otevřte soubor";
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -167,6 +178,52 @@ namespace Latrunculi.ViewModel
                     return "Latrunculi";
                 else
                     return string.Format("{0} - [{1}]", "Latrunculi", FileTitle);
+            }
+        }
+
+        private string _error;
+        public string Error
+        {
+            get
+            {
+                return _error;
+            }
+            set
+            {
+                _error = value;
+                OnPropertyChanged("Error");
+                OnPropertyChanged("ErrorExists");
+            }
+        }
+
+        public bool ErrorExists
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(Error);
+            }
+        }
+
+        private string _info;
+        public string Info
+        {
+            get
+            {
+                return _info;
+            }
+            set
+            {
+                _info = value;
+                OnPropertyChanged("Info");
+                OnPropertyChanged("InfoExists");
+            }
+        }
+
+        public bool InfoExists
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(Info);
             }
         }
     }

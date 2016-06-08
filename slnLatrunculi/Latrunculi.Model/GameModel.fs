@@ -10,7 +10,6 @@ type StatusChangedEventArgs(newStatus: GameStatus) =
 type StatusChangedEventHandler = delegate of obj * StatusChangedEventArgs -> unit
 
 type GameModel() = 
-            
     let board = match Board.tryInit Board.create Rules.GetInitialBoardSquares with
                 | Error e -> failwith (sprintf "Desku se nepodařilo zinicializovat: %A" e)
                 | Success s -> s
@@ -20,16 +19,21 @@ type GameModel() =
     let status = Created
 
     let statusChangedEvent = new Event<StatusChangedEventHandler, StatusChangedEventArgs>()
-
+      
     member val Board = board
     member val PlayerSettings = playerSettings with get, set
     member val Status = status with get, set
-
+        
     [<CLIEvent>]
     member this.StatusChanged = statusChangedEvent.Publish
 
     member private this.OnStatusChanged() =
         statusChangedEvent.Trigger(this, StatusChangedEventArgs(this.Status))
+
+    member this.setStatus x =
+        this.Status <- x
+        this.OnStatusChanged()
+        this.Status
 
     member this.changePlayerSettings (white, black) =
         this.PlayerSettings <- PlayerSettings.create white black

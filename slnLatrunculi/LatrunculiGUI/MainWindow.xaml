@@ -199,6 +199,8 @@
             <ContentControl Content="{Binding BlackPlayer}" Grid.Column="2"/>
         </Grid>
 
+        <TextBlock Text="{Binding Error}" Visibility="{Binding ErrorExists, Converter={StaticResource bvis}}" FontWeight="Bold" FontSize="36" Background="LightGray" Foreground="Red" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2"/>
+        <TextBlock Text="{Binding Info}" Visibility="{Binding InfoExists, Converter={StaticResource bvis}}" FontWeight="Bold" FontSize="36" Background="LightGray" Foreground="Blue" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2"/>
 
         <StatusBar Grid.Row="3" Height="22">
             <StatusBarItem Content="{Binding StatusBarText}"/>
