@@ -1,0 +1,78 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Latrunculi.GUI.Help">
+
+    <Style TargetType="FlowDocument">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontFamily" Value="Georgia"/>
+        <Setter Property="ColumnWidth" Value="NaN"/>
+    </Style>
+    
+    <Style x:Key="title" TargetType="Paragraph">
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="FontFamily" Value="Tahoma"/>
+    </Style>
+
+    <Style x:Key="h" TargetType="Paragraph">
+        <Setter Property="FontWeight" Value="Bold"/>
+    </Style>
+    
+    <Style TargetType="Paragraph">
+        <Setter Property="Margin" Value="0,0,0,0"/>
+        <Setter Property="TextIndent" Value="30"/>
+    </Style>
+    
+    <FlowDocument x:Key="docAbout">
+        <Paragraph Style="{StaticResource title}">O hře Latrunculi</Paragraph>
+        <Paragraph>
+            Hra Latrunculi (také známá jako Ludus latrunculorum) je strategická desková hra pro 2 hráče, která bývala hrána již za dob Římské říše (1. století před n.l.).
+        </Paragraph>
+        
+        <Paragraph Style="{StaticResource h}">Cíl hry</Paragraph>
+        <List>
+            <ListItem>
+                <Paragraph>Vyřadit ze hry co nejvíce soupeřových kamenů</Paragraph>
+            </ListItem>
+        </List>
+
+        <Paragraph Style="{StaticResource h}">Výchozí situace</Paragraph>
+        <Paragraph>
+            Na začátku hry stojí všechny kameny proti sobě v krajních řadách desky 8 x 7 (viz obrázek).
+        </Paragraph>
+        <Paragraph>
+            <Image Source="InitialBoard.png" Height="300" Width="300"/>
+        </Paragraph>
+    </FlowDocument>
+
+    <FlowDocument x:Key="docRules">
+        <Paragraph Style="{StaticResource title}">Pravidla hry</Paragraph>
+        <List>
+            <ListItem>
+                <Paragraph>Kameny se pohybují ortogonálně o jedno pole.</Paragraph>
+            </ListItem>
+            <ListItem>
+                <Paragraph>Kameny se nemohou přeskakovat.</Paragraph>
+            </ListItem>
+            <ListItem>
+                <Paragraph>Soupeřův kámen může být zajat tak, že je obestoupen 2 kameny v jednom směru nebo je uzavřen v rohu dvěma cizími kameny.</Paragraph>
+            </ListItem>
+            <ListItem>
+                <Paragraph>Jedním tahem lze zajmout i více kamenů najednou.</Paragraph>
+            </ListItem>
+            <ListItem>
+                <Paragraph>Jestliže kámen dobrovolně vstoupí mezi dva cizí kameny, není zajat.</Paragraph>
+            </ListItem>
+        </List>
+
+        <Paragraph Style="{StaticResource h}">Podmínky vítězství</Paragraph>
+        <List>
+            <ListItem>
+                <Paragraph>Hra končí, jestliže jeden z hráčů ztratí všechny své kameny nebo se hráči dostanou do situace, kdy ani jeden z hráčů není schopen během 30 tahů zajmout cizí kámen.</Paragraph>
+            </ListItem>
+            <ListItem>
+                <Paragraph>Vítězem je hráč, kterému zbylo na desce více kamenů.</Paragraph>
+            </ListItem>
+        </List>
+    </FlowDocument>
+
+</ResourceDictionary>

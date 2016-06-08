@@ -60,6 +60,22 @@ namespace Latrunculi.GUI
             }
         }
 
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            e.Handled = true;
+            if (WindowState == WindowState.Normal || WindowState == WindowState.Maximized)
+            {
+                int width = ((int)e.NewSize.Width - 300) / ViewModel.Board.NumberOfCols;
+                if (width < 18)
+                    width = 18;
+                if (width > 100)
+                    width = 100;
+
+                if (board.SquareSize != width)
+                    board.SquareSize = width;
+            }
+        }
+        
         private bool MainWindowCommand_CanExecute
         {
             get
@@ -83,20 +99,18 @@ namespace Latrunculi.GUI
                 Close();
         }
 
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void Help_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            if (WindowState == WindowState.Normal || WindowState == WindowState.Maximized)
-            {
-                int width = ((int)e.NewSize.Width - 300) / ViewModel.Board.NumberOfCols;
-                if (width < 18)
-                    width = 18;
-                if (width > 100)
-                    width = 100;
+            e.CanExecute = MainWindowCommand_CanExecute;
+        }
 
-                if (board.SquareSize != width)
-                    board.SquareSize = width;
-            }
+        private void Help_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            if (HelpWindow.Current == null)
+                HelpWindow.Current = new HelpWindow() { Owner = this };
+            HelpWindow.Current.Show();
         }
     }
 }
