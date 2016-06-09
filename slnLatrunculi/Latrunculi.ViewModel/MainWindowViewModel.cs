@@ -9,29 +9,42 @@ using System.Windows.Input;
 
 namespace Latrunculi.ViewModel
 {
-    public class MainWindowViewModel : INotifyPropertyChanged
+    public class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     {
         public MainWindowViewModel()
         {
             if (Model == null)
                 Model = new GameModel();
+            InitModel();
+        }
 
+        public MainWindowViewModel(GameModel model)
+        {
+            Model = model;
+            InitModel();
+        }
+
+        void IDisposable.Dispose()
+        {
+            Model.BoardChanged -= new ModelChangeEventHandler(Model_BoardChanged);
+            Model.StatusChanged -= new ModelChangeEventHandler(Model_StatusChanged);
+            Model.PlayerSettingsChanged -= new ModelChangeEventHandler(Model_PlayerSettingsChanged);
+            Model.ActivePlayerChanged -= new ModelChangeEventHandler(Model_ActivePlayerChanged);
+        }
+
+        private void InitModel()
+        {
             Model.BoardChanged += new ModelChangeEventHandler(Model_BoardChanged);
             Model.StatusChanged += new ModelChangeEventHandler(Model_StatusChanged);
             Model.PlayerSettingsChanged += new ModelChangeEventHandler(Model_PlayerSettingsChanged);
             Model.ActivePlayerChanged += new ModelChangeEventHandler(Model_ActivePlayerChanged);
 
             Board.Init(Model.Board);
-            //OnBoardChanged();
-            //OnPlayerSettingsChanged();
-            //OnActivePlayerChanged();
+            OnBoardChanged();
+            OnPlayerSettingsChanged();
+            OnActivePlayerChanged();
 
             OnStatusChanged(Model.Status);
-        }
-
-        public MainWindowViewModel(GameModel model): this()
-        {
-            Model = model;
         }
 
         private void Model_BoardChanged(object sender, EventArgs e)
