@@ -91,13 +91,18 @@ namespace Latrunculi.ViewModel
             OnPropertyChanged("Status");
             OnPropertyChanged("IsGameCreated");
             OnPropertyChanged("IsGameRunning");
+            OnPropertyChanged("IsGameFinished");
             OnPropertyChanged("IsGamePaused");
-            OnPropertyChanged("IsGameCreatedOrPaused");
 
             if (IsGameCreated)
             {
                 Error = string.Empty;
                 Info = "Vytvořte novou hru nebo ji načtěte ze souboru";
+            }
+            else if (IsGameFinished)
+            {
+                Error = string.Empty;
+                Info = "Hra skončila";
             }
             else
             {
@@ -109,6 +114,8 @@ namespace Latrunculi.ViewModel
                 StatusBarText = "Hra běží...";
             else if (IsGamePaused)
                 StatusBarText = "Hra byla pozastavena...";
+            else if (IsGameFinished)
+                StatusBarText = "Hra skončila.";
             else
                 StatusBarText = "";
 
@@ -154,11 +161,11 @@ namespace Latrunculi.ViewModel
             }
         }        
 
-        public bool IsGameCreatedOrPaused
+        public bool IsGameFinished
         {
             get
             {
-                return Status == GameStatus.Created || Status == GameStatus.Paused;
+                return Status == GameStatus.Finished;
             }
         }
 

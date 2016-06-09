@@ -6,6 +6,7 @@ type GameStatus =
     | Created
     | Running
     | Paused
+    | Finished
 
 type ModelChangeEventHandler = delegate of obj * EventArgs -> unit
 

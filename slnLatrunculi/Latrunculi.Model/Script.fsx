@@ -17,9 +17,8 @@ open System.Threading
 let model = GameModel()
 let controller = GameController(model)
 
-let cts = new CancellationTokenSource()
-cts.Cancel();;
-//controller.Run(cts.Token)
+//cts.Cancel();;
+let cts = controller.Run()
 
 //match result |>  Async.RunSynchronously with
 //| Choice1Of2 _ -> printfn "Success"; ()

@@ -27,23 +27,20 @@ type GameController(gameModel: GameModel) =
 
             return Continue }
 
-    // infinite GameLoop
     member private this.GameLoop() =
         async {
             while true do
                 let! result = this.GameLoopCycle()
                 match result with
                 | Continue -> ()
-                | Quit -> return () }
+                | Quit -> 
+                    printfn "Quitting Game Loop"
+                    this.Model.setStatus(GameStatus.Finished) |> ignore
+                    return () }
 
-    // start infinite GameLoop with cancellation support
-    member this.Run(ct: CancellationToken) =
-        let RunGameLoop =
-            async {
-                match Async.RunSynchronously <| Async.Catch(this.GameLoop()) with
-                | Choice1Of2 _ -> printfn "Success"
-                | Choice2Of2 exn -> printfn "Failed %s" exn.Message
-                () }
-
-        Async.Start(RunGameLoop, ct)
+    member this.Run() =
+        let cts = new CancellationTokenSource()
+        this.Model.setStatus(GameStatus.Running) |> ignore
+        Async.Start(this.GameLoop(), cts.Token)
+        cts
 
