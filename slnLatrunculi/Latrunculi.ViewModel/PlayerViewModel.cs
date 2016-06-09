@@ -25,6 +25,20 @@ namespace Latrunculi.ViewModel
                 PropertyChanged(this, new PropertyChangedEventArgs(propName));
         }
 
+        private bool _isActive;
+        public bool IsActive
+        {
+            get
+            {
+                return _isActive;
+            }
+            set
+            {
+                _isActive = value;
+                OnPropertyChanged("IsActive");
+            }
+        }
+
         private PlayerColors _color;
         public PlayerColors Color
         {

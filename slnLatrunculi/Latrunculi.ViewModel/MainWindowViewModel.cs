@@ -76,11 +76,13 @@ namespace Latrunculi.ViewModel
         private void OnPlayerSettingsChanged()
         {
             Settings.RefreshFromModel(Model.PlayerSettings);
+            OnActivePlayerChanged();
         }
 
         private void OnActivePlayerChanged()
         {
-
+            WhitePlayer.IsActive = Model.isWhitePlayerActive;
+            BlackPlayer.IsActive = Model.isBlackPlayerActive;
         }
 
         private void OnStatusChanged(Model.GameStatus status)

@@ -24,7 +24,7 @@ type GameModel() =
     member val Board = board
     member val PlayerSettings = playerSettings with get, set
     member val Status = status with get, set
-    member val ActivePlayer = Some playerSettings.WhitePlayer with get, set
+    member val ActivePlayer = None with get, set
         
     [<CLIEvent>]
     member this.StatusChanged = statusChangedEvent.Publish
@@ -53,6 +53,16 @@ type GameModel() =
         this.PlayerSettings <- PlayerSettings.create white black
         this.OnPlayerSettingsChanged()
         this.PlayerSettings
+
+    member this.isWhitePlayerActive =
+        match this.ActivePlayer with
+        | Some p -> if p = this.PlayerSettings.WhitePlayer then true else false
+        | _ -> false
+
+    member this.isBlackPlayerActive =
+        match this.ActivePlayer with
+        | Some p -> if p = this.PlayerSettings.BlackPlayer then true else false
+        | _ -> false
 
     member this.setActivePlayer x =
         this.ActivePlayer <- x

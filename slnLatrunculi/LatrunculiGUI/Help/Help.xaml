@@ -78,6 +78,7 @@
     <FlowDocument x:Key="docBoardControl">
         <Paragraph Style="{StaticResource title}">Ovládání hry</Paragraph>
         <Paragraph>Lidský hráč, který je na tahu, ovládá hru pomocí primárního (levého) tlačítka myši.</Paragraph>
+        <Paragraph>Hráč na tahu je indikován tučným rámečkem.</Paragraph>
         <Paragraph>Po kliknutí na vybrané políčko s vlastním kamenem dojde k jeho podbarvení červenou barvou, pokud není žádný tah možný. V opačném případě bude podbarven zeleně a současně budou zeleně podbarvena políčka, která lze zvolit jako cílová.</Paragraph>
         <Paragraph>Kliknutím na cílové políčko bude proveden tah.</Paragraph>
     </FlowDocument>

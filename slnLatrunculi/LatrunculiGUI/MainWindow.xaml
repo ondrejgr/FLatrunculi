@@ -65,6 +65,11 @@
                 <DataTrigger Binding="{Binding Color}" Value="pcBlack">
                     <Setter TargetName="grpPlayer" Property="Header" Value="Černý hráč"/>
                 </DataTrigger>
+                <DataTrigger Binding="{Binding IsActive}" Value="True">
+                    <Setter TargetName="grpPlayer" Property="BorderBrush" Value="Navy"/>
+                    <Setter TargetName="grpPlayer" Property="BorderThickness" Value="2"/>
+                    <Setter TargetName="grpPlayer" Property="FontWeight" Value="Bold"/>
+                </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>        
     </Window.Resources>
