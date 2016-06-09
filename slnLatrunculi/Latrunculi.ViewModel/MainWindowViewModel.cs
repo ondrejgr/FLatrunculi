@@ -16,11 +16,15 @@ namespace Latrunculi.ViewModel
             if (Model == null)
                 Model = new GameModel();
 
-            Model.StatusChanged += Model_StatusChanged;
+            Model.BoardChanged += new ModelChangeEventHandler(Model_BoardChanged);
+            Model.StatusChanged += new ModelChangeEventHandler(Model_StatusChanged);
+            Model.PlayerSettingsChanged += new ModelChangeEventHandler(Model_PlayerSettingsChanged);
+            Model.ActivePlayerChanged += new ModelChangeEventHandler(Model_ActivePlayerChanged);
 
             Board.Init(Model.Board);
-            Board.RefreshFromModel(Model.Board);
-            Settings.RefreshFromModel(Model.PlayerSettings);
+            //OnBoardChanged();
+            //OnPlayerSettingsChanged();
+            //OnActivePlayerChanged();
 
             OnStatusChanged(Model.Status);
         }
@@ -30,17 +34,48 @@ namespace Latrunculi.ViewModel
             Model = model;
         }
 
-        private void Model_StatusChanged(object sender, StatusChangedEventArgs e)
+        private void Model_BoardChanged(object sender, EventArgs e)
+        {
+            OnBoardChanged();
+        }
+
+        private void Model_StatusChanged(object sender, EventArgs e)
         {
             CommandManager.InvalidateRequerySuggested();
+            OnPropertyChanged("IsGameCreated");
+        }
+
+        private void Model_PlayerSettingsChanged(object sender, EventArgs e)
+        {
+            OnPlayerSettingsChanged();
+        }
+
+        private void Model_ActivePlayerChanged(object sender, EventArgs e)
+        {
+            OnActivePlayerChanged();
+        }
+
+        private void OnBoardChanged()
+        {
+            Board.RefreshFromModel(Model.Board);
+        }
+
+        private void OnPlayerSettingsChanged()
+        {
+            Settings.RefreshFromModel(Model.PlayerSettings);
+        }
+
+        private void OnActivePlayerChanged()
+        {
+
         }
 
         private void OnStatusChanged(Model.GameStatus status)
         {
-            if (status == GameStatus.Created)
+            if (IsGameCreated)
             {
                 Error = string.Empty;
-                Info = "Vytvořte novou hru nebo otevřte soubor";
+                Info = "Vytvořte novou hru nebo ji načtěte ze souboru";
             }
         }
 
@@ -56,6 +91,14 @@ namespace Latrunculi.ViewModel
             get
             {
                 return Model.Status;
+            }
+        }
+
+        public bool IsGameCreated
+        {
+            get
+            {
+                return Status == GameStatus.Created;
             }
         }
 

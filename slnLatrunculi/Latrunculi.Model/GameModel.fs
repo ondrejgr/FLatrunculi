@@ -1,16 +1,14 @@
 ﻿namespace Latrunculi.Model
+open System
 
 [<StructuralEquality;NoComparison>]
 type GameStatus =
     | Created
 
-type StatusChangedEventArgs(newStatus: GameStatus) =
-    inherit System.EventArgs()
-    member this.NewStatus = newStatus
-type StatusChangedEventHandler = delegate of obj * StatusChangedEventArgs -> unit
+type ModelChangeEventHandler = delegate of obj * EventArgs -> unit
 
 type GameModel() = 
-    let board = match Board.tryInit Board.create Rules.GetInitialBoardSquares with
+    let board = match Board.tryInit Board.create (fun _ -> Square.createEmpty) with
                 | Error e -> failwith (sprintf "Desku se nepodařilo zinicializovat: %A" e)
                 | Success s -> s
        
@@ -18,17 +16,33 @@ type GameModel() =
 
     let status = Created
 
-    let statusChangedEvent = new Event<StatusChangedEventHandler, StatusChangedEventArgs>()
+    let statusChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
+    let playerSettingsChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
+    let activePlayerChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
+    let boardChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
       
     member val Board = board
     member val PlayerSettings = playerSettings with get, set
     member val Status = status with get, set
+    member val ActivePlayer = Some playerSettings.WhitePlayer with get, set
         
     [<CLIEvent>]
     member this.StatusChanged = statusChangedEvent.Publish
+    [<CLIEvent>]
+    member this.PlayerSettingsChanged = playerSettingsChangedEvent.Publish
+    [<CLIEvent>]
+    member this.ActivePlayerChanged = activePlayerChangedEvent.Publish
+    [<CLIEvent>]
+    member this.BoardChanged = boardChangedEvent.Publish
 
     member private this.OnStatusChanged() =
-        statusChangedEvent.Trigger(this, StatusChangedEventArgs(this.Status))
+        statusChangedEvent.Trigger(this, EventArgs.Empty)
+    member private this.OnPlayerSettingsChanged() =
+        playerSettingsChangedEvent.Trigger(this, EventArgs.Empty)
+    member private this.OnActivePlayerChanged() =
+        activePlayerChangedEvent.Trigger(this, EventArgs.Empty)
+    member private this.OnBoardChanged() =
+        boardChangedEvent.Trigger(this, EventArgs.Empty)
 
     member this.setStatus x =
         this.Status <- x
@@ -37,4 +51,18 @@ type GameModel() =
 
     member this.changePlayerSettings (white, black) =
         this.PlayerSettings <- PlayerSettings.create white black
+        this.OnPlayerSettingsChanged()
         this.PlayerSettings
+
+    member this.setActivePlayer x =
+        this.ActivePlayer <- x
+        this.OnActivePlayerChanged()
+        this.ActivePlayer
+
+    member this.initBoard() =
+        match Board.tryInit this.Board Rules.GetInitialBoardSquares with
+                | Error e -> failwith (sprintf "Desku se nepodařilo zinicializovat: %A" e)
+                | Success s -> 
+                    this.OnBoardChanged()
+                    s
+

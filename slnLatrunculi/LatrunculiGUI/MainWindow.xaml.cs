@@ -114,7 +114,7 @@ namespace Latrunculi.GUI
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             e.Cancel = ViewModel.IsBusy;
-            if (!e.Cancel && (ViewModel.Status != Model.GameStatus.Created))
+            if (!e.Cancel && !ViewModel.IsGameCreated)
             {
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine("Chcete před ukončením aplikace uložit stávající hru ?");
@@ -214,11 +214,12 @@ namespace Latrunculi.GUI
         private void Settings_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
-            PlayerSettingsViewModel vm = (PlayerSettingsViewModel)ViewModel.Settings.Clone();
-            SettingsWindow win = new SettingsWindow() { Owner = this, ViewModel = vm };
-            if (win.ShowDialog() ?? false)
+            PlayerSettingsViewModel vm = TryShowSettings();
+            if (vm != null)
             {
-                ViewModel.Settings.RefreshFromModel(Controller.changePlayerSettings(vm.WhitePlayer.GetPlayerForModel(), vm.BlackPlayer.GetPlayerForModel()));
+                Controller.changePlayerSettings(
+                    vm.WhitePlayer.GetPlayerForModel(),
+                    vm.BlackPlayer.GetPlayerForModel());
             }
         }
 
@@ -234,7 +235,7 @@ namespace Latrunculi.GUI
             try
             {
                 bool cancel = false;
-                if (ViewModel.Status != Model.GameStatus.Created)
+                if (!ViewModel.IsGameCreated)
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("Chcete před spuštěním nové hry uložit stávající hru ?");
@@ -274,7 +275,7 @@ namespace Latrunculi.GUI
         private void Save_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = MainWindowCommand_CanExecute;
+            e.CanExecute = MainWindowCommand_CanExecute && !ViewModel.IsGameCreated;
         }
 
         private void Save_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -286,7 +287,7 @@ namespace Latrunculi.GUI
         private void SaveAs_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = MainWindowCommand_CanExecute;
+            Save_CanExecute(sender, e);
         }
 
         private void SaveAs_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -316,7 +317,7 @@ namespace Latrunculi.GUI
         private void Pause_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = MainWindowCommand_CanExecute;
+            e.CanExecute = MainWindowCommand_CanExecute && !ViewModel.IsGameCreated;
         }
 
         private void Pause_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -327,7 +328,7 @@ namespace Latrunculi.GUI
         private void Resume_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = MainWindowCommand_CanExecute;
+            e.CanExecute = MainWindowCommand_CanExecute && !ViewModel.IsGameCreated;
         }
 
         private void Resume_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -340,9 +341,25 @@ namespace Latrunculi.GUI
 
         }
 
+        private PlayerSettingsViewModel TryShowSettings()
+        {
+            PlayerSettingsViewModel vm = (PlayerSettingsViewModel)ViewModel.Settings.Clone();
+            SettingsWindow win = new SettingsWindow() { Owner = this, ViewModel = vm };
+            if (win.ShowDialog() ?? false)
+                return vm;
+            else
+                return null;
+        }
+
         private void NewGame()
         {
-            throw new NotImplementedException();
+            PlayerSettingsViewModel newSettings = TryShowSettings();
+            if (newSettings == null)
+                newSettings = ViewModel.Settings;
+
+            Controller.LoadGame(newSettings.WhitePlayer.GetPlayerForModel(),
+                    newSettings.BlackPlayer.GetPlayerForModel(),
+                    newSettings.WhitePlayer.GetPlayerForModel());
         }
 
         private void LoadGame(string fileName)
