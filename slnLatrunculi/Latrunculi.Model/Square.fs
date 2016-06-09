@@ -2,6 +2,7 @@
 
 module Square =
 
+    [<StructuralEquality;NoComparison>]
     type Color = 
         | White
         | Black

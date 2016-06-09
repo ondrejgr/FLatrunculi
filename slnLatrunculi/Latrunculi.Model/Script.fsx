@@ -18,8 +18,8 @@ let model = GameModel()
 let controller = GameController(model)
 
 let cts = new CancellationTokenSource()
-
-controller.Run(cts.Token)
+cts.Cancel();;
+//controller.Run(cts.Token)
 
 //match result |>  Async.RunSynchronously with
 //| Choice1Of2 _ -> printfn "Success"; ()

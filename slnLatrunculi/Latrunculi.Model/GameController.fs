@@ -2,6 +2,11 @@
 open Latrunculi.Model
 open System.Threading
 
+[<StructuralEquality;NoComparison>]
+type GameLoopCycleResult =
+    | Continue
+    | Quit
+
 type GameController(gameModel: GameModel) = 
 
     member private this.Model = gameModel
@@ -13,25 +18,23 @@ type GameController(gameModel: GameModel) =
         this.Model.changePlayerSettings(white, black) |> ignore
         this.Model.setActiveColor(Some Rules.GetInitialActiveColor) |> ignore
         this.Model.initBoard() |> ignore
-
-    member val index = 0 with get, set
-
-    // GameLoopCycle returns Success true to repeat game cycle, Success false to stop game loop
-    member private this.tryGameLoopCycle() =
+            
+    member private this.GameLoopCycle() =
         async {
             printfn "Start of Game Loop"
-            do! Async.Sleep(5000)
+            do! Async.Sleep(500)
             printfn "End of Game Loop"
 
-            return Success true }
+            return Continue }
 
     // infinite GameLoop
     member private this.GameLoop() =
         async {
-            let! result = this.tryGameLoopCycle()
-            match result with
-            | Error e -> return Error e
-            | Success s -> if s then return! this.GameLoop() else return Success s }
+            while true do
+                let! result = this.GameLoopCycle()
+                match result with
+                | Continue -> ()
+                | Quit -> return () }
 
     // start infinite GameLoop with cancellation support
     member this.Run(ct: CancellationToken) =
