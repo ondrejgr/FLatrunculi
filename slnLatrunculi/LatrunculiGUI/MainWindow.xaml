@@ -12,7 +12,8 @@
         MinHeight="600" MinWidth="800"
         Height="700" Width="1000"
         Closing="Window_Closing"
-        SizeChanged="Window_SizeChanged">
+        SizeChanged="Window_SizeChanged"
+        x:Name="win">
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
@@ -153,39 +154,39 @@
                     </Style.Triggers>
                 </Style>
             </ToolBar.Resources>
-            <Button Command="{x:Static local:MainWindowCommands.New}">
+            <Button Command="{x:Static local:MainWindowCommands.New}" CommandTarget="{Binding ElementName=win}">
                 <Button.ToolTip>
                     <AccessText Text="{Binding Source={x:Static local:MainWindowCommands.New}, Path=Text}"/>
                 </Button.ToolTip>
                 <Image Height="16" Width="16" Source="{Binding Source={x:Static local:MainWindowCommands.New}, Path=ImageSource}"/>
             </Button>
-            <Button Command="{x:Static local:MainWindowCommands.Load}">
+            <Button Command="{x:Static local:MainWindowCommands.Load}" CommandTarget="{Binding ElementName=win}">
                 <Button.ToolTip>
                     <AccessText Text="{Binding Source={x:Static local:MainWindowCommands.Load}, Path=Text}"/>
                 </Button.ToolTip>
                 <Image Height="16" Width="16" Source="{Binding Source={x:Static local:MainWindowCommands.Load}, Path=ImageSource}"/>
             </Button>
-            <Button Command="{x:Static local:MainWindowCommands.Save}">
+            <Button Command="{x:Static local:MainWindowCommands.Save}" CommandTarget="{Binding ElementName=win}">
                 <Button.ToolTip>
                     <AccessText Text="{Binding Source={x:Static local:MainWindowCommands.Save}, Path=Text}"/>
                 </Button.ToolTip>
                 <Image Height="16" Width="16" Source="{Binding Source={x:Static local:MainWindowCommands.Save}, Path=ImageSource}"/>
             </Button>
             <Separator/>
-            <Button Command="{x:Static local:MainWindowCommands.Pause}">
+            <Button Command="{x:Static local:MainWindowCommands.Pause}" CommandTarget="{Binding ElementName=win}">
                 <Button.ToolTip>
                     <AccessText Text="{Binding Source={x:Static local:MainWindowCommands.Pause}, Path=Text}"/>
                 </Button.ToolTip>
                 <Image Height="16" Width="16" Source="{Binding Source={x:Static local:MainWindowCommands.Pause}, Path=ImageSource}"/>
             </Button>
-            <Button Command="{x:Static local:MainWindowCommands.Resume}">
+            <Button Command="{x:Static local:MainWindowCommands.Resume}" CommandTarget="{Binding ElementName=win}">
                 <Button.ToolTip>
                     <AccessText Text="{Binding Source={x:Static local:MainWindowCommands.Resume}, Path=Text}"/>
                 </Button.ToolTip>
                 <Image Height="16" Width="16" Source="{Binding Source={x:Static local:MainWindowCommands.Resume}, Path=ImageSource}"/>
             </Button>
             <Separator/>
-            <Button Command="{x:Static local:MainWindowCommands.Settings}">
+            <Button Command="{x:Static local:MainWindowCommands.Settings}" CommandTarget="{Binding ElementName=win}">
                 <Button.ToolTip>
                     <AccessText Text="{Binding Source={x:Static local:MainWindowCommands.Settings}, Path=Text}"/>
                 </Button.ToolTip>

@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Latrunculi.ViewModel
@@ -44,7 +45,7 @@ namespace Latrunculi.ViewModel
             OnPlayerSettingsChanged();
             OnActivePlayerChanged();
 
-            OnStatusChanged(Model.Status);
+            OnStatusChanged();
         }
 
         private void Model_BoardChanged(object sender, EventArgs e)
@@ -54,8 +55,7 @@ namespace Latrunculi.ViewModel
 
         private void Model_StatusChanged(object sender, EventArgs e)
         {
-            CommandManager.InvalidateRequerySuggested();
-            OnPropertyChanged("IsGameCreated");
+            OnStatusChanged();
         }
 
         private void Model_PlayerSettingsChanged(object sender, EventArgs e)
@@ -83,15 +83,36 @@ namespace Latrunculi.ViewModel
         {
             WhitePlayer.IsActive = Model.isWhitePlayerActive;
             BlackPlayer.IsActive = Model.isBlackPlayerActive;
+            Application.Current.Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
         }
 
-        private void OnStatusChanged(Model.GameStatus status)
+        private void OnStatusChanged()
         {
+            OnPropertyChanged("Status");
+            OnPropertyChanged("IsGameCreated");
+            OnPropertyChanged("IsGameRunning");
+            OnPropertyChanged("IsGamePaused");
+            OnPropertyChanged("IsGameCreatedOrPaused");
+
             if (IsGameCreated)
             {
                 Error = string.Empty;
                 Info = "Vytvořte novou hru nebo ji načtěte ze souboru";
             }
+            else
+            {
+                Error = string.Empty;
+                Info = string.Empty;
+            }
+
+            if (IsGameRunning)
+                StatusBarText = "Hra běží...";
+            else if (IsGamePaused)
+                StatusBarText = "Hra byla pozastavena...";
+            else
+                StatusBarText = "";
+
+            Application.Current.Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -114,6 +135,30 @@ namespace Latrunculi.ViewModel
             get
             {
                 return Status == GameStatus.Created;
+            }
+        }
+
+        public bool IsGameRunning
+        {
+            get
+            {
+                return Status == GameStatus.Running;
+            }
+        }
+
+        public bool IsGamePaused
+        {
+            get
+            {
+                return Status == GameStatus.Paused;
+            }
+        }        
+
+        public bool IsGameCreatedOrPaused
+        {
+            get
+            {
+                return Status == GameStatus.Created || Status == GameStatus.Paused;
             }
         }
 
@@ -199,35 +244,6 @@ namespace Latrunculi.ViewModel
             }
         }
 
-        private bool _isBusy = false;
-        public bool IsBusy
-        {
-            get
-            {
-                return _isBusy;
-            }
-            set
-            {
-                _isBusy = value;
-                OnPropertyChanged("IsBusy");
-                System.Windows.Input.CommandManager.InvalidateRequerySuggested();
-            }
-        }
-
-        private string _statusBarText;
-        public string StatusBarText
-        {
-            get
-            {
-                return _statusBarText;
-            }
-            set
-            {
-                _statusBarText = value;
-                OnPropertyChanged("StatusBarText");
-            }
-        }
-
         public string Title
         {
             get
@@ -282,6 +298,20 @@ namespace Latrunculi.ViewModel
             get
             {
                 return !string.IsNullOrEmpty(Info);
+            }
+        }
+
+        private string _statusBarText;
+        public string StatusBarText
+        {
+            get
+            {
+                return _statusBarText;
+            }
+            set
+            {
+                _statusBarText = value;
+                OnPropertyChanged("StatusBarText");
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿namespace Latrunculi.Controller
 open Latrunculi.Model
+open System.Threading
 
 type GameController(gameModel: GameModel) = 
 
@@ -8,7 +9,17 @@ type GameController(gameModel: GameModel) =
     member this.changePlayerSettings (white, black) =
         this.Model.changePlayerSettings (white, black)
 
-    member this.LoadGame(white, black, activePlayer) =
+    member this.NewGame(white, black) =
         this.Model.changePlayerSettings(white, black) |> ignore
-        this.Model.setActivePlayer(Some activePlayer) |> ignore
+        this.Model.setActiveColor(Some Rules.GetInitialActiveColor) |> ignore
         this.Model.initBoard() |> ignore
+
+    member private this.RunGame() =
+        async {
+            this.Model.setStatus(GameStatus.Running) |> ignore
+            Thread.Sleep(5000)
+            this.Model.setStatus(GameStatus.Paused) |> ignore
+        }
+
+    member this.Run(cts: CancellationTokenSource) =
+        Async.Start (this.RunGame(), cts.Token)

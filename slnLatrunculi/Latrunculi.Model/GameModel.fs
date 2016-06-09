@@ -4,6 +4,8 @@ open System
 [<StructuralEquality;NoComparison>]
 type GameStatus =
     | Created
+    | Running
+    | Paused
 
 type ModelChangeEventHandler = delegate of obj * EventArgs -> unit
 
@@ -24,7 +26,7 @@ type GameModel() =
     member val Board = board
     member val PlayerSettings = playerSettings with get, set
     member val Status = status with get, set
-    member val ActivePlayer = None with get, set
+    member val ActiveColor = None with get, set
         
     [<CLIEvent>]
     member this.StatusChanged = statusChangedEvent.Publish
@@ -55,19 +57,19 @@ type GameModel() =
         this.PlayerSettings
 
     member this.isWhitePlayerActive =
-        match this.ActivePlayer with
-        | Some p -> if p = this.PlayerSettings.WhitePlayer then true else false
+        match this.ActiveColor with
+        | Some p -> if p = White then true else false
         | _ -> false
 
     member this.isBlackPlayerActive =
-        match this.ActivePlayer with
-        | Some p -> if p = this.PlayerSettings.BlackPlayer then true else false
+        match this.ActiveColor with
+        | Some p -> if p = Black then true else false
         | _ -> false
 
-    member this.setActivePlayer x =
-        this.ActivePlayer <- x
+    member this.setActiveColor (x: ActiveColor option) =
+        this.ActiveColor <- x
         this.OnActivePlayerChanged()
-        this.ActivePlayer
+        this.ActiveColor
 
     member this.initBoard() =
         match Board.tryInit this.Board Rules.GetInitialBoardSquares with

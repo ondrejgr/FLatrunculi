@@ -20,4 +20,3 @@ module Common
             x
 
     let maybe = new MaybeBuilder()
-    
