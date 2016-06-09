@@ -37,7 +37,7 @@ namespace Latrunculi.GUI
             Controller = controller;
         }
 
-        private CancellationTokenSource cts = new CancellationTokenSource();
+        private CancellationTokenSource cts = null;
 
         public MainWindowViewModel ViewModel
         {
@@ -312,13 +312,13 @@ namespace Latrunculi.GUI
         private void Pause_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = ViewModel.IsGameRunning;
+            e.CanExecute = ViewModel.IsGameRunning && (cts != null);
         }
 
         private void Pause_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
-            if (ViewModel.IsGameRunning)
+            if (ViewModel.IsGameRunning && (cts != null))
                 cts.Cancel();
         }
 
@@ -332,11 +332,7 @@ namespace Latrunculi.GUI
         {
             e.Handled = true;
             if (ViewModel.IsGamePaused)
-            {
-                cts = new CancellationTokenSource();
-                Controller.Run(cts);
-                CommandManager.InvalidateRequerySuggested();
-            }
+                RunGame();
         }
 
         private void board_BoardSquareClicked(object sender, Controls.BoardSquareClickedEventArgs e)
@@ -363,8 +359,15 @@ namespace Latrunculi.GUI
             Controller.NewGame(newSettings.WhitePlayer.GetPlayerForModel(),
                     newSettings.BlackPlayer.GetPlayerForModel());
 
+            RunGame();
+        }
+
+        private void RunGame()
+        {
+            if (cts != null)
+                cts.Dispose();
             cts = new CancellationTokenSource();
-            Controller.Run(cts);
+            //Controller.Run(cts.Token);
             CommandManager.InvalidateRequerySuggested();
         }
 

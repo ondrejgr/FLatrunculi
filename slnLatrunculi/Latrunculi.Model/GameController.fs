@@ -14,12 +14,33 @@ type GameController(gameModel: GameModel) =
         this.Model.setActiveColor(Some Rules.GetInitialActiveColor) |> ignore
         this.Model.initBoard() |> ignore
 
-    member private this.RunGame() =
-        async {
-            this.Model.setStatus(GameStatus.Running) |> ignore
-            Thread.Sleep(5000)
-            this.Model.setStatus(GameStatus.Paused) |> ignore
-        }
+    member val index = 0 with get, set
 
-    member this.Run(cts: CancellationTokenSource) =
-        Async.Start (this.RunGame(), cts.Token)
+    // GameLoopCycle returns Success true to repeat game cycle, Success false to stop game loop
+    member private this.tryGameLoopCycle() =
+        async {
+            printfn "Start of Game Loop"
+            do! Async.Sleep(5000)
+            printfn "End of Game Loop"
+
+            return Success true }
+
+    // infinite GameLoop
+    member private this.GameLoop() =
+        async {
+            let! result = this.tryGameLoopCycle()
+            match result with
+            | Error e -> return Error e
+            | Success s -> if s then return! this.GameLoop() else return Success s }
+
+    // start infinite GameLoop with cancellation support
+    member this.Run(ct: CancellationToken) =
+        let RunGameLoop =
+            async {
+                match Async.RunSynchronously <| Async.Catch(this.GameLoop()) with
+                | Choice1Of2 _ -> printfn "Success"
+                | Choice2Of2 exn -> printfn "Failed %s" exn.Message
+                () }
+
+        Async.Start(RunGameLoop, ct)
+
