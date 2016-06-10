@@ -95,33 +95,25 @@ namespace Latrunculi.ViewModel
             }
         }
         
-        public void RefreshFromModel(Model.PlayerSettings.Player player)
+        public void RefreshFromModel(Model.Player player)
         {
-            Model.PlayerSettings.PlayerInfo info;
-
-            if (player.IsComputerPlayer)
-            {
+            if (player is Model.ComputerPlayer)
                 PlayerType = PlayerTypes.ptComputer;
-                info = (player as Model.PlayerSettings.Player.ComputerPlayer).Item;
-            }
-            else if (player.IsHumanPlayer)
-            {
+            else if (player is Model.HumanPlayer)
                 PlayerType = PlayerTypes.ptHuman;
-                info = (player as Model.PlayerSettings.Player.HumanPlayer).Item;
-            }
             else
                 throw new NotImplementedException();
 
-            Name = info.Name;
-            Level = (PlayerLevels)info.Level;
+            Name = player.Name;
+            Level = (PlayerLevels)player.Level;
         }
 
-        public Model.PlayerSettings.Player GetPlayerForModel()
+        public Model.Player GetPlayerForModel()
         {
             if (PlayerType == PlayerTypes.ptComputer)
-                return Model.PlayerSettings.createComputerPlayer(Name, (Model.PlayerSettings.Levels)Level);
+                return Model.PlayerSettings.createComputerPlayer(Name, (Model.Levels)Level);
             else if (PlayerType == PlayerTypes.ptHuman)
-                return Model.PlayerSettings.createHumanPlayer(Name, (Model.PlayerSettings.Levels)Level);
+                return Model.PlayerSettings.createHumanPlayer(Name, (Model.Levels)Level);
             else
                 throw new NotImplementedException();
         }
