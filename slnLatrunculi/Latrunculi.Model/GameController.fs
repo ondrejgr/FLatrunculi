@@ -5,7 +5,7 @@ open System.Threading
 [<StructuralEquality;NoComparison>]
 type GameLoopCycleResult =
     | Continue
-    | Quit
+    | Finished
 
 type GameController(gameModel: GameModel) = 
 
@@ -21,19 +21,18 @@ type GameController(gameModel: GameModel) =
             
     member private this.GameLoopCycle() =
         async {
-            printfn "Start of Game Loop"
             do! Async.Sleep(500)
-            printfn "End of Game Loop"
 
             return Continue }    
 
     member private this.GameLoop() =
         async {
+            use! cancelHandler = Async.OnCancel(fun () -> this.Model.setStatus(GameStatus.Paused) |> ignore)
+
             let! result = this.GameLoopCycle()
             match result with
             | Continue -> return! this.GameLoop()
-            | Quit -> 
-                printfn "Quitting Game Loop"
+            | Finished -> 
                 this.Model.setStatus(GameStatus.Finished) |> ignore
                 return () }
 
