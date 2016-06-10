@@ -16,7 +16,7 @@ type GameController(gameModel: GameModel) =
 
     member this.NewGame(white, black) =
         this.Model.changePlayerSettings(white, black) |> ignore
-        this.Model.setActiveColor(Some Rules.GetInitialActiveColor) |> ignore
+        this.Model.setActiveColor(Some Rules.getInitialActiveColor) |> ignore
         this.Model.initBoard() |> ignore
             
     member private this.GameLoopCycle() =

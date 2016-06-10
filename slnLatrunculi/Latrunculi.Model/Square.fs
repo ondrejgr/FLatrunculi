@@ -3,11 +3,6 @@
 module Square =
 
     [<StructuralEquality;NoComparison>]
-    type Color = 
-        | White
-        | Black
-
-    [<StructuralEquality;NoComparison>]
     type T =
         | Piece of Piece.T
         | Nothing

@@ -23,6 +23,14 @@ module Board =
             Array.set this.Squares.[row] col s
             ()
 
+        member this.GetNumberOfPiecesByColor (color: Piece.Colors) =
+            Array.fold (fun count row ->
+                            count + Array.fold (fun count sq ->
+                                                count + match sq with
+                                                        | Square.Piece p -> if p.Color = color then 1 else 0
+                                                        | _ -> 0) 0 row)
+                        0 this.Squares
+            
         member this.GetRowNumbers =
             Coord.RowNumbers
 

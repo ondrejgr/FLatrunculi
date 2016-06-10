@@ -73,7 +73,7 @@ type GameModel() =
         this.ActiveColor
 
     member this.initBoard() =
-        match Board.tryInit this.Board Rules.GetInitialBoardSquares with
+        match Board.tryInit this.Board Rules.getInitialBoardSquares with
                 | Error e -> failwith (sprintf "Desku se nepodařilo zinicializovat: %A" e)
                 | Success s -> 
                     this.OnBoardChanged()
