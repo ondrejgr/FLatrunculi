@@ -362,6 +362,15 @@ Při vytvoření instance provede vytvoření herní desky a~inicializaci rozmí
 Provádí řízení hry. Obsahuje odkaz na instanci třídy \texttt{Latrunculi.Model.GameModel}.
 Umožňuje změnit nastavení hráčů. Metodou NewGame se inicializuje herní deska do výchozí polohy.
 
+V metodě GameLoop je nekonečná (tokenem zrušitelná) herní smyčka, která v~každém cyklu:
+	\begin{itemize}  
+		\item vyvolává události pro pohledový model (překreselní desky, aktualizace UI)
+		\item získá tah od hráče (PC nebo lidského)
+		\item zkontroluje tah u rozhodčího (modulu \texttt{Rules})
+		\item provede tah na herní desce
+		\item změní hráče na tahu
+	\end{itemize}
+
 \section{Systémové požadavky}
 Pro vývoj i~běh aplikace jsou na počítač kladeny tyto nároky:
 	\begin{itemize}  
