@@ -25,18 +25,17 @@ type GameController(gameModel: GameModel) =
             do! Async.Sleep(500)
             printfn "End of Game Loop"
 
-            return Continue }
+            return Continue }    
 
     member private this.GameLoop() =
         async {
-            while true do
-                let! result = this.GameLoopCycle()
-                match result with
-                | Continue -> ()
-                | Quit -> 
-                    printfn "Quitting Game Loop"
-                    this.Model.setStatus(GameStatus.Finished) |> ignore
-                    return () }
+            let! result = this.GameLoopCycle()
+            match result with
+            | Continue -> return! this.GameLoop()
+            | Quit -> 
+                printfn "Quitting Game Loop"
+                this.Model.setStatus(GameStatus.Finished) |> ignore
+                return () }
 
     member this.Run() =
         let cts = new CancellationTokenSource()
