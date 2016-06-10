@@ -107,7 +107,21 @@ let BasicTypesTest() =
                     | Success s -> s = squareWithWhitePiece
                     | _ -> false)
 
-    let gameModel = new GameModel()
+    let whitePlayer = PlayerSettings.createHumanPlayer "White" Levels.Easy :> Player
+    let blackPlayer = PlayerSettings.createComputerPlayer "Black" Levels.Hard :> Player
+    Assert.IsTrue(whitePlayer :? HumanPlayer)
+    Assert.IsTrue(blackPlayer :? ComputerPlayer)
+
+    let model = new GameModel()
+    let controller = GameController(model)
+    let playerSettings = model.changePlayerSettings(whitePlayer, blackPlayer)
+    Assert.AreEqual(playerSettings, model.PlayerSettings)
+    Assert.AreEqual(whitePlayer.Name, playerSettings.WhitePlayer.Name)
+    Assert.AreEqual(whitePlayer.Level, playerSettings.WhitePlayer.Level)
+    Assert.AreEqual(blackPlayer.Name, playerSettings.BlackPlayer.Name)
+    Assert.AreEqual(blackPlayer.Level, playerSettings.BlackPlayer.Level)
+    Assert.IsTrue(playerSettings.WhitePlayer :? HumanPlayer)
+    Assert.IsTrue(playerSettings.BlackPlayer :? ComputerPlayer)
 
     ()
  
