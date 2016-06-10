@@ -111,7 +111,7 @@ namespace Latrunculi.GUI
             e.Cancel = false;
             if (ViewModel.IsGameRunning)
             {
-                e.Cancel = MainWindowCommands.Pause.CanExecute(null, this);
+                e.Cancel = !MainWindowCommands.Pause.CanExecute(null, this);
                 if (!e.Cancel)
                     MainWindowCommands.Pause.Execute(null, this);
             }
