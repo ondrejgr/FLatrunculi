@@ -37,7 +37,7 @@ namespace Latrunculi.GUI
             Controller = controller;
         }
 
-        private CancellationTokenSource cts = null;
+        static private CancellationTokenSource cts = null;
 
         public MainWindowViewModel ViewModel
         {
@@ -83,7 +83,7 @@ namespace Latrunculi.GUI
         private void ExitCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = !ViewModel.IsGameRunning;
+            e.CanExecute = true;
         }
 
         private void ExitCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -108,7 +108,13 @@ namespace Latrunculi.GUI
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            e.Cancel = ViewModel.IsGameRunning;
+            e.Cancel = false;
+            if (ViewModel.IsGameRunning)
+            {
+                e.Cancel = MainWindowCommands.Pause.CanExecute(null, this);
+                if (!e.Cancel)
+                    MainWindowCommands.Pause.Execute(null, this);
+            }
             if (!e.Cancel && !ViewModel.IsGameCreated)
             {
                 StringBuilder sb = new StringBuilder();
