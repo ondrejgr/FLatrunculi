@@ -127,7 +127,15 @@ module Coord =
                 
             let! newCoord = tryCreate (getCol newCol) (getRow newRow)
             return Success newCoord
-        }                
+        }            
+        
+    let getCoordsSeq =
+        seq {
+            for row in RowNumbers do
+                for col in ColumnNumbers do
+                    yield match tryCreate col row with
+                                | Success c -> c
+                                | _ -> failwith "Souřadnici se nepodařilo vytvořit." } 
 
     let iter (x: T -> unit) = 
         Seq.iter (fun row -> 

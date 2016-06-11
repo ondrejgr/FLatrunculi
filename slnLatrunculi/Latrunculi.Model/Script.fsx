@@ -20,6 +20,4 @@ let controller = GameController(model)
 let playerSettings = PlayerSettings.createDefault
 controller.NewGame(playerSettings.WhitePlayer, playerSettings.BlackPlayer)
 
-let col = Coord.ColumnNumber 'B'
-Coord.tryGetNextCol col
-Coord.tryGetPrevCol col
+
