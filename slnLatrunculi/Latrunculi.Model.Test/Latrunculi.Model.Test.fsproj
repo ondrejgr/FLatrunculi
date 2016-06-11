@@ -49,6 +49,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="BasicTypesTest.fs" />
     <Compile Include="RulesTest.fs" />
+    <Compile Include="CoordTest.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Latrunculi.Model\Latrunculi.Model.fsproj">

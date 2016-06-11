@@ -4,7 +4,16 @@ module Coord =
     type Error =
         | InvalidColumnNumber
         | InvalidRowNumber
+        | ColumnOutOfRange
+        | RowOutOfRange
+        | InvalidSourceCoord
         | UnableToParseCoordFromString
+
+    type Direction =
+        | Up
+        | Down
+        | Left
+        | Right
 
     type ColumnNumber = ColumnNumber of char
     type RowNumber = RowNumber of int
@@ -22,6 +31,45 @@ module Coord =
                     (i + 1, (RowNumber x, i)::xs)) 
             (0, []) RowNumbers 
         |> snd |> List.rev |> Map.ofList
+
+    let getCol (ColumnNumber col) = col
+    let getRow (RowNumber row) = row
+
+    let tryGetPrevCol (x: ColumnNumber) =
+        let col = getCol x
+        let lst = ColumnNumbers
+        fst <| Seq.fold (fun (prev, found) a ->
+                    match found with
+                    | true -> (prev, found)
+                    | false -> if a = col then (prev, true) else (Success (ColumnNumber a), false))
+                ((Error ColumnOutOfRange), false) lst
+
+    let tryGetNextCol (x: ColumnNumber) =
+        let col = getCol x
+        let lst = ColumnNumbers |> Seq.toList
+        fst <| List.foldBack (fun a (prev, found) ->
+                    match found with
+                    | true -> (prev, found)
+                    | false -> if a = col then (prev, true) else (Success (ColumnNumber a), false))
+                lst ((Error ColumnOutOfRange), false)
+
+    let tryGetPrevRow (x: RowNumber) =
+        let row = getRow x
+        let lst = RowNumbers
+        fst <| Seq.fold (fun (prev, found) a ->
+                    match found with
+                    | true -> (prev, found)
+                    | false -> if a = row then (prev, true) else (Success (RowNumber a), false))
+                ((Error ColumnOutOfRange), false) lst
+
+    let tryGetNextRow (x: RowNumber) =
+        let row = getRow x
+        let lst = RowNumbers |> Seq.toList
+        fst <| List.foldBack (fun a (prev, found) ->
+                    match found with
+                    | true -> (prev, found)
+                    | false -> if a = row then (prev, true) else (Success (RowNumber a), false))
+                lst ((Error ColumnOutOfRange), false)
 
     [<StructuralEquality;NoComparison>]
     type T = {
@@ -60,6 +108,26 @@ module Coord =
                 let! row = tryParseRowNumberFromChar <| s.Chars 1
                 let! coord = tryCreate col row
                 return Success coord }
+
+    let tryGetRelative (coord: Result<T, Error>) (dir: Direction) =
+        let getCoord (coord: Result<T, Error>) =
+            match coord with
+            | Success c -> Success c
+            | _ -> Error InvalidSourceCoord
+        maybe {
+            let! c = getCoord coord
+            let! newCol = match dir with
+                          | Up | Down -> Success c.Column
+                          | Left -> tryGetPrevCol c.Column
+                          | Right -> tryGetNextCol c.Column
+            let! newRow = match dir with
+                          | Left | Right -> Success c.Row
+                          | Up -> tryGetPrevRow c.Row
+                          | Down -> tryGetNextRow c.Row
+                
+            let! newCoord = tryCreate (getCol newCol) (getRow newRow)
+            return Success newCoord
+        }                
 
     let iter (x: T -> unit) = 
         Seq.iter (fun row -> 

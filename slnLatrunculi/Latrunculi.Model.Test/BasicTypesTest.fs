@@ -123,5 +123,6 @@ let BasicTypesTest() =
     Assert.IsTrue(playerSettings.WhitePlayer :? HumanPlayer)
     Assert.IsTrue(playerSettings.BlackPlayer :? ComputerPlayer)
 
+
     ()
  
