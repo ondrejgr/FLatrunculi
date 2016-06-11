@@ -17,4 +17,5 @@ open System.Threading
 
 let model = GameModel()
 let controller = GameController(model)
-
+let playerSettings = PlayerSettings.createDefault
+controller.NewGame(playerSettings.WhitePlayer, playerSettings.BlackPlayer)

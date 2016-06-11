@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="BasicTypesTest.fs" />
+    <Compile Include="RulesTest.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Latrunculi.Model\Latrunculi.Model.fsproj">

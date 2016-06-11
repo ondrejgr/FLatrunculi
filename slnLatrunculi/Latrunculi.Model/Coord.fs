@@ -70,7 +70,7 @@ module Coord =
                                 | _ -> failwith "Souřadnici se nepodařilo vytvořit.")
                         ColumnNumbers) RowNumbers
 
-    let getAllCoords =
+    let getCoordsSeq =
         seq {
             for row in RowNumbers do
                 for col in ColumnNumbers do

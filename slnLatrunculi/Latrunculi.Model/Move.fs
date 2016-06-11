@@ -38,3 +38,6 @@ module Move =
 
     let tryCreate x y nx ny =
         tryCreateWithRemovedPiecesList x y nx ny []
+
+    let tryCreateFromStringCoords x y nx ny =
+        tryCreate (Coord.tryCreateFromString x) (Coord.tryCreateFromString y) nx ny
