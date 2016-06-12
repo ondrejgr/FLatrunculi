@@ -10,11 +10,6 @@ module Common
         | Success x -> Success x
         | Error _ -> Error e
 
-    let getObjExn c =
-        match c with
-        | Success c -> c
-        | _ -> failwith "Unable to extract object instance from function result, because called function has failed."
-
     type MaybeBuilder() =
         member this.Bind(m, f) = 
             match m with
