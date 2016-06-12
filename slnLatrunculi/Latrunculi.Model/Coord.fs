@@ -96,7 +96,7 @@ module Coord =
         maybe {
             let! col = tryCheckColumnNumberRange x
             let! row = tryCheckRowNumberRange y
-            return Success { Column = col; Row = row } } 
+            return { Column = col; Row = row } }
 
     let tryCreateFromString (s: string) =
         let tryParseColumnNumberFromChar (c: char) =
@@ -114,15 +114,11 @@ module Coord =
                 let! col = tryParseColumnNumberFromChar <| s.Chars 0
                 let! row = tryParseRowNumberFromChar <| s.Chars 1
                 let! coord = tryCreate col row
-                return Success coord }
+                return coord }
 
     let tryGetRelative (coord: Result<T, Error>) (dir: Direction) =
-        let getCoord (coord: Result<T, Error>) =
-            match coord with
-            | Success c -> Success c
-            | _ -> Error InvalidSourceCoord
         maybe {
-            let! c = getCoord coord
+            let! c = tryChangeError coord InvalidSourceCoord
             let! newCol = match dir with
                           | Up | Down -> Success c.Column
                           | Left -> tryGetPrevCol c.Column
@@ -132,8 +128,7 @@ module Coord =
                           | Up -> tryGetPrevRow c.Row
                           | Down -> tryGetNextRow c.Row
                 
-            let! newCoord = tryCreate (getCol newCol) (getRow newRow)
-            return Success newCoord
+            return! tryCreate (getCol newCol) (getRow newRow)
         }            
         
     let getCoordsSeq =

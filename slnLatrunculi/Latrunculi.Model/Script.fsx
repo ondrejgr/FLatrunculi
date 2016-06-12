@@ -20,20 +20,3 @@ let controller = GameController(model)
 let playerSettings = PlayerSettings.createDefault
 controller.NewGame(playerSettings.WhitePlayer, playerSettings.BlackPlayer)
 
-
-let test a b =
-    let geta =
-        maybe {
-            return Success 4 }
-    let getb =
-        maybe {
-            return Success 5 }
-
-    let secti a b = 
-        maybe {
-            return Success (a + b) }
-    maybe {
-        let! a = geta
-        let! b = getb
-        let! soucet = secti a b              
-        return Success soucet }

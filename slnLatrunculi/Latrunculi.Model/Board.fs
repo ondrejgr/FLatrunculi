@@ -23,7 +23,7 @@ module Board =
             Array.set this.Squares.[row] col s
             ()
 
-        member this.GetCoordsByPieceColor (color: Piece.Colors) =
+        member this.GetCoordsWithPieceColor (color: Piece.Colors) =
             Seq.filter (fun coord ->
                             match this.GetSquare(coord) with
                             | Square.Nothing -> false
@@ -52,8 +52,8 @@ module Board =
                                 | _ -> failwith "Souřadnici se nepodařilo vytvořit."
                     yield (coord, square) }
 
-    let getCoordsByPieceColor (board: T) (color: Piece.Colors) =
-        board.GetCoordsByPieceColor(color)
+    let getCoordsWithPieceColor (board: T) (color: Piece.Colors) =
+        board.GetCoordsWithPieceColor(color)
 
     let tryGetSquare (board: T) (coord: Result<Coord.T, Coord.Error>) =
         match coord with

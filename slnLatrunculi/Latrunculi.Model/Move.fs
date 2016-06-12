@@ -15,21 +15,16 @@ module Move =
         RemovedPieces: RemovedPiece.T list }
 
     let tryCreateWithRemovedPiecesList x y nx ny xys =
-        let getCoord (c: Result<Coord.T, Coord.Error>) (e: Error) =
-            match c with
-            | Success c -> Success c
-            | Error _ -> Error e
-
         let checkSourceAndTarget src tar =
             if src = tar then Error SourceAndTargetMayNotBeSame else Success ()
 
         maybe {
-            let! source = getCoord x InvalidSourceCoordSpecified
-            let! target = getCoord y InvalidTargetCoordSpecified
+            let! source = tryChangeError x InvalidSourceCoordSpecified
+            let! target = tryChangeError y InvalidTargetCoordSpecified
             let! newSourceSq = Success nx
             let! newTargetSq = Success ny
             do! checkSourceAndTarget source target
-            return Success { 
+            return { 
                 Source = source; 
                 Target = target;
                 NewSourceSquare = newSourceSq;

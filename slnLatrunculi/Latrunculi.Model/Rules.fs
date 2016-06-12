@@ -16,26 +16,10 @@ module Rules =
         Piece.Colors.White
 
     
-    let getValidMoves (board: Board.T) (color: Piece.Colors) =
-        let tryGetPieceByColor (sq: Square.T) =
-            match sq with
-            | Square.Piece p -> if p.Color = color then Success p else Error SquareDoesNotContainSpecifiedColorPiece
-            | _ -> Error SquareIsEmpty
-        let tryGetValidMove src dir =
-            maybe {
-                let tar = Coord.tryGetRelative src dir
-                let! src_sq = Board.tryGetSquare board src
-                let! tar_piece = tryGetPieceByColor src_sq
-                let! move = Move.tryCreate src tar Square.createEmpty src_sq
-                return Success move }
-        let addValidMove result src dir =
-            match tryGetValidMove src dir with
-            | Success m -> m::result
-            | _ -> result
-        Seq.fold (fun result src ->
-                    List.append (Seq.fold (fun result dir ->
-                                        addValidMove result (Success src) dir) [] Coord.Directions)
-                                result) [] (Board.getCoordsByPieceColor board color)
+
+//        Seq.fold (fun result src ->
+                    
+//                                result) [] (Board.getCoordsWithPieceColor board color)
 
 //    let isMoveValid (move: Result<Move.T, Move.Error>) (color: ActiveColor) =
                         
