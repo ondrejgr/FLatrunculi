@@ -15,6 +15,13 @@ module Coord =
         | Left
         | Right
 
+    let Directions = 
+        seq {
+            yield Up
+            yield Down
+            yield Left
+            yield Right }
+
     type ColumnNumber = ColumnNumber of char
     type RowNumber = RowNumber of int
 

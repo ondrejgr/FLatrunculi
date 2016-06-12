@@ -59,15 +59,15 @@ type GameModel() =
 
     member this.isWhitePlayerActive =
         match this.ActiveColor with
-        | Some p -> if p = White then true else false
+        | Some p -> if p = Piece.Colors.White then true else false
         | _ -> false
 
     member this.isBlackPlayerActive =
         match this.ActiveColor with
-        | Some p -> if p = Black then true else false
+        | Some p -> if p = Piece.Colors.Black then true else false
         | _ -> false
 
-    member this.setActiveColor (x: ActiveColor option) =
+    member this.setActiveColor (x: Piece.Colors option) =
         this.ActiveColor <- x
         this.OnActivePlayerChanged()
         this.ActiveColor
