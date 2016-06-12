@@ -55,7 +55,7 @@ let CoordTest() =
 
                   
 
-    let coord = Coord.tryCreate 'F' 4
+    let coord = unwrapResultExn <| Coord.tryCreate 'F' 4
     Assert.IsTrue(match Coord.tryGetRelative coord Coord.Direction.Up with
                     | Success c -> Success c = Coord.tryCreate 'F' 5
                     | _ -> false)
@@ -68,7 +68,7 @@ let CoordTest() =
     Assert.IsTrue(match Coord.tryGetRelative coord Coord.Direction.Right with
                     | Success c -> Success c = Coord.tryCreate 'G' 4
                     | _ -> false)
-    let coord = Coord.tryCreate 'H' 1
+    let coord = unwrapResultExn <| Coord.tryCreate 'H' 1
     Assert.IsTrue(match Coord.tryGetRelative coord Coord.Direction.Right with
                     | Error e -> true
                     | _ -> false)
@@ -81,7 +81,7 @@ let CoordTest() =
     Assert.IsTrue(match Coord.tryGetRelative coord Coord.Direction.Left with
                     | Success c -> Success c = Coord.tryCreate 'G' 1
                     | _ -> false)
-    let coord = Coord.tryCreate 'A' 7
+    let coord = unwrapResultExn <| Coord.tryCreate 'A' 7
     Assert.IsTrue(match Coord.tryGetRelative coord Coord.Direction.Left with
                     | Error e -> true
                     | _ -> false)

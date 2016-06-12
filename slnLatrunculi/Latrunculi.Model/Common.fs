@@ -10,7 +10,7 @@ module Common
         | Success c -> c
         | _ -> failwith "Unable to extract object instance from function result, because called function has failed."
 
-    let tryChangeError m e =
+    let tryChangeError e m =
         match m with
         | Success x -> Success x
         | Error _ -> Error e

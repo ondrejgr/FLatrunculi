@@ -3,8 +3,6 @@
 module Board =
     type Error =
         | UnableToIterateBoard
-        | InvalidCoordSpecified
-        | InvalidMoveSpecified
 
     type T() = 
         let sq = Array.init (Seq.length Coord.RowNumbers) (fun _ -> 
@@ -55,18 +53,12 @@ module Board =
     let getCoordsWithPieceColor (board: T) (color: Piece.Colors) =
         board.GetCoordsWithPieceColor(color)
 
-    let tryGetSquare (board: T) (coord: Result<Coord.T, Coord.Error>) =
-        match coord with
-        | Error _ -> Error InvalidCoordSpecified
-        | Success c -> Success (board.GetSquare c)
+    let getSquare (board: T) coord =
+        board.GetSquare coord
 
-    let tryMove (board: T) (move: Result<Move.T, Move.Error>) =
-        match move with
-        | Error _ -> Error InvalidMoveSpecified
-        | Success m -> 
-            board.ChangeSquare m.Source m.NewSourceSquare
-            board.ChangeSquare m.Target m.NewTargetSquare
-            Success ()
+    let move (board: T) (move: Move.T) =
+        board.ChangeSquare move.Source move.NewSourceSquare
+        board.ChangeSquare move.Target move.NewTargetSquare
 
     let tryInit (board: T) (getInitalSquare: Coord.T -> Square.T) =
         try

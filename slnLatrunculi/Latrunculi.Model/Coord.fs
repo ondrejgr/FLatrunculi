@@ -116,17 +116,16 @@ module Coord =
                 let! coord = tryCreate col row
                 return coord }
 
-    let tryGetRelative (coord: Result<T, Error>) (dir: Direction) =
+    let tryGetRelative coord dir =
         maybe {
-            let! c = tryChangeError coord InvalidSourceCoord
             let! newCol = match dir with
-                          | Up | Down -> Success c.Column
-                          | Left -> tryGetPrevCol c.Column
-                          | Right -> tryGetNextCol c.Column
+                          | Up | Down -> Success coord.Column
+                          | Left -> tryGetPrevCol coord.Column
+                          | Right -> tryGetNextCol coord.Column
             let! newRow = match dir with
-                          | Left | Right -> Success c.Row
-                          | Up -> tryGetPrevRow c.Row
-                          | Down -> tryGetNextRow c.Row
+                          | Left | Right -> Success coord.Row
+                          | Up -> tryGetPrevRow coord.Row
+                          | Down -> tryGetNextRow coord.Row
                 
             return! tryCreate (getCol newCol) (getRow newRow)
         }            

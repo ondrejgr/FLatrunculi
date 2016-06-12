@@ -56,33 +56,33 @@ let BasicTypesTest() =
                     | _ -> false)
 
 
-    let invalidCoord = Coord.tryCreateFromString "ZZZ"
-    let srcCoord = Coord.tryCreate 'A' 1
-    let tarCoord = Coord.tryCreate 'B' 2
+    Assert.Throws(fun () -> Coord.tryCreateFromString "ZZZ" |> unwrapResultExn |> ignore) |> ignore
+    let srcCoord = unwrapResultExn <| Coord.tryCreate 'A' 1
+    let tarCoord = unwrapResultExn <| Coord.tryCreate 'B' 2
     let squareEmpty = Square.createEmpty
     let squareWithWhitePiece = Square.createWithPiece whitePiece
     Assert.IsTrue(match Move.tryCreate srcCoord srcCoord squareEmpty squareWithWhitePiece with
                     | Error Move.SourceAndTargetMayNotBeSame -> true
                     | _ -> false)
-    Assert.IsTrue(match Move.tryCreate invalidCoord tarCoord squareEmpty squareWithWhitePiece with
-                    | Error Move.InvalidSourceCoordSpecified -> true
+    Assert.IsTrue(match Move.tryCreateFromStringCoords "ZZZ" "B2" squareEmpty squareWithWhitePiece with
+                    | Error Move.InvalidSourceCoord -> true
                     | _ -> false)
-    Assert.IsTrue(match Move.tryCreate srcCoord invalidCoord squareEmpty squareWithWhitePiece with
-                    | Error Move.InvalidTargetCoordSpecified -> true
+    Assert.IsTrue(match Move.tryCreateFromStringCoords "A1" "ZZZ" squareEmpty squareWithWhitePiece with
+                    | Error Move.InvalidTargetCoord -> true
                     | _ -> false)
     Assert.IsTrue(match Move.tryCreate srcCoord tarCoord squareEmpty squareWithWhitePiece with
                     | Success s -> 
-                        (Success s.Source = srcCoord) && 
-                        (Success s.Target = tarCoord) &&
+                        (s.Source = srcCoord) && 
+                        (s.Target = tarCoord) &&
                         (s.NewSourceSquare = squareEmpty) &&
                         (s.NewTargetSquare = squareWithWhitePiece) &&
                         (List.length s.RemovedPieces = 0)
                     | _ -> false)
-    let removedPiece = RemovedPiece.create (unwrapResultExn srcCoord) whitePiece
+    let removedPiece = RemovedPiece.create srcCoord whitePiece
     Assert.IsTrue(match Move.tryCreateWithRemovedPiecesList srcCoord tarCoord squareEmpty squareWithWhitePiece [removedPiece] with
                     | Success s -> 
-                        (Success s.Source = srcCoord) && 
-                        (Success s.Target = tarCoord) &&
+                        (s.Source = srcCoord) && 
+                        (s.Target = tarCoord) &&
                         (s.NewSourceSquare = squareEmpty) &&
                         (s.NewTargetSquare = squareWithWhitePiece) &&
                         (List.head s.RemovedPieces = removedPiece)
@@ -90,23 +90,14 @@ let BasicTypesTest() =
 
 
     let board = Board.create
-    let boardCoord1 = Coord.tryCreate 'B' 1
-    let boardCoord2 = Coord.tryCreate 'B' 3
-    let boardMove = Move.tryCreate boardCoord1 boardCoord2 squareEmpty squareWithWhitePiece
-    let boardMoveInvalid = Move.tryCreate boardCoord1 boardCoord1 squareEmpty squareWithWhitePiece
-    Assert.IsTrue(match Board.tryMove board boardMoveInvalid with
-                    | Error Board.InvalidMoveSpecified -> true
-                    | _ -> false)
-    Assert.IsTrue(match Board.tryMove board boardMove with
-                    | Success _ -> true
-                    | _ -> false)
-    Assert.IsTrue(match Board.tryGetSquare board boardCoord1 with
-                    | Success s -> s = squareEmpty
-                    | _ -> false)
-    Assert.IsTrue(match Board.tryGetSquare board boardCoord2 with
-                    | Success s -> s = squareWithWhitePiece
-                    | _ -> false)
-
+    let boardCoord1 = unwrapResultExn <| Coord.tryCreate 'B' 1
+    let boardCoord2 = unwrapResultExn <| Coord.tryCreate 'B' 3
+    let boardMove = unwrapResultExn <| Move.tryCreate boardCoord1 boardCoord2 squareEmpty squareWithWhitePiece
+    Assert.Throws(fun () -> (Move.tryCreate boardCoord1 boardCoord1 squareEmpty squareWithWhitePiece) |> unwrapResultExn |> ignore) |> ignore
+    Board.move board boardMove
+    Assert.AreEqual(squareEmpty, Board.getSquare board boardCoord1)
+    Assert.AreEqual(squareWithWhitePiece, Board.getSquare board boardCoord2)
+    
     let whitePlayer = PlayerSettings.createHumanPlayer "White" Levels.Easy :> Player
     let blackPlayer = PlayerSettings.createComputerPlayer "Black" Levels.Hard :> Player
     Assert.IsTrue(whitePlayer :? HumanPlayer)

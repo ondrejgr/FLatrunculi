@@ -2,8 +2,8 @@
 
 module Move =
     type Error =
-        | InvalidSourceCoordSpecified
-        | InvalidTargetCoordSpecified
+        | InvalidSourceCoord
+        | InvalidTargetCoord
         | SourceAndTargetMayNotBeSame
 
     [<StructuralEquality;NoComparison>]
@@ -14,25 +14,24 @@ module Move =
         NewTargetSquare: Square.T;
         RemovedPieces: RemovedPiece.T list }
 
-    let tryCreateWithRemovedPiecesList x y nx ny xys =
-        let checkSourceAndTarget src tar =
-            if src = tar then Error SourceAndTargetMayNotBeSame else Success ()
+    let checkSourceAndTarget src tar =
+        if src = tar then Error SourceAndTargetMayNotBeSame else Success ()
 
+    let tryCreateWithRemovedPiecesList src tar nsrcsq ntarsq rmpieces =
         maybe {
-            let! source = tryChangeError x InvalidSourceCoordSpecified
-            let! target = tryChangeError y InvalidTargetCoordSpecified
-            let! newSourceSq = Success nx
-            let! newTargetSq = Success ny
-            do! checkSourceAndTarget source target
+            do! checkSourceAndTarget src tar
             return { 
-                Source = source; 
-                Target = target;
-                NewSourceSquare = newSourceSq;
-                NewTargetSquare = newTargetSq;
-                RemovedPieces = xys }}
+                Source = src; 
+                Target = tar;
+                NewSourceSquare = nsrcsq;
+                NewTargetSquare = ntarsq;
+                RemovedPieces = rmpieces }}
 
-    let tryCreate x y nx ny =
-        tryCreateWithRemovedPiecesList x y nx ny []
+    let tryCreate src tar nsrcsq ntarsq =
+        tryCreateWithRemovedPiecesList src tar nsrcsq ntarsq []
 
-    let tryCreateFromStringCoords x y nx ny =
-        tryCreate (Coord.tryCreateFromString x) (Coord.tryCreateFromString y) nx ny
+    let tryCreateFromStringCoords src tar nsrcsq ntarsq =
+        maybe {
+            let! a = tryChangeError InvalidSourceCoord <| Coord.tryCreateFromString src
+            let! b = tryChangeError InvalidTargetCoord <| Coord.tryCreateFromString tar
+            return! tryCreateWithRemovedPiecesList a b nsrcsq ntarsq [] }
