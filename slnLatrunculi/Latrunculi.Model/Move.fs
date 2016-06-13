@@ -11,30 +11,25 @@ module Move =
         Source: Coord.T;
         Target: Coord.T;
         NewSourceSquare: Square.T;
-        NewTargetSquare: Square.T;
-        RemovedPieces: RemovedPiece.T list }
+        NewTargetSquare: Square.T }
 
     let checkSourceAndTarget src tar =
         if src = tar then Error SourceAndTargetMayNotBeSame else Success ()
 
-    let tryCreateWithRemovedPiecesList src tar nsrcsq ntarsq rmpieces =
+    let tryCreate src tar nsrcsq ntarsq =
         maybe {
             do! checkSourceAndTarget src tar
             return { 
                 Source = src; 
                 Target = tar;
                 NewSourceSquare = nsrcsq;
-                NewTargetSquare = ntarsq;
-                RemovedPieces = rmpieces }}
-
-    let tryCreate src tar nsrcsq ntarsq =
-        tryCreateWithRemovedPiecesList src tar nsrcsq ntarsq []
+                NewTargetSquare = ntarsq }}
 
     let tryCreateFromStrCoord src tar nsrcsq ntarsq =
         maybe {
             let! a = tryChangeError InvalidSourceCoord <| Coord.tryCreateFromString src
             let! b = tryChangeError InvalidTargetCoord <| Coord.tryCreateFromString tar
-            return! tryCreateWithRemovedPiecesList a b nsrcsq ntarsq [] }
+            return! tryCreate a b nsrcsq ntarsq }
 
     let createFromStrCoordExn src tar nsrcsq ntarsq =
         match tryCreateFromStrCoord src tar nsrcsq ntarsq with

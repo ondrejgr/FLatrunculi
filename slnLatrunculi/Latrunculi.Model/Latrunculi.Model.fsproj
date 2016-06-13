@@ -49,8 +49,9 @@
     <Compile Include="Piece.fs" />
     <Compile Include="Square.fs" />
     <Compile Include="Coord.fs" />
-    <Compile Include="RemovedPiece.fs" />
     <Compile Include="Move.fs" />
+    <Compile Include="RemovedPiece.fs" />
+    <Compile Include="BoardMove.fs" />
     <Compile Include="Board.fs" />
     <Compile Include="Rules.fs" />
     <Compile Include="Player.fs" />

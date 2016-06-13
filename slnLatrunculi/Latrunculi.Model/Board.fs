@@ -59,9 +59,19 @@ module Board =
     let tryGetSquare (board: T) coord =
         Success (getSquare board coord)
 
-    let move (board: T) (move: Move.T) =
-        board.ChangeSquare move.Source move.NewSourceSquare
-        board.ChangeSquare move.Target move.NewTargetSquare
+    let move (board: T) (move: BoardMove.T) =
+        let m = move.Move
+        board.ChangeSquare m.Source m.NewSourceSquare
+        board.ChangeSquare m.Target m.NewTargetSquare
+        List.iter (fun (x: RemovedPiece.T) ->
+                    board.ChangeSquare x.Coord Square.createEmpty) move.RemovedPieces
+
+    let invmove (board: T) (move: BoardMove.T) =
+        let m = move.Move
+        board.ChangeSquare m.Source m.NewTargetSquare
+        board.ChangeSquare m.Target m.NewSourceSquare
+        List.iter (fun (x: RemovedPiece.T) ->
+                    board.ChangeSquare x.Coord (Square.createWithPiece x.Piece)) move.RemovedPieces
 
     let tryInit (board: T) (getInitalSquare: Coord.T -> Square.T) =
         try
