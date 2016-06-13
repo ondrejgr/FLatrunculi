@@ -3,8 +3,10 @@
 
 module Rules =
     type Error =
-        | SquareDoesNotContainSpecifiedColorPiece
-        | SquareIsEmpty
+        | RelativeCoordIsOutOfRange
+        | UnableToGetTargetSquare
+        | UnableToCreateMove
+        | TargetSquareIsNotEmpty
 
     let getInitialBoardSquares (coord: Coord.T) =
         match coord with
@@ -15,49 +17,30 @@ module Rules =
     let getInitialActiveColor =
         Piece.Colors.White
 
-    
-
-//        Seq.fold (fun result src ->
+    let getValidMoves (board: Board.T) (color: Piece.Colors) =
+        let getValidMovesForCoord src =
+            // src coord is already filtered - it is not empty and contains piece of active player
+            let tryGetMoveWithDir dir =
+                // we return Success move to relative coord in specified direction if possible or Error
+                let tryCreateMove tar tarsq =
+                    // we create move if target square is empty
+                    match tarsq with
+                    | Square.Nothing -> 
+                        let nsrcsq = Square.createEmpty
+                        let ntarsq = Square.createWithPiece <| Piece.create color
+                        tryChangeError UnableToCreateMove <| Move.tryCreate src tar nsrcsq ntarsq
+                    | _ -> Error TargetSquareIsNotEmpty
                     
-//                                result) [] (Board.getCoordsWithPieceColor board color)
-
-//    let isMoveValid (move: Result<Move.T, Move.Error>) (color: ActiveColor) =
-                        
-
-//
-//        protected override void OnGetValidMoves(Moves moves, GameColorsEnum color)
-//        {
-//            Pieces tarPiece = (color == GameColorsEnum.plrBlack) ? Pieces.pcBlack : Pieces.pcWhite;
-//
-//            Coord src = new Coord();
-//
-//            for (char x = 'A'; x <= Board.MaxX; x++)
-//            {
-//                for (byte y = 1; y <= Board.MaxY; y++)
-//                {
-//                    src.Set(x, y);
-//                    if (((color == GameColorsEnum.plrBlack) &&
-//                        (Board[src] == Pieces.pcBlack || Board[src] == Pieces.pcBlackKing)) ||
-//                        ((color == GameColorsEnum.plrWhite) &&
-//                        (Board[src] == Pieces.pcWhite || Board[src] == Pieces.pcWhiteKing)))
-//                    {
-//                        // barva figurky na danem miste patri hraci provadejicimu tah,
-//                        // muzeme overit mozne tahy v ortogonalich smerech.
-//                        // Pokud tam neni figurka a pokud to neni mimo desku, je tah dovoleny.
-//                        Action<CoordDirectionEnum> addMoveIfValid = new Action<CoordDirectionEnum>((dir) =>
-//                            {
-//                                Coord? tar;
-//                                tar = Board.GetRelativeCoord(src, dir);
-//                                if (tar.HasValue && (Board[tar.Value] == Pieces.pcNone))
-//                                    moves.Add(new Move(src, tar.Value, Pieces.pcNone, tarPiece));
-//                            }
-//                        );
-//
-//                        addMoveIfValid(CoordDirectionEnum.deForward);
-//                        addMoveIfValid(CoordDirectionEnum.deAft);
-//                        addMoveIfValid(CoordDirectionEnum.deLeft);
-//                        addMoveIfValid(CoordDirectionEnum.deRight);
-//                    }
-//                }
-//            }
-//        }
+                maybe {
+                    // try to get relative coord
+                    let! tar = tryChangeError RelativeCoordIsOutOfRange <| Coord.tryGetRelative src dir
+                    // get target square
+                    let! tarsq = tryChangeError UnableToGetTargetSquare <| Board.tryGetSquare board tar
+                    return! tryCreateMove tar tarsq }
+            Seq.fold (fun result dir ->
+                        match tryGetMoveWithDir dir with
+                        | Success move -> move::result
+                        | _ -> result) [] Coord.Directions
+            
+        Seq.fold (fun result coord ->
+                    List.append result <| getValidMovesForCoord coord) [] <| board.GetCoordsWithPieceColor color

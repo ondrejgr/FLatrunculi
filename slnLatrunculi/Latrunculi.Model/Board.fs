@@ -22,7 +22,7 @@ module Board =
             ()
 
         member this.GetCoordsWithPieceColor (color: Piece.Colors) =
-            Seq.filter (fun coord ->
+            Seq.toList <| Seq.filter (fun coord ->
                             match this.GetSquare(coord) with
                             | Square.Nothing -> false
                             | Square.Piece p -> p.Color = color)
@@ -55,6 +55,9 @@ module Board =
 
     let getSquare (board: T) coord =
         board.GetSquare coord
+
+    let tryGetSquare (board: T) coord =
+        Success (getSquare board coord)
 
     let move (board: T) (move: Move.T) =
         board.ChangeSquare move.Source move.NewSourceSquare
