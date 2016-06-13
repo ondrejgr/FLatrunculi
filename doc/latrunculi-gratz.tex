@@ -178,19 +178,29 @@ module Common
         | Success of 'TSuccess 
         | Error of 'TError
 
-    let getObjExn c =
+    let unwrapResultExn c =
         match c with
         | Success c -> c
         | _ -> failwith "Unable to extract object instance from function result, because called function has failed."
 
+    let tryChangeError e m =
+        match m with
+        | Success x -> Success x
+        | Error _ -> Error e
+
     type MaybeBuilder() =
-        member this.Bind(x, f) = 
-            match x with
+        member this.Bind(m, f) = 
+            match m with
             | Success s -> f s
             | Error e -> Error e
 
         member this.Return(x) = 
-            x
+            Success x
+
+        member this.ReturnFrom(m) =
+            m
+
+    let maybe = new MaybeBuilder()
 \end{lstlisting}
 
 \subsection{Entita \texttt{Piece}}
@@ -327,25 +337,6 @@ module RemovedPiece =
 
 \subsection{Entita \texttt{Move}}
 Struktura \texttt{Record}, která reprezentuje tah a~obsahuje počáteční a~koncové souřadnice a~také nové stavy obou políček. Obsahuje také seznam zajatých kamenů a jejich souřadnic (kameny, které budou odstraněny z~hrací desky). Při~vytváření instance se~kontroluje, zda počáteční a~koncová souřadnice není shodná.
-\begin{lstlisting}[language=FSharp]
-module Move =
-    type Error =
-        | InvalidSourceCoordSpecified
-        | InvalidTargetCoordSpecified
-        | SourceAndTargetMayNotBeSame
-
-    type T = {
-        Source: Coord.T;
-        Target: Coord.T;
-        NewSourceSquare: Square.T;
-        NewTargetSquare: Square.T;
-        RemovedPieces: RemovedPiece.T list }
-
-    let tryCreateWithRemovedPiecesList x y nx ny xys = ...
-
-    let tryCreate x y nx ny =
-        tryCreateWithRemovedPiecesList x y nx ny []
-\end{lstlisting}
 
 \subsection{Třída \texttt{Board}}
 Hrací deska (Board) provádí tahy (bez ověřování pravidel), uchovává rozmístění kamenů a~provedné tahy ukládá do~historie.
@@ -353,7 +344,12 @@ Hrací deska (Board) provádí tahy (bez ověřování pravidel), uchovává roz
 Rozmístění kamenů je dvojrozměrné pole objektů \texttt{Square}.
 
 \subsection{Modul \texttt{Rules}}
-Obsahuje herní pravidla včetně funkce vracející výchozí rezestavení kamenů.
+Obsahuje herní pravidla.
+	\begin{itemize}  
+		\item\texttt{getInitialBoardSquares} vrací výchozí rozestavění kamenů na desce
+		\item\texttt{getInitialActiveColor} vrací barvu hráče prvního na tahu
+		\item\texttt{getValidMoves} vrací seznam platných tahů pro danou barvu hráče
+	\end{itemize}
 
 \subsection{Třída \texttt{Latrunculi.Model.GameModel}}
 Při vytvoření instance provede vytvoření herní desky a~inicializaci rozmístění kamenů dle pravidel.
