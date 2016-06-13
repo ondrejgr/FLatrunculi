@@ -23,10 +23,8 @@ module Board =
 
         member this.GetCoordsWithPieceColor (color: Piece.Colors) =
             Seq.toList <| Seq.filter (fun coord ->
-                            match this.GetSquare(coord) with
-                            | Square.Nothing -> false
-                            | Square.Piece p -> p.Color = color)
-                        Coord.getCoordsSeq
+                                        Square.containsColor color <| this.GetSquare(coord))
+                                    Coord.getCoordsSeq
 
         member this.GetNumberOfPiecesByColor (color: Piece.Colors) =
             Array.fold (fun count row ->

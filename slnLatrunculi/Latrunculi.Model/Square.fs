@@ -12,6 +12,14 @@ module Square =
         | Nothing -> true
         | _ -> false
 
+    let isNotEmpty x =
+        not <| isEmpty x
+
+    let containsColor (color: Piece.Colors) x =
+        match x with 
+        | Nothing -> false
+        | Piece p -> p.Color = color
+
     let createWithPiece piece =
         Piece piece
 

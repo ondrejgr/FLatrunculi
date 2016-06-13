@@ -7,6 +7,8 @@ module Rules =
         | UnableToGetTargetSquare
         | UnableToCreateMove
         | TargetSquareIsNotEmpty
+        | MoveIsNotValid
+        | UnableToRemovePiece
 
     let getInitialBoardSquares (coord: Coord.T) =
         match coord with
@@ -47,3 +49,40 @@ module Rules =
 
     let isMoveValid (board: Board.T) (color: Piece.Colors) (move: Move.T) =
         List.exists (fun m -> m = move) <| getValidMoves board color
+
+    let tryIsMoveValid (board: Board.T) (color: Piece.Colors) (move: Move.T) =
+        match List.exists (fun m -> m = move) <| getValidMoves board color with
+        | true -> Success move
+        | false -> Error MoveIsNotValid
+
+    let tryValidateAndGetBoardMove (board: Board.T) (color: Piece.Colors) (move: Move.T) =
+        let ownPiece = Piece.create color
+        let enemyPiece = if (color = Piece.Colors.Black) then Piece.createWhite else Piece.createBlack
+        let ownColor = color
+        let enemyColor = if (color = Piece.Colors.Black) then Piece.Colors.White else Piece.Colors.Black
+        let c1 = move.Target
+
+        let tryCaptureEnemyInLine c1 dir =
+            // sebrani obkliceneho soupere
+            let tryGetRemovedPiece c2 c3 =
+                let sq2 = board.GetSquare c2
+                let sq3 = board.GetSquare c3
+                if (Square.containsColor ownColor sq3) && (Square.containsColor enemyColor sq2) then
+                    Success (RemovedPiece.create c2 enemyPiece)
+                else
+                    Error UnableToRemovePiece
+            maybe {
+                let! c2 = tryChangeError RelativeCoordIsOutOfRange <| Coord.tryGetRelative c1 dir
+                let! c3 = tryChangeError RelativeCoordIsOutOfRange <| Coord.tryGetRelative c2 dir                
+                return! tryGetRemovedPiece c2 c3 }
+
+        match isMoveValid board color move with
+        | false -> Error MoveIsNotValid
+        | true ->
+            let result = List.concat <| seq {
+                yield Seq.toList <| Seq.fold (fun result dir ->
+                        match tryCaptureEnemyInLine c1 dir with
+                        | Success rmpiece -> rmpiece::result
+                        | _ -> result) [] Coord.Directions }
+            
+            Success (BoardMove.createWithRmPieces move result)
