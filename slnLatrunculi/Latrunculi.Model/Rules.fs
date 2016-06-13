@@ -44,3 +44,6 @@ module Rules =
             
         Seq.fold (fun result coord ->
                     List.append result <| getValidMovesForCoord coord) [] <| board.GetCoordsWithPieceColor color
+
+    let isMoveValid (board: Board.T) (move: Move.T) (color: Piece.Colors) =
+        List.exists (fun m -> m = move) <| getValidMoves board color
