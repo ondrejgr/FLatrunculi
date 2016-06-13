@@ -336,7 +336,10 @@ module RemovedPiece =
 \end{lstlisting}
 
 \subsection{Entita \texttt{Move}}
-Struktura \texttt{Record}, která reprezentuje tah a~obsahuje počáteční a~koncové souřadnice a~také nové stavy obou políček. Obsahuje také seznam zajatých kamenů a jejich souřadnic (kameny, které budou odstraněny z~hrací desky). Při~vytváření instance se~kontroluje, zda počáteční a~koncová souřadnice není shodná.
+Struktura \texttt{Record}, která reprezentuje tah a~obsahuje počáteční a~koncové souřadnice a~také nové stavy obou políček. Při~vytváření instance se~kontroluje, zda počáteční a~koncová souřadnice není shodná.
+
+\subsection{Entita \texttt{BoardMove}}
+Struktura, která je předávána desce pro provedení tahu. Základem je~\texttt{Move}, obsahuje ale navíc seznam zajatých kamenů a jejich souřadnic (kameny, které budou odstraněny z~hrací desky).
 
 \subsection{Třída \texttt{Board}}
 Hrací deska (Board) provádí tahy (bez ověřování pravidel), uchovává rozmístění kamenů a~provedné tahy ukládá do~historie.
