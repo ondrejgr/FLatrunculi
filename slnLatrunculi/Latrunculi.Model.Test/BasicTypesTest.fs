@@ -64,10 +64,10 @@ let BasicTypesTest() =
     Assert.IsTrue(match Move.tryCreate srcCoord srcCoord squareEmpty squareWithWhitePiece with
                     | Error Move.SourceAndTargetMayNotBeSame -> true
                     | _ -> false)
-    Assert.IsTrue(match Move.tryCreateFromStringCoords "ZZZ" "B2" squareEmpty squareWithWhitePiece with
+    Assert.IsTrue(match Move.tryCreateFromStrCoord "ZZZ" "B2" squareEmpty squareWithWhitePiece with
                     | Error Move.InvalidSourceCoord -> true
                     | _ -> false)
-    Assert.IsTrue(match Move.tryCreateFromStringCoords "A1" "ZZZ" squareEmpty squareWithWhitePiece with
+    Assert.IsTrue(match Move.tryCreateFromStrCoord "A1" "ZZZ" squareEmpty squareWithWhitePiece with
                     | Error Move.InvalidTargetCoord -> true
                     | _ -> false)
     Assert.IsTrue(match Move.tryCreate srcCoord tarCoord squareEmpty squareWithWhitePiece with

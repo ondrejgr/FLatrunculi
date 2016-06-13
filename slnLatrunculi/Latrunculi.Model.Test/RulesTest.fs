@@ -8,6 +8,7 @@ open NUnit.Framework.Constraints
 [<Test>]
 let RulesTest() =
     let model = GameModel()
+    let board = model.Board
     let controller = GameController(model)
     let playerSettings = PlayerSettings.createDefault
     controller.NewGame(playerSettings.WhitePlayer, playerSettings.BlackPlayer)
@@ -16,9 +17,18 @@ let RulesTest() =
     let white = Square.createWithPiece <| Piece.createWhite
     let black = Square.createWithPiece <| Piece.createBlack
     
-//    let createMove Coord.tryCreateFromString src
-//    Coord.tryCreate 'A' 1 |> Move.tryCreate <| Coord.tryCreate 'A' 2
+    // non-empty target
+    Assert.IsFalse(Rules.isMoveValid board Piece.Colors.White <| Move.createFromStrCoordExn "A1" "A2" empty white)
+    Assert.IsFalse(Rules.isMoveValid board Piece.Colors.Black <| Move.createFromStrCoordExn "A1" "A2" empty white)
 
-    let move = Move.tryCreateFromStringCoords "A1" "A2" empty white
+    // valid moves
+    Assert.IsTrue(Rules.isMoveValid board Piece.Colors.White <| Move.createFromStrCoordExn "A2" "A3" empty white)
+    Assert.IsTrue(Rules.isMoveValid board Piece.Colors.Black <| Move.createFromStrCoordExn "B6" "B5" empty black)
+    // only own piece allowed
+    Assert.IsFalse(Rules.isMoveValid board Piece.Colors.Black <| Move.createFromStrCoordExn "A2" "A3" empty white)
+
+    // no diagonal
+    Assert.IsFalse(Rules.isMoveValid board Piece.Colors.White <| Move.createFromStrCoordExn "B2" "C3" empty white)
+    Assert.IsFalse(Rules.isMoveValid board Piece.Colors.White <| Move.createFromStrCoordExn "B2" "A3" empty white)
 
     ()
