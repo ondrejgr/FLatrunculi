@@ -30,8 +30,13 @@ module Move =
     let tryCreate src tar nsrcsq ntarsq =
         tryCreateWithRemovedPiecesList src tar nsrcsq ntarsq []
 
-    let tryCreateFromStringCoords src tar nsrcsq ntarsq =
+    let tryCreateFromStrCoord src tar nsrcsq ntarsq =
         maybe {
             let! a = tryChangeError InvalidSourceCoord <| Coord.tryCreateFromString src
             let! b = tryChangeError InvalidTargetCoord <| Coord.tryCreateFromString tar
             return! tryCreateWithRemovedPiecesList a b nsrcsq ntarsq [] }
+
+    let createFromStrCoordExn src tar nsrcsq ntarsq =
+        match tryCreateFromStrCoord src tar nsrcsq ntarsq with
+        | Success m -> m
+        | _ -> failwith "Unable to create move from string coordinates."
