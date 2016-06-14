@@ -2,6 +2,7 @@
 
 
 module Rules =
+
     type Error =
         | RelativeCoordIsOutOfRange
         | UnableToGetTargetSquare
@@ -61,9 +62,10 @@ module Rules =
         let ownColor = color
         let enemyColor = if (color = Piece.Colors.Black) then Piece.Colors.White else Piece.Colors.Black
         let c1 = move.Target
+        let target = move.Target
 
         let tryCaptureEnemyInLine c1 dir =
-            // sebrani obkliceneho soupere
+            // capture enemy
             let tryGetRemovedPiece c2 c3 =
                 let sq2 = board.GetSquare c2
                 let sq3 = board.GetSquare c3
@@ -76,6 +78,50 @@ module Rules =
                 let! c3 = tryChangeError RelativeCoordIsOutOfRange <| Coord.tryGetRelative c2 dir                
                 return! tryGetRemovedPiece c2 c3 }
 
+        let tryCaptureEnemyInCorner (boardCorner: Coord.BoardCorner) =
+            // capture enemy in corner
+            let corner = (fst boardCorner)
+            let cc1 = (fst (snd boardCorner))
+            let cc2 = (snd (snd boardCorner))
+
+            let sqc = board.GetSquare corner
+            let sqc1 = board.GetSquare cc1
+            let sqc2 = board.GetSquare cc2
+
+            let tryIsEnemyInCorner =
+                match Square.containsColor enemyColor sqc with
+                | true -> Success ()
+                | false -> Error UnableToRemovePiece
+            let tryGetRemovedPiece =
+                if (target = cc1) && (Square.containsColor ownColor sqc2) then 
+                    Success (RemovedPiece.create corner enemyPiece) 
+                elif (target = cc2) && (Square.containsColor ownColor sqc1) then 
+                    Success (RemovedPiece.create corner enemyPiece) 
+                else Error UnableToRemovePiece
+
+            maybe {
+                do! tryIsEnemyInCorner
+                return! tryGetRemovedPiece }
+
+            // sebrani soupere obliceneho v rohu
+//            Action<Coord,Coord,Coord> checkCorner = new Action<Coord,Coord,Coord>((corner, cc1, cc2) =>
+//                {
+//                    if (Board[corner] == enemyPiece)
+//                    {
+//                        if (move.Target.Equals(cc1) && (Board[cc2] == ownPiece))
+//                            move.RemovedPieces.Add(RemovedPiece.Create(corner, Board[corner]));
+//                        else if (move.Target.Equals(cc2) && (Board[cc1] == ownPiece))
+//                            move.RemovedPieces.Add(RemovedPiece.Create(corner, Board[corner]));
+//                    }
+//                });
+//
+//            checkCorner(Coord.Parse("a1"), Coord.Parse("a2"), Coord.Parse("b1"));
+//            checkCorner(Coord.Parse("h1"), Coord.Parse("h2"), Coord.Parse("g1"));
+//            checkCorner(Coord.Parse("a7"), Coord.Parse("g7"), Coord.Parse("h8"));
+//            checkCorner(Coord.Parse("h7"), Coord.Parse("b7"), Coord.Parse("a6"));
+//        }
+
+
         match isMoveValid board color move with
         | false -> Error MoveIsNotValid
         | true ->
@@ -83,6 +129,10 @@ module Rules =
                 yield Seq.toList <| Seq.fold (fun result dir ->
                         match tryCaptureEnemyInLine c1 dir with
                         | Success rmpiece -> rmpiece::result
-                        | _ -> result) [] Coord.Directions }
+                        | _ -> result) [] Coord.Directions 
+                yield Seq.toList <| Seq.fold (fun result corner ->
+                        match tryCaptureEnemyInCorner corner with
+                        | Success rmpiece -> rmpiece::result
+                        | _ -> result) [] Coord.getBoardCornersSeq }
             
             Success (BoardMove.createWithRmPieces move result)

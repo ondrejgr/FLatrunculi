@@ -122,6 +122,43 @@ let RulesTest() =
     Assert.AreEqual(empty, Board.getSquare board cx)    
     Assert.AreEqual(empty, Board.getSquare board cy)    
     
+    // white should not capture
+    //        o
+    //        x
+    //      ox xo
+    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+                            match c with
+                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 5 } -> empty
+                            | { Column = Coord.ColumnNumber 'B'; Row = Coord.RowNumber 5 } -> empty
+                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 4 } -> empty
+                            | { Column = Coord.ColumnNumber 'B'; Row = Coord.RowNumber 4 } -> empty
+                            | { Column = Coord.ColumnNumber 'C'; Row = Coord.RowNumber 3 } -> empty
+
+                            | { Column = Coord.ColumnNumber 'D'; Row = Coord.RowNumber 5 } -> empty
+                            | { Column = Coord.ColumnNumber 'E'; Row = Coord.RowNumber 5 } -> empty
+                            | { Column = Coord.ColumnNumber 'D'; Row = Coord.RowNumber 4 } -> empty
+                            | { Column = Coord.ColumnNumber 'E'; Row = Coord.RowNumber 4 } -> empty
+                            
+                            | { Column = Coord.ColumnNumber 'C'; Row = Coord.RowNumber 4 } -> black
+                            | { Column = Coord.ColumnNumber 'B'; Row = Coord.RowNumber 3 } -> black
+                            | { Column = Coord.ColumnNumber 'D'; Row = Coord.RowNumber 3 } -> black
+
+                            | { Column = Coord.ColumnNumber 'C'; Row = Coord.RowNumber 5 } -> white
+                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 3 } -> white
+                            | { Column = Coord.ColumnNumber 'C'; Row = Coord.RowNumber 2 } -> white
+                            | _ -> Rules.getInitialBoardSquares c))
+    let c1 = unwrapResultExn <| Coord.tryCreate 'C' 2
+    let c2 = unwrapResultExn <| Coord.tryCreate 'C' 3
+    let cx = unwrapResultExn <| Coord.tryCreate 'C' 4
+    let cy = unwrapResultExn <| Coord.tryCreate 'B' 3
+    let cz = unwrapResultExn <| Coord.tryCreate 'D' 3
+    let m = unwrapResultExn <| Move.tryCreate c1 c2 empty white
+    let move = unwrapResultExn <| Rules.tryValidateAndGetBoardMove board Piece.Colors.White m
+    Board.move board move
+    Assert.AreEqual(empty, Board.getSquare board cx)    
+    Assert.AreEqual(empty, Board.getSquare board cy)    
+    Assert.AreEqual(black, Board.getSquare board cz)    
+
     ()
 
 

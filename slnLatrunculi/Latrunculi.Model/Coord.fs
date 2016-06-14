@@ -83,6 +83,8 @@ module Coord =
         Column: ColumnNumber;
         Row: RowNumber }
 
+    type BoardCorner = T * (T * T)
+
     let tryCreate x y =
         let tryCheckColumnNumberRange (col: char) = 
             match Seq.tryFind (fun x -> x = System.Char.ToUpper(col)) ColumnNumbers with
@@ -116,6 +118,9 @@ module Coord =
                 let! coord = tryCreate col row
                 return coord }
 
+    let createFromStringExn (s: string) =
+        unwrapResultExn <| tryCreateFromString s
+
     let tryGetRelative coord dir =
         maybe {
             let! newCol = match dir with
@@ -128,7 +133,15 @@ module Coord =
                           | Down -> tryGetNextRow coord.Row
                 
             return! tryCreate (getCol newCol) (getRow newRow)
-        }            
+        }         
+        
+    let getBoardCornersSeq: seq<BoardCorner> =
+        seq {
+            yield (createFromStringExn "A1", (createFromStringExn "A2", createFromStringExn "B1"))
+            yield (createFromStringExn "H1", (createFromStringExn "H2", createFromStringExn "G1"))
+            yield (createFromStringExn "A7", (createFromStringExn "A6", createFromStringExn "B7"))
+            yield (createFromStringExn "H7", (createFromStringExn "H6", createFromStringExn "G7"))
+        }
         
     let getCoordsSeq =
         seq {
