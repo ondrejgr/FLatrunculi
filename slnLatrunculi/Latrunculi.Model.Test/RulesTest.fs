@@ -10,8 +10,7 @@ let RulesTest() =
     let model = GameModel()
     let board = model.Board
     let controller = GameController(model)
-    let playerSettings = PlayerSettings.createDefault
-    controller.NewGame(playerSettings.WhitePlayer, playerSettings.BlackPlayer)
+    controller.NewGame()
 
     let empty = Square.createEmpty
     let white = Square.createWithPiece <| Piece.createWhite

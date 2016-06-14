@@ -11,17 +11,23 @@ type GameController(gameModel: GameModel) =
 
     member private this.Model = gameModel
     
-    member this.changePlayerSettings (white, black) =
-        this.Model.changePlayerSettings (white, black)
+    member this.changePlayerSettingsFromPlayers (white: Player.T) (black: Player.T) =
+        let playerSettings = unwrapResultExn <| PlayerSettings.tryCreate white black
+        this.Model.changePlayerSettings playerSettings
 
-    member this.NewGame(white, black) =
-        this.Model.changePlayerSettings(white, black) |> ignore
+    member this.changePlayerSettings (types: Player.PlayerTypes) (names: Player.PlayerNames) (levels: Player.PlayerLevels) =
+        let white = Player.create (fst types) (fst names) (fst levels) Piece.Colors.White this.Model.Board
+        let black = Player.create (snd types) (snd names) (snd levels) Piece.Colors.Black this.Model.Board
+        this.changePlayerSettingsFromPlayers white black
+
+    member this.NewGame() =
         this.Model.setActiveColor(Some Rules.getInitialActiveColor) |> ignore
         this.Model.initBoard() |> ignore
             
     member private this.GameLoopCycle() =
         async {
             do! Async.Sleep(500)
+            //Async.
 
             return Continue }    
 

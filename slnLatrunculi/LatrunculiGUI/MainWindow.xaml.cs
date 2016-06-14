@@ -221,8 +221,9 @@ namespace Latrunculi.GUI
                 if (vm != null)
                 {
                     Controller.changePlayerSettings(
-                        vm.WhitePlayer.GetPlayerForModel(),
-                        vm.BlackPlayer.GetPlayerForModel());
+                        new Tuple<Model.Player.Types, Model.Player.Types>((Model.Player.Types)vm.WhitePlayer.PlayerType, (Model.Player.Types)vm.BlackPlayer.PlayerType),
+                        new Tuple<string, string>(vm.WhitePlayer.Name, vm.BlackPlayer.Name),
+                        new Tuple<Model.Player.Levels, Model.Player.Levels>((Model.Player.Levels)vm.WhitePlayer.Level, (Model.Player.Levels)vm.BlackPlayer.Level));
                 }
             }
         }
@@ -366,14 +367,17 @@ namespace Latrunculi.GUI
 
         private void NewGame()
         {
-            PlayerSettingsViewModel newSettings = TryShowSettings();
-            if (newSettings == null)
-                newSettings = ViewModel.Settings;
+            PlayerSettingsViewModel vm = TryShowSettings();
+            if (vm != null)
+            {
+                Controller.changePlayerSettings(
+                    new Tuple<Model.Player.Types, Model.Player.Types>((Model.Player.Types)vm.WhitePlayer.PlayerType, (Model.Player.Types)vm.BlackPlayer.PlayerType),
+                    new Tuple<string, string>(vm.WhitePlayer.Name, vm.BlackPlayer.Name),
+                    new Tuple<Model.Player.Levels, Model.Player.Levels>((Model.Player.Levels)vm.WhitePlayer.Level, (Model.Player.Levels)vm.BlackPlayer.Level));
 
-            Controller.NewGame(newSettings.WhitePlayer.GetPlayerForModel(),
-                    newSettings.BlackPlayer.GetPlayerForModel());
-
-            RunGame();
+                Controller.NewGame();
+                RunGame();
+            }
         }
 
         private void RunGame()

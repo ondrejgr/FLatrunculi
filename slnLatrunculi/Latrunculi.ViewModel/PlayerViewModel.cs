@@ -46,7 +46,7 @@ namespace Latrunculi.ViewModel
             {
                 return _color;
             }
-            set
+            private set
             {
                 _color = value;
                 OnPropertyChanged("Color");
@@ -97,25 +97,10 @@ namespace Latrunculi.ViewModel
         
         public void RefreshFromModel(Model.Player.T player)
         {
-            if (Model.Player.isComputer(player))
-                PlayerType = PlayerTypes.ptComputer;
-            else if (Model.Player.isHuman(player))
-                PlayerType = PlayerTypes.ptHuman;
-            else
-                throw new NotImplementedException();
-
+            PlayerType = (PlayerTypes)Model.Player.getPlayerType(player);
             Name = player.Name;
             Level = (PlayerLevels)player.Level;
-        }
-
-        public Model.Player.T GetPlayerForModel()
-        {
-            if (PlayerType == PlayerTypes.ptComputer)
-                return Model.Player.createComputerPlayer(Name, (Model.Player.Levels)Level);
-            else if (PlayerType == PlayerTypes.ptHuman)
-                return Model.Player.createHumanPlayer(Name, (Model.Player.Levels)Level);
-            else
-                throw new NotImplementedException();
+            Color = (PlayerColors)player.Color;
         }
 
         public object Clone()

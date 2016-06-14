@@ -9,6 +9,7 @@ type GameStatus =
     | Finished
 
 type ModelChangeEventHandler = delegate of obj * EventArgs -> unit
+type MoveSelectedOrComputedEventHandler = delegate of obj * EventArgs -> unit
 
 type GameModel() = 
     let board = match Board.tryInit Board.create (fun _ -> Square.createEmpty) with
@@ -23,6 +24,7 @@ type GameModel() =
     let playerSettingsChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
     let activePlayerChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
     let boardChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
+    let moveSelectedOrComputedEvent = new Event<MoveSelectedOrComputedEventHandler, EventArgs>()
       
     member val Board = board
     member val PlayerSettings = playerSettings with get, set
@@ -37,6 +39,8 @@ type GameModel() =
     member this.ActivePlayerChanged = activePlayerChangedEvent.Publish
     [<CLIEvent>]
     member this.BoardChanged = boardChangedEvent.Publish
+    [<CLIEvent>]
+    member this.MoveSelectedOrComputed = moveSelectedOrComputedEvent.Publish
 
     member private this.OnStatusChanged() =
         statusChangedEvent.Trigger(this, EventArgs.Empty)
@@ -46,14 +50,16 @@ type GameModel() =
         activePlayerChangedEvent.Trigger(this, EventArgs.Empty)
     member private this.OnBoardChanged() =
         boardChangedEvent.Trigger(this, EventArgs.Empty)
+    member private this.OnMoveSelectedOrComputed() =
+        moveSelectedOrComputedEvent.Trigger(this, EventArgs.Empty)
 
     member this.setStatus x =
         this.Status <- x
         this.OnStatusChanged()
         this.Status
 
-    member this.changePlayerSettings (white, black) =
-        this.PlayerSettings <- PlayerSettings.create white black
+    member this.changePlayerSettings playerSettings =
+        this.PlayerSettings <- playerSettings
         this.OnPlayerSettingsChanged()
         this.PlayerSettings
 
