@@ -113,7 +113,13 @@ namespace Latrunculi.ViewModel
             if (IsGameRunning)
                 StatusBarText = "Hra běží...";
             else if (IsGamePaused)
-                StatusBarText = "Hra byla pozastavena...";
+            {
+                GameStatus.Paused p = (GameStatus.Paused)Status;
+                if (p.Item == GamePausedStatus.PausedByUser)
+                    StatusBarText = "Hra byla pozastavena uživatelem...";
+                else
+                    StatusBarText = "Hra byla pozastavena...";
+            }
             else if (IsGameFinished)
                 StatusBarText = "Hra skončila.";
             else
@@ -157,7 +163,7 @@ namespace Latrunculi.ViewModel
         {
             get
             {
-                return Status == GameStatus.Paused;
+                return Status is GameStatus.Paused;
             }
         }        
 
