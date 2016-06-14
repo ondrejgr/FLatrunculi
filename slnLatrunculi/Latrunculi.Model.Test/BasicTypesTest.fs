@@ -119,8 +119,8 @@ let BasicTypesTest() =
     Assert.IsTrue(blackPlayer :? Player.ComputerPlayer)
 
     // player settings change
-    let model = new GameModel()
-    let controller = GameController(model)
+    let model = unwrapResultExn <| GameModel.tryCreate
+    let controller = GameController.create model
     let playerSettings = controller.changePlayerSettingsFromPlayers whitePlayer  blackPlayer
     Assert.AreEqual(playerSettings, model.PlayerSettings)
     Assert.AreEqual(whitePlayer.Name, playerSettings.WhitePlayer.Name)

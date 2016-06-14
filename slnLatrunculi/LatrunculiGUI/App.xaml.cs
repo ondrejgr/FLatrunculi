@@ -20,9 +20,9 @@ namespace Latrunculi.GUI
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             if (MainWindow != null)
-                MessageBox.Show(MainWindow, Common.ConvertExceptionToString(e.Exception), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(MainWindow, ViewModelCommon.ConvertExceptionToString(e.Exception), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
             else
-                MessageBox.Show(Common.ConvertExceptionToString(e.Exception), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ViewModelCommon.ConvertExceptionToString(e.Exception), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
 
             e.Handled = true;
             Shutdown(-1);
@@ -32,8 +32,8 @@ namespace Latrunculi.GUI
         {
             try
             {
-                GameModel model = new GameModel();
-                GameController controller = new GameController(model);
+                GameModel.T model = Common.unwrapResultExn<GameModel.T, GameModel.Error>(GameModel.tryCreate);
+                GameController.T controller = GameController.create(model);
                 MainWindowViewModel viewModel = new MainWindowViewModel(model);
 
                 MainWindow win = new GUI.MainWindow(viewModel, controller);
@@ -42,7 +42,7 @@ namespace Latrunculi.GUI
             }
             catch (Exception exc)
             {
-                MessageBox.Show(string.Format("Aplikaci Latrunculi se nepodařilo spustit:{0}{1}", Environment.NewLine, Common.ConvertExceptionToString(exc)), 
+                MessageBox.Show(string.Format("Aplikaci Latrunculi se nepodařilo spustit:{0}{1}", Environment.NewLine, ViewModelCommon.ConvertExceptionToString(exc)), 
                     "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
                 Shutdown(-1);
             }

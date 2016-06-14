@@ -12,12 +12,10 @@
 #load "PlayerSettings.fs"
 #load "GameModel.fs"
 #load "GameController.fs"
+#load "ErrorMessages.fs"
 
 open Latrunculi.Model
 open Latrunculi.Controller
 open System.Threading
 
-let model = GameModel()
-let board = model.Board
-let controller = GameController(model)
-controller.NewGame()
+

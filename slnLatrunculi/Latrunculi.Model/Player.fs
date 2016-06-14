@@ -27,15 +27,16 @@ module Player =
         member val Level = level with get, set
         member val Color = color with get
 
-        abstract member TryGetMove: unit -> Result<Move.T, Error>
+        abstract member TryGetMove: unit -> Async<Result<Move.T, Error>>
 
     type HumanPlayer(name, level, color) =
         inherit T(name, level, color)
 
         override this.TryGetMove() =
-            match SelectedMove with
-            | Some m -> Success m
-            | None -> Error UnableToDeterminePlayerMove            
+            async {
+                match SelectedMove with
+                | Some m -> return Success m
+                | None -> return Error UnableToDeterminePlayerMove }
 
     type ComputerPlayer(name, level, color, board) =
         inherit T(name, level, color)
@@ -43,12 +44,15 @@ module Player =
         member val private Board = board with get
 
         override this.TryGetMove() =
-            match Brain.tryGetBestMove this.Board this.Color with
-            | Success m -> Success m
-            | Error _ -> Error UnableToDeterminePlayerMove     
+            async {
+                let! move = Brain.tryGetBestMove this.Board this.Color
+                match move with
+                | Success m -> return Success m
+                | Error _ -> return Error UnableToDeterminePlayerMove }
+
                 
     let tryGetMove (player: T) =
-            player.TryGetMove()
+        player.TryGetMove()
 
     let getPlayerType (player: T) =
         match player with

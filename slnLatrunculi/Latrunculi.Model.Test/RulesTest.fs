@@ -7,10 +7,10 @@ open NUnit.Framework.Constraints
 
 [<Test>]
 let RulesTest() =
-    let model = GameModel()
+    let model = unwrapResultExn <| GameModel.tryCreate
     let board = model.Board
-    let controller = GameController(model)
-    controller.NewGame()
+    let controller = GameController.create model
+    ignore <| (unwrapResultExn <| controller.TryNewGame())
 
     let empty = Square.createEmpty
     let white = Square.createWithPiece <| Piece.createWhite

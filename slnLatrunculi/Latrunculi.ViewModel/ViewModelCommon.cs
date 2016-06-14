@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Latrunculi
 {
-    static public class Common
+    static public class ViewModelCommon
     {
         static public string ConvertExceptionToString(Exception exc)
         {

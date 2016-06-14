@@ -1,30 +1,30 @@
 ﻿[<AutoOpen>]
 module Common
 
-    type Result<'TSuccess,'TError> = 
-        | Success of 'TSuccess 
-        | Error of 'TError
+type Result<'TSuccess,'TError> = 
+    | Success of 'TSuccess 
+    | Error of 'TError
 
-    let unwrapResultExn c =
-        match c with
-        | Success c -> c
-        | Error e -> failwith <| sprintf "Unable to extract object instance from function result. Error: %A" e
+let unwrapResultExn c =
+    match c with
+    | Success c -> c
+    | Error e -> failwith <| sprintf "Unable to extract object instance from function result. Error: %A" e
 
-    let tryChangeError e m =
+let tryChangeError e m =
+    match m with
+    | Success x -> Success x
+    | Error _ -> Error e
+
+type MaybeBuilder() =
+    member this.Bind(m, f) = 
         match m with
-        | Success x -> Success x
-        | Error _ -> Error e
+        | Success s -> f s
+        | Error e -> Error e
 
-    type MaybeBuilder() =
-        member this.Bind(m, f) = 
-            match m with
-            | Success s -> f s
-            | Error e -> Error e
+    member this.Return(x) = 
+        Success x
 
-        member this.Return(x) = 
-            Success x
+    member this.ReturnFrom(m) =
+        m
 
-        member this.ReturnFrom(m) =
-            m
-
-    let maybe = new MaybeBuilder()
+let maybe = new MaybeBuilder()

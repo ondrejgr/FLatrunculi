@@ -19,7 +19,7 @@ namespace Latrunculi.ConsoleUI
                 if (Console.CursorLeft > 0)
                     Console.WriteLine();
 
-                Console.WriteLine(Common.ConvertExceptionToString(exc));
+                Console.WriteLine(ViewModelCommon.ConvertExceptionToString(exc));
             }
             Console.WriteLine();
             Console.WriteLine("Stiskněte Enter pro ukončení aplikace.");

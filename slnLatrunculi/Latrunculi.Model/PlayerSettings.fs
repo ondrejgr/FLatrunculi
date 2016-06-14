@@ -13,7 +13,7 @@ module PlayerSettings =
     let tryCreate (x: Player.T) (y: Player.T) =
         if (x.Color = y.Color) then Error TwoPlayersWithSameColor else Success { WhitePlayer = x; BlackPlayer = y}
 
-    let createDefault =
+    let tryCreateDefault =
         let whitePlayer = Player.createHumanPlayer "Bílý" Player.Levels.Medium Piece.Colors.White
         let blackPlayer = Player.createHumanPlayer "Černý" Player.Levels.Medium Piece.Colors.Black
-        unwrapResultExn <| tryCreate whitePlayer blackPlayer
+        tryCreate whitePlayer blackPlayer

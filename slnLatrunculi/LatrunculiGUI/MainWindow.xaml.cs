@@ -30,11 +30,18 @@ namespace Latrunculi.GUI
             InitializeComponent();
         }
 
-        public MainWindow(MainWindowViewModel viewModel, GameController controller)
+        public MainWindow(MainWindowViewModel viewModel, GameController.T controller)
         {
             InitializeComponent();
             ViewModel = viewModel;
+            ViewModel.GameError += ViewModel_GameError;
             Controller = controller;
+        }
+
+        private void ViewModel_GameError(object sender, Model.GameErrorEventArgs e)
+        {
+            Dispatcher.Invoke(new Action(() =>
+                MessageBox.Show(this, string.Format("Při běhu hry došlo k chybě: {0}", e.Error), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error)));
         }
 
         static private CancellationTokenSource cts = null;
@@ -51,8 +58,8 @@ namespace Latrunculi.GUI
             }
         }
 
-        private GameController _controller;
-        public GameController Controller
+        private GameController.T _controller;
+        public GameController.T Controller
         {
             get
             {
@@ -178,7 +185,7 @@ namespace Latrunculi.GUI
             }
             catch (Exception exc)
             {
-                MessageBox.Show(this, "Soubor se nepodařilo uložit." + Environment.NewLine + Common.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(this, "Soubor se nepodařilo uložit." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
         }
@@ -201,7 +208,7 @@ namespace Latrunculi.GUI
             catch (Exception exc)
             {
                 ViewModel.SetFileName(oldFileName, oldFileTitle);
-                MessageBox.Show(this, "Soubor se nepodařilo načíst." + Environment.NewLine + Common.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(this, "Soubor se nepodařilo načíst." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
         }
@@ -263,7 +270,7 @@ namespace Latrunculi.GUI
             }
             catch (Exception exc)
             {
-                MessageBox.Show(this, "Novou hru se nepodařilo vytvořit." + Environment.NewLine + Common.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(this, "Novou hru se nepodařilo vytvořit." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -375,7 +382,7 @@ namespace Latrunculi.GUI
                     new Tuple<string, string>(vm.WhitePlayer.Name, vm.BlackPlayer.Name),
                     new Tuple<Model.Player.Levels, Model.Player.Levels>((Model.Player.Levels)vm.WhitePlayer.Level, (Model.Player.Levels)vm.BlackPlayer.Level));
 
-                Controller.NewGame();
+                Common.unwrapResultExn<GameController.T, GameController.Error>(Controller.TryNewGame());
                 RunGame();
             }
         }

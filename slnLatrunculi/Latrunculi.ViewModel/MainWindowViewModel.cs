@@ -15,11 +15,11 @@ namespace Latrunculi.ViewModel
         public MainWindowViewModel()
         {
             if (Model == null)
-                Model = new GameModel();
+                Model = Common.unwrapResultExn<GameModel.T, GameModel.Error>(GameModel.tryCreate);
             InitModel();
         }
 
-        public MainWindowViewModel(GameModel model)
+        public MainWindowViewModel(GameModel.T model)
         {
             Model = model;
             InitModel();
@@ -31,6 +31,7 @@ namespace Latrunculi.ViewModel
             Model.StatusChanged -= new ModelChangeEventHandler(Model_StatusChanged);
             Model.PlayerSettingsChanged -= new ModelChangeEventHandler(Model_PlayerSettingsChanged);
             Model.ActivePlayerChanged -= new ModelChangeEventHandler(Model_ActivePlayerChanged);
+            Model.GameError -= new GameErrorEventHandler(Model_GameError);
         }
 
         private void InitModel()
@@ -39,6 +40,7 @@ namespace Latrunculi.ViewModel
             Model.StatusChanged += new ModelChangeEventHandler(Model_StatusChanged);
             Model.PlayerSettingsChanged += new ModelChangeEventHandler(Model_PlayerSettingsChanged);
             Model.ActivePlayerChanged += new ModelChangeEventHandler(Model_ActivePlayerChanged);
+            Model.GameError += new GameErrorEventHandler(Model_GameError);
 
             Board.Init(Model.Board);
             OnBoardChanged();
@@ -46,6 +48,18 @@ namespace Latrunculi.ViewModel
             OnActivePlayerChanged();
 
             OnStatusChanged();
+        }
+
+        public event GameErrorEventHandler GameError;
+        private void OnGameError(object error)
+        {
+            if (GameError != null)
+                GameError(this, new GameErrorEventArgs(error));
+        }
+
+        private void Model_GameError(object sender, GameErrorEventArgs e)
+        {
+            OnGameError(e.Error);
         }
 
         private void Model_BoardChanged(object sender, EventArgs e)
@@ -204,8 +218,8 @@ namespace Latrunculi.ViewModel
             FileTitle = fileTitle;
         }
 
-        private GameModel _model;
-        private GameModel Model
+        private GameModel.T _model;
+        private GameModel.T Model
         {
             get
             {
