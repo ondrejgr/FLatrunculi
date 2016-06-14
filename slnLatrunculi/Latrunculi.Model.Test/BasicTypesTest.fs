@@ -113,10 +113,10 @@ let BasicTypesTest() =
     Assert.AreEqual(squareWithWhitePiece, Board.getSquare board boardCoord3)
     Assert.AreEqual(squareWithWhitePiece, Board.getSquare board boardCoord4)
 
-    let whitePlayer = PlayerSettings.createHumanPlayer "White" Levels.Easy :> Player
-    let blackPlayer = PlayerSettings.createComputerPlayer "Black" Levels.Hard :> Player
-    Assert.IsTrue(whitePlayer :? HumanPlayer)
-    Assert.IsTrue(blackPlayer :? ComputerPlayer)
+    let whitePlayer = Player.createHumanPlayer "White" Player.Levels.Easy :> Player.T
+    let blackPlayer = Player.createComputerPlayer "Black" Player.Levels.Hard :> Player.T
+    Assert.IsTrue(whitePlayer :? Player.HumanPlayer)
+    Assert.IsTrue(blackPlayer :? Player.ComputerPlayer)
 
     // player settings change
     let model = new GameModel()
@@ -127,8 +127,8 @@ let BasicTypesTest() =
     Assert.AreEqual(whitePlayer.Level, playerSettings.WhitePlayer.Level)
     Assert.AreEqual(blackPlayer.Name, playerSettings.BlackPlayer.Name)
     Assert.AreEqual(blackPlayer.Level, playerSettings.BlackPlayer.Level)
-    Assert.IsTrue(playerSettings.WhitePlayer :? HumanPlayer)
-    Assert.IsTrue(playerSettings.BlackPlayer :? ComputerPlayer)
+    Assert.IsTrue(playerSettings.WhitePlayer :? Player.HumanPlayer)
+    Assert.IsTrue(playerSettings.BlackPlayer :? Player.ComputerPlayer)
 
 
     ()

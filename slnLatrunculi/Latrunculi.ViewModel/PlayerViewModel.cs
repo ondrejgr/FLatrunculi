@@ -95,11 +95,11 @@ namespace Latrunculi.ViewModel
             }
         }
         
-        public void RefreshFromModel(Model.Player player)
+        public void RefreshFromModel(Model.Player.T player)
         {
-            if (player is Model.ComputerPlayer)
+            if (Model.Player.isComputer(player))
                 PlayerType = PlayerTypes.ptComputer;
-            else if (player is Model.HumanPlayer)
+            else if (Model.Player.isHuman(player))
                 PlayerType = PlayerTypes.ptHuman;
             else
                 throw new NotImplementedException();
@@ -108,12 +108,12 @@ namespace Latrunculi.ViewModel
             Level = (PlayerLevels)player.Level;
         }
 
-        public Model.Player GetPlayerForModel()
+        public Model.Player.T GetPlayerForModel()
         {
             if (PlayerType == PlayerTypes.ptComputer)
-                return Model.PlayerSettings.createComputerPlayer(Name, (Model.Levels)Level);
+                return Model.Player.createComputerPlayer(Name, (Model.Player.Levels)Level);
             else if (PlayerType == PlayerTypes.ptHuman)
-                return Model.PlayerSettings.createHumanPlayer(Name, (Model.Levels)Level);
+                return Model.Player.createHumanPlayer(Name, (Model.Player.Levels)Level);
             else
                 throw new NotImplementedException();
         }

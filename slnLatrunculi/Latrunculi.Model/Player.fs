@@ -1,17 +1,31 @@
 ﻿namespace Latrunculi.Model
 
-type Levels =
-    | Easy = 0
-    | Medium = 1
-    | Hard = 2
+module Player =
+    type Levels =
+        | Easy = 0
+        | Medium = 1
+        | Hard = 2
 
-type Player(name: string, level: Levels) =
-    member val Name = name with get, set
-    member val Level = level with get, set
+    [<AbstractClass>]
+    type T(name: string, level: Levels) =
+        member val Name = name with get, set
+        member val Level = level with get, set
+
+    type HumanPlayer(name, level) =
+        inherit T(name, level)
+
+    type ComputerPlayer(name, level) =
+        inherit T(name, level)
 
 
-type HumanPlayer(name, level) =
-    inherit Player(name, level)
+    let isComputer (player: T) =
+        player :? ComputerPlayer
 
-type ComputerPlayer(name, level) =
-    inherit Player(name, level)
+    let isHuman (player: T) =
+        player :? HumanPlayer
+
+    let createHumanPlayer name level =
+        HumanPlayer(name, level)
+
+    let createComputerPlayer name level =
+        ComputerPlayer(name, level)

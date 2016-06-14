@@ -4,19 +4,13 @@ module PlayerSettings =
 
     [<StructuralEquality;NoComparison>]
     type T = {
-        WhitePlayer: Player;
-        BlackPlayer: Player }
-
-    let createHumanPlayer name level =
-        HumanPlayer(name, level)
-
-    let createComputerPlayer name level =
-        ComputerPlayer(name, level)
+        WhitePlayer: Player.T;
+        BlackPlayer: Player.T }
 
     let create x y =
         { WhitePlayer = x; BlackPlayer = y}
 
     let createDefault =
-        let whitePlayer = createHumanPlayer "Bílý" Levels.Medium
-        let blackPlayer = createHumanPlayer "Černý" Levels.Medium
+        let whitePlayer = Player.createHumanPlayer "Bílý" Player.Levels.Medium
+        let blackPlayer = Player.createHumanPlayer "Černý" Player.Levels.Medium
         create whitePlayer blackPlayer
