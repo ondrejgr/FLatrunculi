@@ -33,7 +33,7 @@ type GameController(gameModel: GameModel) =
 
     member private this.GameLoop() =
         async {
-            use! cancelHandler = Async.OnCancel(fun () -> this.Model.setStatus(GameStatus.Paused GamePausedStatus.PausedByUser) |> ignore)
+            use! cancelHandler = Async.OnCancel(fun () -> this.Model.setStatus(GameStatus.Paused) |> ignore)
 
             let! result = this.GameLoopCycle()
             match result with
