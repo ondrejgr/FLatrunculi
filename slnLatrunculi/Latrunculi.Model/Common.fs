@@ -8,7 +8,7 @@ module Common
     let unwrapResultExn c =
         match c with
         | Success c -> c
-        | _ -> failwith "Unable to extract object instance from function result, because called function has failed."
+        | Error e -> failwith <| sprintf "Unable to extract object instance from function result. Error: %A" e
 
     let tryChangeError e m =
         match m with
