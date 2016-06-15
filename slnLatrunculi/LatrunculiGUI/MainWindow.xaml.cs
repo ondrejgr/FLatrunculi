@@ -342,7 +342,7 @@ namespace Latrunculi.GUI
             {
                 if (ViewModel.IsGameRunning)
                 {
-                    Controller.TryPause();
+                    ModelException.TryThrow<GameController.T, GameController.Error>(Controller.TryPause());
                     CommandManager.InvalidateRequerySuggested();
                 }
             }
@@ -365,7 +365,7 @@ namespace Latrunculi.GUI
             {
                 if (ViewModel.IsGamePaused)
                 {
-                    Controller.TryResume();
+                    ModelException.TryThrow<GameController.T, GameController.Error>(Controller.TryResume());
                     CommandManager.InvalidateRequerySuggested();
                 }
             }
@@ -400,8 +400,8 @@ namespace Latrunculi.GUI
                     new Tuple<string, string>(vm.WhitePlayer.Name, vm.BlackPlayer.Name),
                     new Tuple<Model.Player.Levels, Model.Player.Levels>((Model.Player.Levels)vm.WhitePlayer.Level, (Model.Player.Levels)vm.BlackPlayer.Level));
 
-                Common.unwrapResultExn<GameController.T, GameController.Error>(Controller.TryNewGame());
-                Controller.TryRun();
+                ModelException.TryThrow<GameController.T, GameController.Error>(Controller.TryNewGame());
+                ModelException.TryThrow<GameController.T, GameController.Error>(Controller.TryRun());
                 CommandManager.InvalidateRequerySuggested();
             }
         }

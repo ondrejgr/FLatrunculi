@@ -32,10 +32,10 @@ namespace Latrunculi.GUI
         {
             try
             {
-                GameModel.T model = Common.unwrapResultExn<GameModel.T, GameModel.Error>(GameModel.tryCreate);
+                GameModel.T model = ModelException.TryThrow<GameModel.T, GameModel.Error>(GameModel.tryCreate);
                 GameController.T controller = GameController.create(model);
                 MainWindowViewModel viewModel = new MainWindowViewModel(model);
-
+                
                 MainWindow win = new GUI.MainWindow(viewModel, controller);
                 MainWindow = win;
                 win.Show();
