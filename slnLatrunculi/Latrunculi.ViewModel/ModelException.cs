@@ -25,7 +25,7 @@ namespace Latrunculi
             if (result == null)
                 throw new ArgumentNullException("result", "Výsledek provedené operace je prázdný.");
             if (result.IsError)
-                throw new ModelException(result);
+                throw new ModelException(((Result<T, U>.Error)result).Item);
             else
                 return ((Result<T, U>.Success)result).Item;
         }
