@@ -43,7 +43,7 @@ module GameController =
                 do! Async.Sleep(5000)
 
                 this.Model.ReportGameError UnableToSwapActiveColor
-                return Finished }
+                return Continue }
 
 //                match this.Model.trySwapActiveColor with
 //                | Error e -> 

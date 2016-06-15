@@ -55,7 +55,6 @@ module GameModel =
         member private this.OnBoardChanged() =
             boardChangedEvent.Trigger(this, EventArgs.Empty)
         member this.ReportGameError(error) =
-            ignore <| this.setStatus(Paused)
             gameErrorEvent.Trigger(this, GameErrorEventArgs(error))
 
         member this.setStatus x =
