@@ -18,6 +18,8 @@ module GameController =
         | CancellationTokenDoesNotExist
         | GameIsAlreadyRunning
         | GameIsNotRunning
+        | UnableToGetPlayerMove
+        | UnableToGetActivePlayer
 
     type T(model: GameModel.T) = 
 
@@ -29,31 +31,38 @@ module GameController =
             this.Model.changePlayerSettings playerSettings
 
         member this.changePlayerSettings (types: Player.PlayerTypes) (names: Player.PlayerNames) (levels: Player.PlayerLevels) =
-            let white = Player.create (fst types) (fst names) (fst levels) Piece.Colors.White this.Model.Board
-            let black = Player.create (snd types) (snd names) (snd levels) Piece.Colors.Black this.Model.Board
+            let white = Player.create (fst types) (fst names) (fst levels) Piece.Colors.White
+            let black = Player.create (snd types) (snd names) (snd levels) Piece.Colors.Black
             this.changePlayerSettingsFromPlayers white black
 
         member this.TryNewGame() =
             this.Model.setActiveColor(Some Rules.getInitialActiveColor) |> ignore
             match this.Model.tryInitBoard() with
             | Success s -> Success this
-            | Error e -> Error UnableToInitializeBoard
+            | Error _ -> Error UnableToInitializeBoard
             
+        member private this.ReportGameError e =
+            this.Model.setStatus(GameStatus.Paused) |> ignore
+            this.Model.ReportGameError(e)
+
         member private this.GameLoopCycle() =
-            //let waitForPlayerMove =
-                //Player.tryGetMove this.Model.getActivePlayer
             async {
-//                Async.RunSynchronously(waitForPlayerMove) 
-                do! Async.Sleep(5000)
-
-                this.Model.ReportGameError UnableToSwapActiveColor
-                return Continue }
-
-//                match this.Model.trySwapActiveColor with
-//                | Error e -> 
-//                    this.Model.ReportGameError UnableToSwapActiveColor
-//                    return Finished
-//                | _ -> return Continue }    
+                match this.Model.tryGetActivePlayer with
+                | Success player ->
+                    let! move = player.TryGetMove()
+                    match move with
+                    | Success m -> 
+                        ()
+                    | Error _ -> 
+                        this.ReportGameError(UnableToGetPlayerMove)
+                | Error _ -> 
+                    this.ReportGameError(UnableToGetActivePlayer)
+                
+                match this.Model.trySwapActiveColor with
+                | Error e -> 
+                    this.ReportGameError(UnableToSwapActiveColor)
+                    return Finished
+                | _ -> return Continue }    
 
         member private this.GameLoop() =
             async {

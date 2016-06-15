@@ -68,16 +68,16 @@ module GameModel =
             this.PlayerSettings
 
         member this.isWhitePlayerActive =
-            match this.getActivePlayer with
+            match this.tryGetActivePlayer with
             | Success p -> p = this.PlayerSettings.WhitePlayer
             | _ -> false
 
         member this.isBlackPlayerActive =
-            match this.getActivePlayer with
+            match this.tryGetActivePlayer with
             | Success p -> p = this.PlayerSettings.BlackPlayer
             | _ -> false
 
-        member this.getActivePlayer =
+        member this.tryGetActivePlayer =
             match this.ActiveColor with
             | Some p when p = Piece.Colors.Black -> Success this.PlayerSettings.BlackPlayer
             | Some p when p = Piece.Colors.White -> Success this.PlayerSettings.WhitePlayer

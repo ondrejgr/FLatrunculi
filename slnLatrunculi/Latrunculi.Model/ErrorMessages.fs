@@ -18,4 +18,6 @@ module ErrorMessages =
                     | GameController.CancellationTokenDoesNotExist -> "Požadavek na zrušení akce neexistuje."
                     | GameController.GameIsAlreadyRunning -> "Hra je již spuštěna."
                     | GameController.GameIsNotRunning -> "Hra nebyla spuštěna."
+                    | GameController.UnableToGetPlayerMove -> "Nepodařilo se získat tah hráče."
+                    | GameController.UnableToGetActivePlayer -> "Nepodařilo se zjistit hráče na tahu."
         | _ -> result.ToString()

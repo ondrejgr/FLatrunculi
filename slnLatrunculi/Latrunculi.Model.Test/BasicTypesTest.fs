@@ -114,7 +114,7 @@ let BasicTypesTest() =
     Assert.AreEqual(squareWithWhitePiece, Board.getSquare board boardCoord4)
 
     let whitePlayer = Player.createHumanPlayer "White" Player.Levels.Easy Piece.Colors.White :> Player.T
-    let blackPlayer = Player.createComputerPlayer "Black" Player.Levels.Hard Piece.Colors.Black board :> Player.T
+    let blackPlayer = Player.createComputerPlayer "Black" Player.Levels.Hard Piece.Colors.Black :> Player.T
     Assert.IsTrue(whitePlayer :? Player.HumanPlayer)
     Assert.IsTrue(blackPlayer :? Player.ComputerPlayer)
 
