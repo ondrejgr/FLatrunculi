@@ -12,7 +12,7 @@ module ErrorMessages =
 
     let msgGameController error =
         match error with
-        | GameController.UnableToSwapActiveColor -> "Změne aktivního hráče selhala."
+        | GameController.UnableToSwapActiveColor -> "Změna aktivního hráče selhala."
         | GameController.UnableToInitializeBoard -> "Nepodařilo se zinicializovat herní desku."
         | GameController.CancellationTokenDoesNotExist -> "Požadavek na zrušení akce neexistuje."
         | GameController.GameIsAlreadyRunning -> "Hra je již spuštěna."
