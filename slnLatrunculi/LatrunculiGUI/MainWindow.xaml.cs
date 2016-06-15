@@ -44,8 +44,6 @@ namespace Latrunculi.GUI
                 MessageBox.Show(this, string.Format("Při běhu hry došlo k chybě: {0}", e.Error), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error)));
         }
 
-        static private CancellationTokenSource cts = null;
-
         public MainWindowViewModel ViewModel
         {
             get
@@ -86,7 +84,7 @@ namespace Latrunculi.GUI
                     board.SquareSize = width;
             }
         }
-          
+
         private void ExitCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
@@ -334,14 +332,24 @@ namespace Latrunculi.GUI
         private void Pause_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = ViewModel.IsGameRunning && (cts != null);
+            e.CanExecute = ViewModel.IsGameRunning;
         }
 
         private void Pause_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
-            if (ViewModel.IsGameRunning && (cts != null))
-                cts.Cancel();
+            try
+            {
+                if (ViewModel.IsGameRunning)
+                {
+                    Controller.TryPause();
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(this, "Nelze pozastavit hru kvůli chybě." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Resume_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -353,8 +361,18 @@ namespace Latrunculi.GUI
         private void Resume_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
-            if (ViewModel.IsGamePaused)
-                RunGame();
+            try
+            {
+                if (ViewModel.IsGamePaused)
+                {
+                    Controller.TryResume();
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(this, "Nelze pokračovat ve hře kvůli chybě." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void board_BoardSquareClicked(object sender, Controls.BoardSquareClickedEventArgs e)
@@ -383,14 +401,9 @@ namespace Latrunculi.GUI
                     new Tuple<Model.Player.Levels, Model.Player.Levels>((Model.Player.Levels)vm.WhitePlayer.Level, (Model.Player.Levels)vm.BlackPlayer.Level));
 
                 Common.unwrapResultExn<GameController.T, GameController.Error>(Controller.TryNewGame());
-                RunGame();
+                Controller.TryRun();
+                CommandManager.InvalidateRequerySuggested();
             }
-        }
-
-        private void RunGame()
-        {
-            cts = Controller.Run();
-            CommandManager.InvalidateRequerySuggested();
         }
 
         private void LoadGame(string fileName)
