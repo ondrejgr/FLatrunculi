@@ -41,7 +41,9 @@ namespace Latrunculi.GUI
         private void ViewModel_GameError(object sender, Model.GameErrorEventArgs e)
         {
             Dispatcher.Invoke(new Action(() =>
-                MessageBox.Show(this, string.Format("Při běhu hry došlo k chybě: {0}", e.Error), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error)));
+                MessageBox.Show(this, 
+                    string.Format("Při běhu hry došlo k chybě: {0}", ErrorMessages.toString(e.Error)), 
+                    "Chyba", MessageBoxButton.OK, MessageBoxImage.Error)));
         }
 
         public MainWindowViewModel ViewModel
