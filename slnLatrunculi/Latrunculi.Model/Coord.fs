@@ -1,14 +1,6 @@
 ﻿namespace Latrunculi.Model
 
 module Coord =
-    type Error =
-        | InvalidColumnNumber
-        | InvalidRowNumber
-        | ColumnOutOfRange
-        | RowOutOfRange
-        | InvalidSourceCoord
-        | UnableToParseCoordFromString
-
     type Direction =
         | Up
         | Down
@@ -49,7 +41,7 @@ module Coord =
                     match found with
                     | true -> (prev, found)
                     | false -> if a = col then (prev, true) else (Success (ColumnNumber a), false))
-                ((Error ColumnOutOfRange), false) lst
+                ((Error Errors.ColumnOutOfRange), false) lst
 
     let tryGetNextCol (x: ColumnNumber) =
         let col = getCol x
@@ -58,7 +50,7 @@ module Coord =
                     match found with
                     | true -> (prev, found)
                     | false -> if a = col then (prev, true) else (Success (ColumnNumber a), false))
-                lst ((Error ColumnOutOfRange), false)
+                lst ((Error Errors.ColumnOutOfRange), false)
 
     let tryGetPrevRow (x: RowNumber) =
         let row = getRow x
@@ -67,7 +59,7 @@ module Coord =
                     match found with
                     | true -> (prev, found)
                     | false -> if a = row then (prev, true) else (Success (RowNumber a), false))
-                ((Error ColumnOutOfRange), false) lst
+                ((Error Errors.ColumnOutOfRange), false) lst
 
     let tryGetNextRow (x: RowNumber) =
         let row = getRow x
@@ -76,7 +68,7 @@ module Coord =
                     match found with
                     | true -> (prev, found)
                     | false -> if a = row then (prev, true) else (Success (RowNumber a), false))
-                lst ((Error ColumnOutOfRange), false)
+                lst ((Error Errors.ColumnOutOfRange), false)
 
     [<StructuralEquality;NoComparison>]
     type T = {
@@ -89,11 +81,11 @@ module Coord =
         let tryCheckColumnNumberRange (col: char) = 
             match Seq.tryFind (fun x -> x = System.Char.ToUpper(col)) ColumnNumbers with
             | Some x -> Success (ColumnNumber x)
-            | None -> Error InvalidColumnNumber
+            | None -> Error Errors.InvalidColumnNumber
         let tryCheckRowNumberRange (row: int) =
             match Seq.tryFind (fun x -> x = row) RowNumbers with
             | Some y -> Success (RowNumber y)
-            | None -> Error InvalidRowNumber
+            | None -> Error Errors.InvalidRowNumber
 
         maybe {
             let! col = tryCheckColumnNumberRange x
@@ -106,11 +98,11 @@ module Coord =
         let tryParseRowNumberFromChar (c: char) =
             match System.Int32.TryParse(string c) with
             | (true,i) -> Success i
-            | _ -> Error UnableToParseCoordFromString     
+            | _ -> Error Errors.UnableToParseCoordFromString     
                                
         match s with
-        | null -> Error UnableToParseCoordFromString
-        | _ when s.Length <> 2 -> Error UnableToParseCoordFromString
+        | null -> Error Errors.UnableToParseCoordFromString
+        | _ when s.Length <> 2 -> Error Errors.UnableToParseCoordFromString
         | _ -> 
             maybe {
                 let! col = tryParseColumnNumberFromChar <| s.Chars 0

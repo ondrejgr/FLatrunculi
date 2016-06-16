@@ -118,6 +118,11 @@ namespace Latrunculi.ViewModel
                 Error = string.Empty;
                 Info = "Hra skončila";
             }
+            else if (IsGamePaused)
+            {
+                Error = string.Empty;
+                Info = "Hra je pozastavena";
+            }
             else
             {
                 Error = string.Empty;

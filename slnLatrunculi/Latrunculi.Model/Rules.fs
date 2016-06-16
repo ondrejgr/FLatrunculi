@@ -103,25 +103,6 @@ module Rules =
                 do! tryIsEnemyInCorner
                 return! tryGetRemovedPiece }
 
-            // sebrani soupere obliceneho v rohu
-//            Action<Coord,Coord,Coord> checkCorner = new Action<Coord,Coord,Coord>((corner, cc1, cc2) =>
-//                {
-//                    if (Board[corner] == enemyPiece)
-//                    {
-//                        if (move.Target.Equals(cc1) && (Board[cc2] == ownPiece))
-//                            move.RemovedPieces.Add(RemovedPiece.Create(corner, Board[corner]));
-//                        else if (move.Target.Equals(cc2) && (Board[cc1] == ownPiece))
-//                            move.RemovedPieces.Add(RemovedPiece.Create(corner, Board[corner]));
-//                    }
-//                });
-//
-//            checkCorner(Coord.Parse("a1"), Coord.Parse("a2"), Coord.Parse("b1"));
-//            checkCorner(Coord.Parse("h1"), Coord.Parse("h2"), Coord.Parse("g1"));
-//            checkCorner(Coord.Parse("a7"), Coord.Parse("g7"), Coord.Parse("h8"));
-//            checkCorner(Coord.Parse("h7"), Coord.Parse("b7"), Coord.Parse("a6"));
-//        }
-
-
         match isMoveValid board color move with
         | false -> Error MoveIsNotValid
         | true ->

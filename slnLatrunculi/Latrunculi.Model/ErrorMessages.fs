@@ -20,4 +20,5 @@ module ErrorMessages =
                     | GameController.GameIsNotRunning -> "Hra nebyla spuštěna."
                     | GameController.UnableToGetPlayerMove -> "Nepodařilo se získat tah hráče."
                     | GameController.UnableToGetActivePlayer -> "Nepodařilo se zjistit hráče na tahu."
+                    | GameController.MoveIsNotValid -> "Tah není platný."
         | _ -> result.ToString()

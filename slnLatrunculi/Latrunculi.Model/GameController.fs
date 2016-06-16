@@ -20,6 +20,7 @@ module GameController =
         | GameIsNotRunning
         | UnableToGetPlayerMove
         | UnableToGetActivePlayer
+        | MoveIsNotValid
 
     type T(model: GameModel.T) = 
 
@@ -45,34 +46,31 @@ module GameController =
             this.Model.setStatus(GameStatus.Paused) |> ignore
             this.Model.ReportGameError(e)
 
-        member private this.GameLoopCycle() =
+        member private this.GameLoopCycle(): Async<Result<GameLoopCycleResult, Error>> =
             async {
-                match this.Model.tryGetActivePlayer with
-                | Success player ->
-                    let! move = player.TryGetMove()
-                    match move with
-                    | Success m -> 
-                        ()
-                    | Error _ -> 
-                        this.ReportGameError(UnableToGetPlayerMove)
-                | Error _ -> 
-                    this.ReportGameError(UnableToGetActivePlayer)
-                
-                match this.Model.trySwapActiveColor with
-                | Error e -> 
-                    this.ReportGameError(UnableToSwapActiveColor)
-                    return Finished
-                | _ -> return Continue }    
+                return maybe {
+                    let! player = tryChangeError UnableToGetActivePlayer <| this.Model.tryGetActivePlayer
+                    let! color = tryChangeError UnableToGetActivePlayer <| this.Model.tryGetActiveColor
+                    let! move = tryChangeError UnableToGetPlayerMove <| Async.RunSynchronously(player.TryGetMove())
+                    let! boardMove = tryChangeError UnableToGetActivePlayer <| Rules.tryValidateAndGetBoardMove this.Model.Board color move
+                    do! this.Model.tryBoardMove boardMove
+                    return Continue
+                } }    
 
-        member private this.GameLoop() =
+        member private this.GameLoop(): Async<unit> =
             async {
                 use! cancelHandler = Async.OnCancel(fun () -> this.Model.setStatus(GameStatus.Paused) |> ignore)
 
-                let! result = this.GameLoopCycle()
-                match result with
-                | Continue -> return! this.GameLoop()
-                | Finished -> 
-                    this.Model.setStatus(GameStatus.Finished) |> ignore
+                let! a = this.GameLoopCycle()
+                match a with
+                | Success result ->
+                    match result with
+                    | Continue -> return! this.GameLoop()
+                    | Finished -> 
+                        this.Model.setStatus(GameStatus.Finished) |> ignore
+                        return ()
+                | Error e ->
+                    this.ReportGameError e
                     return () }
 
         member this.TryGetCts() =

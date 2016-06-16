@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Errors.fs" />
     <Compile Include="Common.fs" />
     <Compile Include="Piece.fs" />
     <Compile Include="Square.fs" />

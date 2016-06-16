@@ -1,4 +1,5 @@
-﻿#load "Common.fs"
+﻿#load "Errors.fs"
+#load "Common.fs"
 #load "Piece.fs"
 #load "Square.fs"
 #load "Coord.fs"

@@ -18,6 +18,7 @@ type GameErrorEventHandler = delegate of obj * GameErrorEventArgs -> unit
 module GameModel =
     type Error = 
         | NoPlayerOnMove
+        | NoActiveColor
         | UnableToInitializeBoard
         | UnableToCreateInitialPlayerSettings
 
@@ -83,6 +84,11 @@ module GameModel =
             | Some p when p = Piece.Colors.White -> Success this.PlayerSettings.WhitePlayer
             | _ -> Error NoPlayerOnMove
 
+        member this.tryGetActiveColor = 
+            match this.ActiveColor with
+            | Some p -> Success p
+            | _ -> Error NoActiveColor
+
         member this.setActiveColor (x: Piece.Colors option) =
             this.ActiveColor <- x
             this.OnActivePlayerChanged()
@@ -102,6 +108,11 @@ module GameModel =
                     | Success s -> 
                         this.OnBoardChanged()
                         Success s
+
+        member this.tryBoardMove(move) =
+            Board.move this.Board move   
+            this.OnBoardChanged()         
+            Success ()
 
     let tryCreate =
         maybe {
