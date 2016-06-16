@@ -38,20 +38,32 @@ module GameController =
             this.Model.setStatus(GameStatus.Paused) |> ignore
             this.Model.ReportGameError(e)
 
+        member private this.RequestHumanPlayerMove =
+            this.Model.setStatus(GameStatus.WaitingForHumanPlayerMove) |> ignore
+
         member private this.GameLoopCycle(): Async<Result<GameLoopCycleResult, Error>> =
-            async {
-                return maybe {
+            let getPlayerMoveWorkflow =
+                maybe {
                     let! player = this.Model.tryGetActivePlayer()
+                    return player.TryGetMove }    
+            let applyMoveAndChangePlayer move =
+                maybe {
                     let! color = this.Model.tryGetActiveColor()
-//                    let move = async {
-//                                    return! player.TryGetMove() }
-//                                    Async.
-                    //let! move = Async.RunSynchronously(player.TryGetMove())
                     let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color move
                     do! this.Model.tryBoardMove boardMove
                     do! this.Model.trySwapActiveColor()
-                    return Continue
-                } }    
+                    return Continue }
+            async {
+                match getPlayerMoveWorkflow with
+                | Success getPlayerMove ->
+                    let! moveResult = getPlayerMove()
+                    match moveResult with
+                    | Success move ->
+                        return applyMoveAndChangePlayer move
+                    | Error e ->
+                        return Error e
+                | Error e ->
+                    return Error e }
 
         member private this.GameLoop(): Async<unit> =
             async {

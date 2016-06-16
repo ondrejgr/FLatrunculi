@@ -102,6 +102,7 @@ namespace Latrunculi.ViewModel
             OnPropertyChanged("IsGameRunning");
             OnPropertyChanged("IsGameFinished");
             OnPropertyChanged("IsGamePaused");
+            OnPropertyChanged("IsGameWaitingForHumanPlayerMove");
 
             if (IsGameCreated)
             {
@@ -130,6 +131,8 @@ namespace Latrunculi.ViewModel
                 StatusBarText = "Hra byla pozastavena...";
             else if (IsGameFinished)
                 StatusBarText = "Hra skončila.";
+            else if (IsGameWaitingForHumanPlayerMove)
+                StatusBarText = "Čekám na tah lidského hráče...";
             else
                 StatusBarText = "";
 
@@ -163,7 +166,8 @@ namespace Latrunculi.ViewModel
         {
             get
             {
-                return Status == GameStatus.Running;
+                return (Status == GameStatus.Running) ||
+                       IsGameWaitingForHumanPlayerMove;
             }
         }
 
@@ -180,6 +184,14 @@ namespace Latrunculi.ViewModel
             get
             {
                 return Status == GameStatus.Finished;
+            }
+        }
+
+        public bool IsGameWaitingForHumanPlayerMove
+        {
+            get
+            {
+                return Status == GameStatus.WaitingForHumanPlayerMove;
             }
         }
 

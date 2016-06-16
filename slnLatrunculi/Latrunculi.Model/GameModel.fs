@@ -6,6 +6,7 @@ type GameStatus =
     | Created
     | Running
     | Paused
+    | WaitingForHumanPlayerMove
     | Finished
 
 type GameErrorEventArgs(error: ErrorDefinitions.Error) =
