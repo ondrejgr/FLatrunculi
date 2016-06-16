@@ -41,7 +41,7 @@ module Coord =
                     match found with
                     | true -> (prev, found)
                     | false -> if a = col then (prev, true) else (Success (ColumnNumber a), false))
-                ((Error Errors.ColumnOutOfRange), false) lst
+                ((Error ColumnOutOfRange), false) lst
 
     let tryGetNextCol (x: ColumnNumber) =
         let col = getCol x
@@ -50,7 +50,7 @@ module Coord =
                     match found with
                     | true -> (prev, found)
                     | false -> if a = col then (prev, true) else (Success (ColumnNumber a), false))
-                lst ((Error Errors.ColumnOutOfRange), false)
+                lst ((Error ColumnOutOfRange), false)
 
     let tryGetPrevRow (x: RowNumber) =
         let row = getRow x
@@ -59,7 +59,7 @@ module Coord =
                     match found with
                     | true -> (prev, found)
                     | false -> if a = row then (prev, true) else (Success (RowNumber a), false))
-                ((Error Errors.ColumnOutOfRange), false) lst
+                ((Error ColumnOutOfRange), false) lst
 
     let tryGetNextRow (x: RowNumber) =
         let row = getRow x
@@ -68,7 +68,7 @@ module Coord =
                     match found with
                     | true -> (prev, found)
                     | false -> if a = row then (prev, true) else (Success (RowNumber a), false))
-                lst ((Error Errors.ColumnOutOfRange), false)
+                lst ((Error ColumnOutOfRange), false)
 
     [<StructuralEquality;NoComparison>]
     type T = {
@@ -81,11 +81,11 @@ module Coord =
         let tryCheckColumnNumberRange (col: char) = 
             match Seq.tryFind (fun x -> x = System.Char.ToUpper(col)) ColumnNumbers with
             | Some x -> Success (ColumnNumber x)
-            | None -> Error Errors.InvalidColumnNumber
+            | None -> Error InvalidColumnNumber
         let tryCheckRowNumberRange (row: int) =
             match Seq.tryFind (fun x -> x = row) RowNumbers with
             | Some y -> Success (RowNumber y)
-            | None -> Error Errors.InvalidRowNumber
+            | None -> Error InvalidRowNumber
 
         maybe {
             let! col = tryCheckColumnNumberRange x
@@ -98,11 +98,11 @@ module Coord =
         let tryParseRowNumberFromChar (c: char) =
             match System.Int32.TryParse(string c) with
             | (true,i) -> Success i
-            | _ -> Error Errors.UnableToParseCoordFromString     
+            | _ -> Error UnableToParseCoordFromString     
                                
         match s with
-        | null -> Error Errors.UnableToParseCoordFromString
-        | _ when s.Length <> 2 -> Error Errors.UnableToParseCoordFromString
+        | null -> Error UnableToParseCoordFromString
+        | _ when s.Length <> 2 -> Error UnableToParseCoordFromString
         | _ -> 
             maybe {
                 let! col = tryParseColumnNumberFromChar <| s.Chars 0

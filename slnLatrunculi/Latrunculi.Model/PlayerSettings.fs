@@ -2,8 +2,6 @@
 
 module PlayerSettings =
 
-    type Error =
-        | TwoPlayersWithSameColor
 
     [<StructuralEquality;NoComparison>]
     type T = {
@@ -11,7 +9,7 @@ module PlayerSettings =
         BlackPlayer: Player.T }
 
     let tryCreate (x: Player.T) (y: Player.T) =
-        if (x.Color = y.Color) then Error TwoPlayersWithSameColor else Success { WhitePlayer = x; BlackPlayer = y}
+        if (x.Color = y.Color) then Error TwoPlayersMayNotBeSameColor else Success { WhitePlayer = x; BlackPlayer = y}
 
     let tryCreateDefault =
         let whitePlayer = Player.createHumanPlayer "Bílý" Player.Levels.Medium Piece.Colors.White

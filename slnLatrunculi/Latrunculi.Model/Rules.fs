@@ -3,14 +3,6 @@
 
 module Rules =
 
-    type Error =
-        | RelativeCoordIsOutOfRange
-        | UnableToGetTargetSquare
-        | UnableToCreateMove
-        | TargetSquareIsNotEmpty
-        | MoveIsNotValid
-        | UnableToRemovePiece
-
     let getInitialBoardSquares (coord: Coord.T) =
         match coord with
         | { Row = Coord.RowNumber 7 } | { Row = Coord.RowNumber 6 } -> Square.createWithPiece <| Piece.createBlack
@@ -31,14 +23,14 @@ module Rules =
                     | Square.Nothing -> 
                         let nsrcsq = Square.createEmpty
                         let ntarsq = Square.createWithPiece <| Piece.create color
-                        tryChangeError UnableToCreateMove <| Move.tryCreate src tar nsrcsq ntarsq
+                        Move.tryCreate src tar nsrcsq ntarsq
                     | _ -> Error TargetSquareIsNotEmpty
                     
                 maybe {
                     // try to get relative coord
-                    let! tar = tryChangeError RelativeCoordIsOutOfRange <| Coord.tryGetRelative src dir
+                    let! tar = changeError RelativeCoordIsOutOfRange <| Coord.tryGetRelative src dir
                     // get target square
-                    let! tarsq = tryChangeError UnableToGetTargetSquare <| Board.tryGetSquare board tar
+                    let! tarsq = Board.tryGetSquare board tar
                     return! tryCreateMove tar tarsq }
             Seq.fold (fun result dir ->
                         match tryGetMoveWithDir dir with
@@ -74,8 +66,8 @@ module Rules =
                 else
                     Error UnableToRemovePiece
             maybe {
-                let! c2 = tryChangeError RelativeCoordIsOutOfRange <| Coord.tryGetRelative c1 dir
-                let! c3 = tryChangeError RelativeCoordIsOutOfRange <| Coord.tryGetRelative c2 dir                
+                let! c2 = changeError RelativeCoordIsOutOfRange <| Coord.tryGetRelative c1 dir
+                let! c3 = changeError RelativeCoordIsOutOfRange <| Coord.tryGetRelative c2 dir                
                 return! tryGetRemovedPiece c2 c3 }
 
         let tryCaptureEnemyInCorner (boardCorner: Coord.BoardCorner) =

@@ -10,7 +10,7 @@ let unwrapResultExn c =
     | Success c -> c
     | Error e -> failwith <| sprintf "Unable to extract object instance from function result. Error: %A" e
 
-let tryChangeError e m =
+let changeError e m =
     match m with
     | Success x -> Success x
     | Error _ -> Error e

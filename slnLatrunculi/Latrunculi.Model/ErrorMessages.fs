@@ -4,21 +4,44 @@ open Latrunculi.Model
 
 module ErrorMessages =
    
-    let toString (result: obj) =
-        match result with
-        | :? GameModel.Error as error -> 
-                    match error with
-                    | GameModel.NoPlayerOnMove -> "Žádný hráč není na tahu."
-                    | GameModel.UnableToInitializeBoard -> "Nepodařilo se zinicializovat herní desku."
-                    | GameModel.UnableToCreateInitialPlayerSettings -> "Nepodařilo se zinicializovat nastavení hráčů."
-        | :? GameController.Error as error -> 
-                    match error with
-                    | GameController.UnableToSwapActiveColor -> "Změna aktivního hráče selhala."
-                    | GameController.UnableToInitializeBoard -> "Nepodařilo se zinicializovat herní desku."
-                    | GameController.CancellationTokenDoesNotExist -> "Požadavek na zrušení akce neexistuje."
-                    | GameController.GameIsAlreadyRunning -> "Hra je již spuštěna."
-                    | GameController.GameIsNotRunning -> "Hra nebyla spuštěna."
-                    | GameController.UnableToGetPlayerMove -> "Nepodařilo se získat tah hráče."
-                    | GameController.UnableToGetActivePlayer -> "Nepodařilo se zjistit hráče na tahu."
-                    | GameController.MoveIsNotValid -> "Tah není platný."
-        | _ -> result.ToString()
+    let toString error =
+        match error with
+        // Coord
+        | InvalidColumnNumber -> error.ToString()
+        | InvalidRowNumber -> error.ToString()
+        | ColumnOutOfRange -> error.ToString()
+        | RowOutOfRange -> error.ToString()
+        | UnableToParseCoordFromString -> error.ToString()    
+        // Move
+        | InvalidSourceCoord -> error.ToString()
+        | InvalidTargetCoord -> error.ToString()
+        | SourceAndTargetCoordMayNotBeSame -> error.ToString()
+        // Board
+        | UnableToIterateBoard -> error.ToString()
+        // Rules
+        | RelativeCoordIsOutOfRange -> error.ToString()
+        | UnableToGetTargetSquare -> error.ToString()
+        | UnableToCreateMove -> error.ToString()
+        | TargetSquareIsNotEmpty -> error.ToString()
+        | MoveIsNotValid -> "Tah není platný."
+        | UnableToRemovePiece -> error.ToString()
+        // Brain
+        | NoValidMoveExists -> "Žádný tah není možný."
+        // Player
+        | UnableToDeterminePlayerMove -> "Nepodařilo se zjistit tah hráče."
+        | NoBoardInstanceSpecified -> "Nebyla předána platná instance hrací desky."
+        // PlayerSettings
+        | TwoPlayersMayNotBeSameColor -> error.ToString()
+        // GameModel
+        | NoPlayerOnMove -> "Není známo, který hráč je na tahu."
+        | NoActiveColor -> "Není známa barva hráče na tahu."
+        | UnableToInitializeBoard -> "Nepodařilo se zinicializovat herní desku."
+        | UnableToCreateInitialPlayerSettings -> "Nepodařilo se zinicializovat nastavení hráčů."
+        // GameController
+        | UnableToSwapActiveColor -> "Změna aktivního hráče selhala."
+        | CancellationTokenDoesNotExist -> "Požadavek na zrušení akce neexistuje."
+        | GameIsAlreadyRunning -> "Hra je již spuštěna."
+        | GameIsNotRunning -> "Hra nebyla spuštěna."
+        | UnableToGetPlayerMove -> "Nepodařilo se získat tah hráče."
+        | UnableToGetActivePlayer -> "Nepodařilo se zjistit hráče na tahu."
+

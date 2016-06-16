@@ -2,10 +2,6 @@
 open System
 
 module Player =
-    type Error =
-        | UnableToDeterminePlayerMove
-        | UnableToComputeMove
-        | NoBoardInstanceSpecified
 
     type Types =
         | Human = 0
@@ -54,8 +50,7 @@ module Player =
             async {
                 match tryGetBoard with
                 | Success board ->
-                    let! move = Brain.tryGetBestMove board this.Color 
-                    return tryChangeError UnableToComputeMove move
+                    return! Brain.tryGetBestMove board this.Color 
                 | Error e ->
                     return Error e }
                 

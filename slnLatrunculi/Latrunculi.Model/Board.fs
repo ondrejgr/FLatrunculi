@@ -1,8 +1,6 @@
 ﻿namespace Latrunculi.Model
 
 module Board =
-    type Error =
-        | UnableToIterateBoard
 
     type T() = 
         let sq = Array.init (Seq.length Coord.RowNumbers) (fun _ -> 

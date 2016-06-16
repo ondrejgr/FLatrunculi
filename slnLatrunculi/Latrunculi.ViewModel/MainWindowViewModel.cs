@@ -15,7 +15,7 @@ namespace Latrunculi.ViewModel
         public MainWindowViewModel()
         {
             if (Model == null)
-                Model = ModelException.TryThrow<GameModel.T, GameModel.Error>(GameModel.tryCreate);
+                Model = ModelException.TryThrow<GameModel.T>(GameModel.tryCreate);
             InitModel();
         }
 
@@ -51,15 +51,10 @@ namespace Latrunculi.ViewModel
         }
 
         public event GameErrorEventHandler GameError;
-        private void OnGameError(object error)
-        {
-            if (GameError != null)
-                GameError(this, new GameErrorEventArgs(error));
-        }
-
         private void Model_GameError(object sender, GameErrorEventArgs e)
         {
-            OnGameError(e.Error);
+            if (GameError != null)
+                GameError(this, e);
         }
 
         private void Model_BoardChanged(object sender, EventArgs e)

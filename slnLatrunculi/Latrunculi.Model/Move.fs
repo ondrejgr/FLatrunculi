@@ -1,10 +1,6 @@
 ﻿namespace Latrunculi.Model
 
 module Move =
-    type Error =
-        | InvalidSourceCoord
-        | InvalidTargetCoord
-        | SourceAndTargetMayNotBeSame
 
     [<StructuralEquality;NoComparison>]
     type T = {
@@ -14,7 +10,7 @@ module Move =
         NewTargetSquare: Square.T }
 
     let checkSourceAndTarget src tar =
-        if src = tar then Error SourceAndTargetMayNotBeSame else Success ()
+        if src = tar then Error SourceAndTargetCoordMayNotBeSame else Success ()
 
     let tryCreate src tar nsrcsq ntarsq =
         maybe {
@@ -27,8 +23,8 @@ module Move =
 
     let tryCreateFromStrCoord src tar nsrcsq ntarsq =
         maybe {
-            let! a = tryChangeError InvalidSourceCoord <| Coord.tryCreateFromString src
-            let! b = tryChangeError InvalidTargetCoord <| Coord.tryCreateFromString tar
+            let! a = changeError InvalidSourceCoord <| Coord.tryCreateFromString src
+            let! b = changeError InvalidTargetCoord <| Coord.tryCreateFromString tar
             return! tryCreate a b nsrcsq ntarsq }
 
     let createFromStrCoordExn src tar nsrcsq ntarsq =

@@ -8,7 +8,7 @@ type GameStatus =
     | Paused
     | Finished
 
-type GameErrorEventArgs(error) =
+type GameErrorEventArgs(error: ErrorDefinitions.Error) =
     inherit EventArgs()
     member val Error = error with get
 
@@ -16,11 +16,6 @@ type ModelChangeEventHandler = delegate of obj * EventArgs -> unit
 type GameErrorEventHandler = delegate of obj * GameErrorEventArgs -> unit
 
 module GameModel =
-    type Error = 
-        | NoPlayerOnMove
-        | NoActiveColor
-        | UnableToInitializeBoard
-        | UnableToCreateInitialPlayerSettings
 
     type T(board: Board.T, playerSettings: PlayerSettings.T) = 
         let status = Created
@@ -69,22 +64,22 @@ module GameModel =
             this.PlayerSettings
 
         member this.isWhitePlayerActive =
-            match this.tryGetActivePlayer with
+            match this.tryGetActivePlayer() with
             | Success p -> p = this.PlayerSettings.WhitePlayer
             | _ -> false
 
         member this.isBlackPlayerActive =
-            match this.tryGetActivePlayer with
+            match this.tryGetActivePlayer() with
             | Success p -> p = this.PlayerSettings.BlackPlayer
             | _ -> false
 
-        member this.tryGetActivePlayer =
+        member this.tryGetActivePlayer() =
             match this.ActiveColor with
             | Some p when p = Piece.Colors.Black -> Success this.PlayerSettings.BlackPlayer
             | Some p when p = Piece.Colors.White -> Success this.PlayerSettings.WhitePlayer
             | _ -> Error NoPlayerOnMove
 
-        member this.tryGetActiveColor = 
+        member this.tryGetActiveColor() = 
             match this.ActiveColor with
             | Some p -> Success p
             | _ -> Error NoActiveColor
@@ -94,12 +89,14 @@ module GameModel =
             this.OnActivePlayerChanged()
             this.ActiveColor
 
-        member this.trySwapActiveColor =
+        member this.trySwapActiveColor() =
             match this.ActiveColor with
             | Some color ->
-                    Success (this.setActiveColor <| if color = Piece.Colors.Black then 
-                                                        Some Piece.Colors.White 
-                                                    else Some Piece.Colors.Black)
+                ignore <| this.setActiveColor (match color with
+                                                | Piece.Colors.Black -> Some Piece.Colors.White 
+                                                | Piece.Colors.White -> Some Piece.Colors.Black
+                                                | _ -> None)
+                Success ()
             | None -> Error NoPlayerOnMove
 
         member this.tryInitBoard() =
@@ -116,8 +113,6 @@ module GameModel =
 
     let tryCreate =
         maybe {
-            let! board = tryChangeError UnableToInitializeBoard <| Board.tryInit 
-                                                                        Board.create 
-                                                                        (fun _ -> Square.createEmpty)
-            let! playerSettings = tryChangeError UnableToCreateInitialPlayerSettings <| PlayerSettings.tryCreateDefault
+            let! board = Board.create |> Board.tryInit <| (fun _ -> Square.createEmpty)
+            let! playerSettings = PlayerSettings.tryCreateDefault
             return T(board, playerSettings) }

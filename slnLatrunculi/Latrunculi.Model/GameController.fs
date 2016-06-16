@@ -12,15 +12,6 @@ type GameLoopStatus =
     | WaitingForHumanPlayerCoords
 
 module GameController =
-    type Error = 
-        | UnableToSwapActiveColor
-        | UnableToInitializeBoard
-        | CancellationTokenDoesNotExist
-        | GameIsAlreadyRunning
-        | GameIsNotRunning
-        | UnableToGetPlayerMove
-        | UnableToGetActivePlayer
-        | MoveIsNotValid
 
     type T(model: GameModel.T) = 
 
@@ -37,6 +28,7 @@ module GameController =
             this.changePlayerSettingsFromPlayers white black
 
         member this.TryNewGame() =
+            Player.Board <- Some model.Board
             this.Model.setActiveColor(Some Rules.getInitialActiveColor) |> ignore
             match this.Model.tryInitBoard() with
             | Success s -> Success this
@@ -49,11 +41,15 @@ module GameController =
         member private this.GameLoopCycle(): Async<Result<GameLoopCycleResult, Error>> =
             async {
                 return maybe {
-                    let! player = tryChangeError UnableToGetActivePlayer <| this.Model.tryGetActivePlayer
-                    let! color = tryChangeError UnableToGetActivePlayer <| this.Model.tryGetActiveColor
-                    let! move = tryChangeError UnableToGetPlayerMove <| Async.RunSynchronously(player.TryGetMove())
-                    let! boardMove = tryChangeError UnableToGetActivePlayer <| Rules.tryValidateAndGetBoardMove this.Model.Board color move
+                    let! player = this.Model.tryGetActivePlayer()
+                    let! color = this.Model.tryGetActiveColor()
+//                    let move = async {
+//                                    return! player.TryGetMove() }
+//                                    Async.
+                    //let! move = Async.RunSynchronously(player.TryGetMove())
+                    let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color move
                     do! this.Model.tryBoardMove boardMove
+                    do! this.Model.trySwapActiveColor()
                     return Continue
                 } }    
 
@@ -87,26 +83,26 @@ module GameController =
 
 
         member this.TryPause() =
-            let tryGameStatus =
+            let checkGameStatus =
                 if this.Model.Status <> GameStatus.Running then Error GameIsNotRunning else Success ()
             maybe {
-                do! tryGameStatus
+                do! checkGameStatus
                 let! cts = this.TryGetCts()
                 cts.Cancel()
                 return this }
 
         member this.TryResume() =
-            let tryGameStatus =
+            let checkGameStatus =
                 if this.Model.Status = GameStatus.Running then Error GameIsAlreadyRunning else Success ()
             maybe {
-                do! tryGameStatus
+                do! checkGameStatus
                 return! this.TryRun() }
 
         member this.TryRun() =
-            let tryGameStatus =
+            let checkGameStatus =
                 if this.Model.Status = GameStatus.Running then Error GameIsAlreadyRunning else Success ()
             maybe {
-                do! tryGameStatus
+                do! checkGameStatus
                 let! cts = this.TryCreateCts()
                 this.Model.setStatus(GameStatus.Running) |> ignore
                 Async.Start(this.GameLoop(), cts.Token)

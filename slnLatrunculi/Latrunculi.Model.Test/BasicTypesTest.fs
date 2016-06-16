@@ -27,29 +27,29 @@ let BasicTypesTest() =
 
 
     Assert.IsTrue(match Coord.tryCreate 'Z' 1 with
-                    | Error Coord.InvalidColumnNumber -> true
+                    | Error InvalidColumnNumber -> true
                     | _ -> false)
     Assert.IsTrue(match Coord.tryCreate 'A' 0 with
-                    | Error Coord.InvalidRowNumber -> true
+                    | Error InvalidRowNumber -> true
                     | _ -> false)
     Assert.IsTrue(match Coord.tryCreate 'B' 3 with
                     | Success s -> (s.Column = Coord.ColumnNumber 'B') && (s.Row = Coord.RowNumber 3)
                     | _ -> false)
 
     Assert.IsTrue(match Coord.tryCreateFromString null with
-                    | Error Coord.UnableToParseCoordFromString -> true
+                    | Error UnableToParseCoordFromString -> true
                     | _ -> false)
     Assert.IsTrue(match Coord.tryCreateFromString "ZZZ" with
-                    | Error Coord.UnableToParseCoordFromString -> true
+                    | Error UnableToParseCoordFromString -> true
                     | _ -> false)
     Assert.IsTrue(match Coord.tryCreateFromString "AA" with
-                    | Error Coord.UnableToParseCoordFromString -> true
+                    | Error UnableToParseCoordFromString -> true
                     | _ -> false)
     Assert.IsTrue(match Coord.tryCreateFromString "Z1" with
-                    | Error Coord.InvalidColumnNumber -> true
+                    | Error InvalidColumnNumber -> true
                     | _ -> false)
     Assert.IsTrue(match Coord.tryCreateFromString "B8" with
-                    | Error Coord.InvalidRowNumber -> true
+                    | Error InvalidRowNumber -> true
                     | _ -> false)
     Assert.IsTrue(match Coord.tryCreate 'C' 4 with
                     | Success s -> (s.Column = Coord.ColumnNumber 'C') && (s.Row = Coord.RowNumber 4)
@@ -62,13 +62,13 @@ let BasicTypesTest() =
     let squareEmpty = Square.createEmpty
     let squareWithWhitePiece = Square.createWithPiece whitePiece
     Assert.IsTrue(match Move.tryCreate srcCoord srcCoord squareEmpty squareWithWhitePiece with
-                    | Error Move.SourceAndTargetMayNotBeSame -> true
+                    | Error SourceAndTargetCoordMayNotBeSame -> true
                     | _ -> false)
     Assert.IsTrue(match Move.tryCreateFromStrCoord "ZZZ" "B2" squareEmpty squareWithWhitePiece with
-                    | Error Move.InvalidSourceCoord -> true
+                    | Error InvalidSourceCoord -> true
                     | _ -> false)
     Assert.IsTrue(match Move.tryCreateFromStrCoord "A1" "ZZZ" squareEmpty squareWithWhitePiece with
-                    | Error Move.InvalidTargetCoord -> true
+                    | Error InvalidTargetCoord -> true
                     | _ -> false)
     Assert.IsTrue(match Move.tryCreate srcCoord tarCoord squareEmpty squareWithWhitePiece with
                     | Success s -> 

@@ -1,10 +1,42 @@
 ﻿[<AutoOpen>]
 module ErrorDefinitions
 
-type Errors =
+type Error =
+    // Coord
     | InvalidColumnNumber
     | InvalidRowNumber
     | ColumnOutOfRange
     | RowOutOfRange
-    | InvalidSourceCoord
     | UnableToParseCoordFromString    
+    // Move
+    | InvalidSourceCoord
+    | InvalidTargetCoord
+    | SourceAndTargetCoordMayNotBeSame
+    // Board
+    | UnableToIterateBoard
+    // Rules
+    | RelativeCoordIsOutOfRange
+    | UnableToGetTargetSquare
+    | UnableToCreateMove
+    | TargetSquareIsNotEmpty
+    | MoveIsNotValid
+    | UnableToRemovePiece
+    // Brain
+    | NoValidMoveExists
+    // Player
+    | UnableToDeterminePlayerMove
+    | NoBoardInstanceSpecified
+    // PlayerSettings
+    | TwoPlayersMayNotBeSameColor
+    // GameModel
+    | NoPlayerOnMove
+    | NoActiveColor
+    | UnableToInitializeBoard
+    | UnableToCreateInitialPlayerSettings
+    // GameController
+    | UnableToSwapActiveColor
+    | CancellationTokenDoesNotExist
+    | GameIsAlreadyRunning
+    | GameIsNotRunning
+    | UnableToGetPlayerMove
+    | UnableToGetActivePlayer

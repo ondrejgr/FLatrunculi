@@ -11,8 +11,15 @@ namespace Latrunculi
     [Serializable]
     public class ModelException : Exception
     {
-        public ModelException(object result) : base(ErrorMessages.toString(result))
+        public ErrorDefinitions.Error ModelError
         {
+            get;
+            private set;
+        }
+
+        public ModelException(ErrorDefinitions.Error error) : base(ErrorMessages.toString(error))
+        {
+            ModelError = error;
         }
 
         protected ModelException(SerializationInfo info, StreamingContext context) : base(info, context)
@@ -20,14 +27,14 @@ namespace Latrunculi
 
         }
 
-        static public T TryThrow<T,U>(Result<T, U> result)
+        static public T TryThrow<T>(Result<T, ErrorDefinitions.Error> result)
         {
             if (result == null)
                 throw new ArgumentNullException("result", "Výsledek provedené operace je prázdný.");
             if (result.IsError)
-                throw new ModelException(((Result<T, U>.Error)result).Item);
+                throw new ModelException(((Result<T, ErrorDefinitions.Error>.Error)result).Item);
             else if (result.IsSuccess)
-                return ((Result<T, U>.Success)result).Item;
+                return ((Result<T, ErrorDefinitions.Error>.Success)result).Item;
             else
                 throw new ArgumentException("Neznámý typ výsledku operace.", "result");
         }
