@@ -125,14 +125,14 @@ namespace Latrunculi.ViewModel
                 Info = string.Empty;
             }
 
-            if (IsGameRunning)
+            if (IsGameWaitingForHumanPlayerMove)
+                StatusBarText = "Čekám na tah lidského hráče...";
+            else if (IsGameRunning)
                 StatusBarText = "Hra běží...";
             else if (IsGamePaused)
                 StatusBarText = "Hra byla pozastavena...";
             else if (IsGameFinished)
                 StatusBarText = "Hra skončila.";
-            else if (IsGameWaitingForHumanPlayerMove)
-                StatusBarText = "Čekám na tah lidského hráče...";
             else
                 StatusBarText = "";
 

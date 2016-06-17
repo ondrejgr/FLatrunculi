@@ -56,6 +56,7 @@
     <Compile Include="Board.fs" />
     <Compile Include="Rules.fs" />
     <Compile Include="Brain.fs" />
+    <Compile Include="HumanSelectedMove.fs" />
     <Compile Include="Player.fs" />
     <Compile Include="PlayerSettings.fs" />
     <Compile Include="GameModel.fs" />

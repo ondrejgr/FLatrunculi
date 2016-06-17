@@ -18,8 +18,8 @@ module Player =
     type PlayerNames = Name * Name
     type PlayerLevels = Levels * Levels
 
-    let mutable SelectedMove: Move.T option = None
     let mutable Board: Board.T option = None
+    let mutable getHumanPlayerMoveFromUIWorkflow: (unit -> Async<Result<Move.T,Error>>) option = None
 
     [<AbstractClass>]
     type T(name: Name, level: Levels, color: Piece.Colors) =
@@ -34,9 +34,12 @@ module Player =
 
         override this.TryGetMove() =
             async {
-                match SelectedMove with
-                | Some m -> return Success m
-                | None -> return Error UnableToDeterminePlayerMove }
+                match getHumanPlayerMoveFromUIWorkflow with
+                | Some getHumanPlayerMoveFromUI ->
+                    let! move = getHumanPlayerMoveFromUI()
+                    return move
+                | None ->
+                    return Error NoGetMoveFromUICallbackSpecified }
 
     type ComputerPlayer(name, level, color) =
         inherit T(name, level, color)

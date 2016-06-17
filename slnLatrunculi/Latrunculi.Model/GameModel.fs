@@ -26,7 +26,7 @@ module GameModel =
         let activePlayerChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let boardChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let gameErrorEvent = new Event<GameErrorEventHandler, GameErrorEventArgs>()
-      
+              
         member val Board = board
         member val PlayerSettings = playerSettings with get, set
         member val Status = status with get, set

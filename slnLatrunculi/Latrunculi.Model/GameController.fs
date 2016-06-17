@@ -27,8 +27,17 @@ module GameController =
             let black = Player.create (snd types) (snd names) (snd levels) Piece.Colors.Black
             this.changePlayerSettingsFromPlayers white black
 
+        member private this.GetHumanMoveFromUI() =
+            async {
+                this.Model.setStatus(GameStatus.WaitingForHumanPlayerMove) |> ignore
+                let request = HumanSelectedMove.create
+                let! move = Async.AwaitEvent(request.HumanMoveSelected)
+                return move.Move }
+
         member this.TryNewGame() =
             Player.Board <- Some model.Board
+            Player.getHumanPlayerMoveFromUIWorkflow <- Some this.GetHumanMoveFromUI
+
             this.Model.setActiveColor(Some Rules.getInitialActiveColor) |> ignore
             match this.Model.tryInitBoard() with
             | Success s -> Success this
@@ -37,9 +46,6 @@ module GameController =
         member private this.ReportGameError e =
             this.Model.setStatus(GameStatus.Paused) |> ignore
             this.Model.ReportGameError(e)
-
-        member private this.RequestHumanPlayerMove =
-            this.Model.setStatus(GameStatus.WaitingForHumanPlayerMove) |> ignore
 
         member private this.GameLoopCycle(): Async<Result<GameLoopCycleResult, Error>> =
             let getPlayerMoveWorkflow =
@@ -95,10 +101,7 @@ module GameController =
 
 
         member this.TryPause() =
-            let checkGameStatus =
-                if this.Model.Status <> GameStatus.Running then Error GameIsNotRunning else Success ()
             maybe {
-                do! checkGameStatus
                 let! cts = this.TryGetCts()
                 cts.Cancel()
                 return this }
@@ -112,7 +115,12 @@ module GameController =
 
         member this.TryRun() =
             let checkGameStatus =
-                if this.Model.Status = GameStatus.Running then Error GameIsAlreadyRunning else Success ()
+                if Seq.contains this.Model.Status 
+                    <| seq { 
+                            yield GameStatus.Running 
+                            yield GameStatus.WaitingForHumanPlayerMove } 
+                    then Error GameIsAlreadyRunning 
+                    else Success ()
             maybe {
                 do! checkGameStatus
                 let! cts = this.TryCreateCts()

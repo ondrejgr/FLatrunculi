@@ -9,6 +9,7 @@
 #load "Board.fs"
 #load "Rules.fs"
 #load "Brain.fs"
+#load "HumanSelectedMove.fs"
 #load "Player.fs"
 #load "PlayerSettings.fs"
 #load "GameModel.fs"

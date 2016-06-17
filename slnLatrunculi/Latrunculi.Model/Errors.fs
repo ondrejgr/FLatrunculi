@@ -26,6 +26,7 @@ type Error =
     // Player
     | UnableToDeterminePlayerMove
     | NoBoardInstanceSpecified
+    | NoGetMoveFromUICallbackSpecified
     // PlayerSettings
     | TwoPlayersMayNotBeSameColor
     // GameModel
