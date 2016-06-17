@@ -126,15 +126,24 @@ namespace Latrunculi.GUI
             HelpWindow.Current.Show();
         }
 
+        private void CancelWorkflows()
+        {
+            if (ViewModel.IsMoveSuggestionComputing)
+            {
+                if (MainWindowCommands.CancelSuggestMove.CanExecute(null, this))
+                    MainWindowCommands.CancelSuggestMove.Execute(null, this); 
+            }
+            if (ViewModel.IsGameRunning)
+            {
+                if (MainWindowCommands.Pause.CanExecute(null, this))
+                    MainWindowCommands.Pause.Execute(null, this);
+            }
+        }
+
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             e.Cancel = false;
-            if (ViewModel.IsGameRunning)
-            {
-                e.Cancel = !MainWindowCommands.Pause.CanExecute(null, this);
-                if (!e.Cancel)
-                    MainWindowCommands.Pause.Execute(null, this);
-            }
+            CancelWorkflows();
             if (!e.Cancel && !ViewModel.IsGameCreated)
             {
                 StringBuilder sb = new StringBuilder();
@@ -444,7 +453,8 @@ namespace Latrunculi.GUI
             {
                 if (ViewModel.IsMoveSuggestionComputing)
                 {
-                    throw new NotImplementedException();
+                    ModelException.TryThrow<GameController.T>(Controller.TryCancelSuggestMove());
+                    CommandManager.InvalidateRequerySuggested();
                 }
             }
             catch (Exception exc)
@@ -466,7 +476,8 @@ namespace Latrunculi.GUI
             {
                 if (ViewModel.IsGameWaitingForHumanPlayerMove && !ViewModel.IsMoveSuggestionComputing)
                 {
-                    throw new NotImplementedException();
+                    ModelException.TryThrow<GameController.T>(Controller.TrySuggestMove());
+                    CommandManager.InvalidateRequerySuggested();
                 }
             }
             catch (Exception exc)

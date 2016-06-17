@@ -16,6 +16,7 @@ module GameController =
     type T(model: GameModel.T) = 
 
         member val private cts: CancellationTokenSource option = None with get, set
+        member val private ctsMoveSuggestion: CancellationTokenSource option = None with get, set
         member private this.Model = model
     
         member this.changePlayerSettingsFromPlayers (white: Player.T) (black: Player.T) =
@@ -33,14 +34,6 @@ module GameController =
                 let request = HumanSelectedMove.create
                 let! move = Async.AwaitEvent(request.HumanMoveSelected)
                 return move.Move }
-
-        member this.TrySuggestMove(ct: CancellationToken) =
-            let colorResult = this.Model.tryGetActiveColor()
-            match colorResult with
-            | Success color ->
-                Async.RunSynchronously(Brain.tryGetBestMove this.Model.Board color,
-                            cancellationToken = ct)
-            | Error e -> Error e
 
         member this.TryNewGame() =
             Player.Board <- Some model.Board
@@ -95,21 +88,58 @@ module GameController =
                     this.ReportGameError e
                     return () }
 
-        member this.TryGetCts() =
+        member private this.SuggestMove(color) =
+            async {
+                use! cnl = Async.OnCancel(fun () -> this.Model.setIsMoveSuggestionComputing false |> ignore)
+                let! move = Brain.tryGetBestMove this.Model.Board color
+                () }
+
+        member private this.TryGetCts() =
             match this.cts with
             | Some cts -> Success cts
             | None -> Error CancellationTokenDoesNotExist
 
-        member this.TryCreateCts(): Result<CancellationTokenSource, Error> =
+        member private this.TryCreateCts(): Result<CancellationTokenSource, Error> =
             if Option.isSome this.cts then 
                 this.cts.Value.Dispose()
-                this.cts <- None
             this.cts <- Some (new CancellationTokenSource())
             Success (Option.get this.cts)
 
+        member private this.TryGetMoveSuggestionCts() =
+            match this.ctsMoveSuggestion with
+            | Some cts -> Success cts
+            | None -> Error CancellationTokenDoesNotExist
+
+        member private this.TryCreateMoveSuggestionCts(): Result<CancellationTokenSource, Error> =
+            if Option.isSome this.ctsMoveSuggestion then
+                this.ctsMoveSuggestion.Value.Dispose()
+            this.ctsMoveSuggestion <- Some (new CancellationTokenSource())
+            Success (Option.get this.ctsMoveSuggestion)
+
+        member this.TryCancelSuggestMove() =
+            maybe {
+                let! cts = this.TryGetMoveSuggestionCts()
+                cts.Cancel()
+                return this }
+
+        member this.TrySuggestMove() =
+            let checkGameStatus =
+                if this.Model.IsMoveSuggestionComputing 
+                    then Error MoveSuggestionAlreadyComputing 
+                    else Success ()
+            maybe {
+                do! checkGameStatus
+                let! cts = this.TryCreateMoveSuggestionCts()
+                let! color = this.Model.tryGetActiveColor()
+                this.Model.setIsMoveSuggestionComputing true |> ignore
+                Async.Start(this.SuggestMove(color), cts.Token)
+                return this }
 
         member this.TryPause() =
             maybe {
+                do! (match this.Model.IsMoveSuggestionComputing with
+                    | true -> Success (ignore <| this.TryCancelSuggestMove())
+                    | false -> Success ())
                 let! cts = this.TryGetCts()
                 cts.Cancel()
                 return this }

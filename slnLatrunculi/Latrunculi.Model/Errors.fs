@@ -41,3 +41,4 @@ type Error =
     | GameIsNotRunning
     | UnableToGetPlayerMove
     | UnableToGetActivePlayer
+    | MoveSuggestionAlreadyComputing

@@ -45,4 +45,4 @@ module ErrorMessages =
         | GameIsNotRunning -> "Hra nebyla spuštěna."
         | UnableToGetPlayerMove -> "Nepodařilo se získat tah hráče."
         | UnableToGetActivePlayer -> "Nepodařilo se zjistit hráče na tahu."
-
+        | MoveSuggestionAlreadyComputing -> "Výpočet nejlepšího tahu již probíhá."
