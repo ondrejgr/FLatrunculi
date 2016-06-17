@@ -35,15 +35,28 @@ namespace Latrunculi.GUI
             InitializeComponent();
             ViewModel = viewModel;
             ViewModel.GameError += ViewModel_GameError;
+            ViewModel.PropertyChanged += ViewModel_PropertyChanged;
             Controller = controller;
+        }
+
+        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            Dispatcher.Invoke(new Action(() =>
+            {
+                if (e.PropertyName == "Status" || e.PropertyName == "IsMoveSuggestionComputing")
+                    Mouse.OverrideCursor = (ViewModel.Status == Model.GameStatus.Running || ViewModel.IsMoveSuggestionComputing) ? Cursors.AppStarting : null;
+            }));
         }
 
         private void ViewModel_GameError(object sender, Model.GameErrorEventArgs e)
         {
             Dispatcher.Invoke(new Action(() =>
-                MessageBox.Show(this, 
-                    string.Format("Při běhu hry došlo k chybě: {0}", ErrorMessages.toString(e.Error)), 
-                    "Chyba", MessageBoxButton.OK, MessageBoxImage.Error)));
+            {
+                Mouse.OverrideCursor = null;
+                MessageBox.Show(this,
+                    string.Format("Při běhu hry došlo k chybě: {0}", ErrorMessages.toString(e.Error)),
+                    "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }));
         }
 
         public MainWindowViewModel ViewModel
@@ -416,6 +429,50 @@ namespace Latrunculi.GUI
         private void SaveGame(string fileName)
         {
             throw new NotImplementedException();
+        }
+
+        private void CancelSuggestMove_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = ViewModel.IsMoveSuggestionComputing;
+        }
+
+        private void CancelSuggestMove_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            try
+            {
+                if (ViewModel.IsMoveSuggestionComputing)
+                {
+                    throw new NotImplementedException();
+                }
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(this, "Nepodařilo se zrušit nápovědu tahu." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void SuggestMove_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = ViewModel.IsGameWaitingForHumanPlayerMove && !ViewModel.IsMoveSuggestionComputing;
+        }
+
+        private void SuggestMove_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            try
+            {
+                if (ViewModel.IsGameWaitingForHumanPlayerMove && !ViewModel.IsMoveSuggestionComputing)
+                {
+                    throw new NotImplementedException();
+                }
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(this, "Nepodařilo se napovědět tah." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

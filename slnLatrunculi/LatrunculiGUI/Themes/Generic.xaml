@@ -29,12 +29,12 @@
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal">
                                     <Storyboard>
-                                        <ThicknessAnimation From="1" To="0" Duration="0:00:00.5" Storyboard.TargetName="border" Storyboard.TargetProperty="BorderThickness" />
+                                        <ThicknessAnimation From="2" To="0" Duration="0:00:00.5" Storyboard.TargetName="border" Storyboard.TargetProperty="BorderThickness" />
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Active">
                                     <Storyboard>
-                                        <ThicknessAnimation From="0" To="1" Duration="0:00:01" Storyboard.TargetName="border" Storyboard.TargetProperty="BorderThickness" />
+                                        <ThicknessAnimation From="0" To="2" Duration="0:00:01" Storyboard.TargetName="border" Storyboard.TargetProperty="BorderThickness" />
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>

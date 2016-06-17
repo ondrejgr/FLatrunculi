@@ -65,21 +65,35 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Controls\ControlCommands.cs" />
+    <Compile Include="Controls\PlayerControl.xaml.cs">
+      <DependentUpon>PlayerControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\PlayerLevelControl.xaml.cs">
       <DependentUpon>PlayerLevelControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\PlayerTypeControl.xaml.cs">
       <DependentUpon>PlayerTypeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\SuggestMoveButton.xaml.cs">
+      <DependentUpon>SuggestMoveButton.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EnumToBooleanConverter.cs" />
     <Compile Include="Windows\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\PlayerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\PlayerLevelControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\PlayerTypeControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\SuggestMoveButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -214,6 +228,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="CommandIcons\SaveAs.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="CommandIcons\SuggestMove.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
