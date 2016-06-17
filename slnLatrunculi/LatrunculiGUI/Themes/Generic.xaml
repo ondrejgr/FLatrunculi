@@ -7,7 +7,6 @@
     <Style TargetType="{x:Type ctrls:Board}">
         <Setter Property="MinHeight" Value="192"/>
         <Setter Property="MinWidth" Value="192"/>
-        <Setter Property="ItemsSource" Value="{Binding Rows}"/>
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
@@ -25,11 +24,28 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ctrls:Board}">
-                    <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
-                        <ItemsPresenter/>
-                    </Border>
+                    <Grid>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal">
+                                    <Storyboard>
+                                        <ThicknessAnimation From="1" To="0" Duration="0:00:00.5" Storyboard.TargetName="border" Storyboard.TargetProperty="BorderThickness" />
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Active">
+                                    <Storyboard>
+                                        <ThicknessAnimation From="0" To="1" Duration="0:00:01" Storyboard.TargetName="border" Storyboard.TargetProperty="BorderThickness" />
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="Navy"
+                                BorderThickness="0" x:Name="border"
+                                CornerRadius="8,8,8,8">
+                            <ItemsPresenter/>
+                        </Border>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

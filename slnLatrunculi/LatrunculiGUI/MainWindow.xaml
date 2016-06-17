@@ -201,7 +201,11 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <ContentControl Content="{Binding WhitePlayer}"/>
-            <ctrls:Board x:Name="board" BoardSquareClicked="board_BoardSquareClicked" DataContext="{Binding Board}" Grid.Column="1" Grid.Row="0"/>
+            <ctrls:Board x:Name="board" 
+                         ItemsSource="{Binding Board.Rows}"
+                         IsActive="{Binding IsGameWaitingForHumanPlayerMove}"
+                         BoardSquareClicked="board_BoardSquareClicked" 
+                         Grid.Column="1" Grid.Row="0"/>
             <ContentControl Content="{Binding BlackPlayer}" Grid.Column="2"/>
         </Grid>
 

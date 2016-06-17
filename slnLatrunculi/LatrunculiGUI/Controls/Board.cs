@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -34,6 +35,8 @@ namespace Latrunculi.GUI.Controls
         }
     }
 
+    [TemplateVisualState(Name = "Normal", GroupName = "CommonStates")]
+    [TemplateVisualState(Name = "Active", GroupName = "CommonStates")]
     public class Board : ItemsControl
     {
         static Board()
@@ -53,10 +56,27 @@ namespace Latrunculi.GUI.Controls
             get { return (int)GetValue(SquareSizeProperty); }
             set { SetValue(SquareSizeProperty, value); }
         }
-        // Using a DependencyProperty as the backing store for SquareSize.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SquareSizeProperty =
             DependencyProperty.Register("SquareSize", typeof(int), typeof(Board), new PropertyMetadata(24));
 
+
+        public bool IsActive
+        {
+            get { return (bool)GetValue(IsActiveProperty); }
+            set { SetValue(IsActiveProperty, value); }
+        }
+        public static readonly DependencyProperty IsActiveProperty =
+            DependencyProperty.Register("IsActive", typeof(bool), typeof(Board), new FrameworkPropertyMetadata(false, new PropertyChangedCallback(IsActiveChanged)));
+
+        static private void IsActiveChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((Board)d).OnIsActiveChanged((bool)e.NewValue);
+        }
+
+        private void OnIsActiveChanged(bool isActive)
+        {
+            VisualStateManager.GoToState(this, isActive ? "Active" : "Normal", true);
+        }
 
         private void BoardSquareClick_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -71,6 +91,5 @@ namespace Latrunculi.GUI.Controls
                 (BoardSquareClicked != null))
                 BoardSquareClicked(this, new BoardSquareClickedEventArgs((ViewModel.BoardSquareViewModel)e.Parameter));
         }
-
     }
 }
