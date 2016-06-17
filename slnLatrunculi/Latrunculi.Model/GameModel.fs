@@ -24,6 +24,7 @@ module GameModel =
         let statusChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let playerSettingsChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let activePlayerChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
+        let isMoveSuggestionComputingChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let boardChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let gameErrorEvent = new Event<GameErrorEventHandler, GameErrorEventArgs>()
               
@@ -31,6 +32,7 @@ module GameModel =
         member val PlayerSettings = playerSettings with get, set
         member val Status = status with get, set
         member val ActiveColor = None with get, set
+        member val IsMoveSuggestionComputing = false with get, set
         
         [<CLIEvent>]
         member this.StatusChanged = statusChangedEvent.Publish
@@ -38,6 +40,8 @@ module GameModel =
         member this.PlayerSettingsChanged = playerSettingsChangedEvent.Publish
         [<CLIEvent>]
         member this.ActivePlayerChanged = activePlayerChangedEvent.Publish
+        [<CLIEvent>]
+        member this.IsMoveSuggestionComputingChanged = isMoveSuggestionComputingChangedEvent.Publish
         [<CLIEvent>]
         member this.BoardChanged = boardChangedEvent.Publish
         [<CLIEvent>]
@@ -49,6 +53,8 @@ module GameModel =
             playerSettingsChangedEvent.Trigger(this, EventArgs.Empty)
         member private this.OnActivePlayerChanged() =
             activePlayerChangedEvent.Trigger(this, EventArgs.Empty)
+        member private this.OnIsMoveSuggestionComputingChanged() =
+            isMoveSuggestionComputingChangedEvent.Trigger(this, EventArgs.Empty)
         member private this.OnBoardChanged() =
             boardChangedEvent.Trigger(this, EventArgs.Empty)
         member this.ReportGameError(error) =
@@ -58,6 +64,11 @@ module GameModel =
             this.Status <- x
             this.OnStatusChanged()
             this.Status
+
+        member this.setIsMoveSuggestionComputing x =
+            this.IsMoveSuggestionComputing <- x
+            this.OnIsMoveSuggestionComputingChanged()
+            this.IsMoveSuggestionComputing            
 
         member this.changePlayerSettings playerSettings =
             this.PlayerSettings <- playerSettings

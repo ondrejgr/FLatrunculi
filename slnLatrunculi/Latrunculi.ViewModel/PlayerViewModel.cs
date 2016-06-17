@@ -64,6 +64,15 @@ namespace Latrunculi.ViewModel
             {
                 _playerType = value;
                 OnPropertyChanged("PlayerType");
+                OnPropertyChanged("IsHuman");
+            }
+        }
+
+        public bool IsHuman
+        {
+            get
+            {
+                return PlayerType == PlayerTypes.ptHuman;
             }
         }
 

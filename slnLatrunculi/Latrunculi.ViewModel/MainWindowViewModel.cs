@@ -31,6 +31,7 @@ namespace Latrunculi.ViewModel
             Model.StatusChanged -= new ModelChangeEventHandler(Model_StatusChanged);
             Model.PlayerSettingsChanged -= new ModelChangeEventHandler(Model_PlayerSettingsChanged);
             Model.ActivePlayerChanged -= new ModelChangeEventHandler(Model_ActivePlayerChanged);
+            Model.IsMoveSuggestionComputingChanged -= new ModelChangeEventHandler(Model_IsMoveSuggestionComputingChanged);
             Model.GameError -= new GameErrorEventHandler(Model_GameError);
         }
 
@@ -40,6 +41,7 @@ namespace Latrunculi.ViewModel
             Model.StatusChanged += new ModelChangeEventHandler(Model_StatusChanged);
             Model.PlayerSettingsChanged += new ModelChangeEventHandler(Model_PlayerSettingsChanged);
             Model.ActivePlayerChanged += new ModelChangeEventHandler(Model_ActivePlayerChanged);
+            Model.IsMoveSuggestionComputingChanged += new ModelChangeEventHandler(Model_IsMoveSuggestionComputingChanged);
             Model.GameError += new GameErrorEventHandler(Model_GameError);
 
             Board.Init(Model.Board);
@@ -48,6 +50,12 @@ namespace Latrunculi.ViewModel
             OnActivePlayerChanged();
 
             OnStatusChanged();
+        }
+
+        private void Model_IsMoveSuggestionComputingChanged(object sender, EventArgs e)
+        {
+            OnPropertyChanged("IsMoveSuggestionComputing");
+            Application.Current.Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
         }
 
         public event GameErrorEventHandler GameError;
@@ -145,7 +153,7 @@ namespace Latrunculi.ViewModel
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propName));
         }
-
+        
         public Model.GameStatus Status
         {
             get
@@ -153,6 +161,15 @@ namespace Latrunculi.ViewModel
                 return Model.Status;
             }
         }
+
+        public bool IsMoveSuggestionComputing
+        {
+            get
+            {
+                return Model.IsMoveSuggestionComputing;
+            }
+        }
+
 
         public bool IsGameCreated
         {

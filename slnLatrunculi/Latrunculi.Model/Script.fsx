@@ -20,3 +20,9 @@ open Latrunculi.Model
 open Latrunculi.Controller
 open System.Threading
 
+let model = unwrapResultExn <| GameModel.tryCreate
+let controller = GameController.create model
+
+unwrapResultExn <| controller.TryNewGame()
+
+

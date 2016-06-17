@@ -34,6 +34,14 @@ module GameController =
                 let! move = Async.AwaitEvent(request.HumanMoveSelected)
                 return move.Move }
 
+        member this.TrySuggestMove(ct: CancellationToken) =
+            let colorResult = this.Model.tryGetActiveColor()
+            match colorResult with
+            | Success color ->
+                Async.RunSynchronously(Brain.tryGetBestMove this.Model.Board color,
+                            cancellationToken = ct)
+            | Error e -> Error e
+
         member this.TryNewGame() =
             Player.Board <- Some model.Board
             Player.getHumanPlayerMoveFromUIWorkflow <- Some this.GetHumanMoveFromUI
@@ -73,7 +81,7 @@ module GameController =
 
         member private this.GameLoop(): Async<unit> =
             async {
-                use! cancelHandler = Async.OnCancel(fun () -> this.Model.setStatus(GameStatus.Paused) |> ignore)
+                use! cnl = Async.OnCancel(fun () -> this.Model.setStatus(GameStatus.Paused) |> ignore)
 
                 let! a = this.GameLoopCycle()
                 match a with
