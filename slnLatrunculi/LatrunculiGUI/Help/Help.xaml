@@ -77,16 +77,23 @@
 
     <FlowDocument x:Key="docBoardControl">
         <Paragraph Style="{StaticResource title}">Ovládání hry</Paragraph>
-        <Paragraph>Lidský hráč, který je na tahu, ovládá hru pomocí primárního (levého) tlačítka myši.</Paragraph>
         <Paragraph>Hráč na tahu je indikován tučným rámečkem.</Paragraph>
-        <Paragraph>Po kliknutí na vybrané políčko s vlastním kamenem dojde k jeho podbarvení červenou barvou, pokud není žádný tah možný. V opačném případě bude podbarven zeleně a současně budou zeleně podbarvena políčka, která lze zvolit jako cílová.</Paragraph>
-        <Paragraph>Kliknutím na cílové políčko bude proveden tah.</Paragraph>
+        <Paragraph>Pokud je na řadě lidský hráč, je rámečkem zvýrazněna i hrací deska. V tuto chvíli je možné provést tah.</Paragraph>
+        <Paragraph>Lidský hráč, který je na tahu, ovládá hru pomocí primárního (levého) tlačítka myši.</Paragraph>
+        <Paragraph>Po kliknutí na vybrané políčko s vlastním kamenem dojde k jeho podbarvení červenou barvou, pokud není žádný tah možný. V opačném případě bude podbarven zeleně a současně budou zeleně podbarvena políčka, která lze zvolit jako cílová. Kliknutím na cílové políčko bude proveden tah.</Paragraph>
+    </FlowDocument>
+
+    <FlowDocument x:Key="docSuggestMove">
+        <Paragraph Style="{StaticResource title}">Nápověda tahu</Paragraph>
+        <Paragraph>Lidský hráč si může vyžádat nápovědu nejlepšího tahu kliknutím na ikonu <Image Source="SuggestMove.png" Height="24" Width="24"/>. Ikona je umístěna v hlavním okně pod jménem hráče a zobrazuje se pouze u lidského hráče.</Paragraph>
+        <Paragraph>Nejlepší vypočítaný tah je poté na desce zvýrazněn žlutým podbarvením.</Paragraph>
     </FlowDocument>
 
     <FlowDocument x:Key="docPlayerSettings">
         <Paragraph Style="{StaticResource title}">Nastavení hry</Paragraph>
-        <Paragraph>Okno Nastavení hry umožňuje kdykoliv změnit obtížnost a typ hráče.</Paragraph>
-        <Paragraph>Každý hráč může být buďto člověk nebo počítač.</Paragraph>
+        <Paragraph>Okno Nastavení hry umožňuje zvolit, který hráč bude počítač a který hráč bude lidský.</Paragraph>
+        <Paragraph>Dále je možné nastavit jména hráčů a jejich úroveň. V případě lidského hráče úroveň stanovuje kvalitu nápovědy tahu.</Paragraph>
+        <Paragraph>Změnu nastavení je možné provést, pouze pokud je hra pozastavena nebo před zahájením nové hry.</Paragraph>
     </FlowDocument>
 
 </ResourceDictionary>
