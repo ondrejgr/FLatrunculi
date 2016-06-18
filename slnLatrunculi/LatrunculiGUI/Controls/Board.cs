@@ -100,17 +100,19 @@ namespace Latrunculi.GUI.Controls
         private void BoardSquareClick_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = IsActive && (e.OriginalSource is Controls.Square) && (e.Parameter is ViewModel.BoardSquareViewModel) &&
-                ((ViewModel.BoardSquareViewModel)e.Parameter).ValidMoveExists;
+            e.CanExecute = IsActive && (e.OriginalSource is Controls.Square) && (e.Parameter is ViewModel.BoardSquareViewModel);
         }
 
         private void BoardSquareClick_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
-            if (IsActive && (e.OriginalSource is Controls.Square) && (e.Parameter is ViewModel.BoardSquareViewModel) &&
-                ((ViewModel.BoardSquareViewModel)e.Parameter).ValidMoveExists &&
-                (BoardSquareClicked != null))
-                BoardSquareClicked(this, new BoardSquareClickedEventArgs((ViewModel.BoardSquareViewModel)e.Parameter));
+            if (IsActive && (e.OriginalSource is Controls.Square) && (e.Parameter is ViewModel.BoardSquareViewModel))
+            {
+                Controls.Square sq = (Controls.Square)e.OriginalSource;
+                ViewModel.BoardSquareViewModel vm = ((ViewModel.BoardSquareViewModel)e.Parameter);
+                if (BoardSquareClicked != null)
+                    BoardSquareClicked(this, new BoardSquareClickedEventArgs(vm));
+            }
         }
     }
 }

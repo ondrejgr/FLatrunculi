@@ -62,11 +62,16 @@ namespace Latrunculi.ViewModel
             {
                 return _isSuggestedMove;
             }
-            set
+            private set
             {
                 _isSuggestedMove = value;
                 OnPropertyChanged("IsSuggestedMove");
             }
+        }
+
+        public void SetIsSuggestedMove(bool value)
+        {
+            IsSuggestedMove = value;
         }
 
         private bool _validMoveExists = false;
@@ -76,11 +81,16 @@ namespace Latrunculi.ViewModel
             {
                 return _validMoveExists;
             }
-            set
+            private set
             {
                 _validMoveExists = value;
                 OnPropertyChanged("ValidMoveExists");
             }
+        }
+
+        public void SetValidMoveExists(bool value)
+        {
+            ValidMoveExists = value;
         }
 
         public void Init(Model.Coord.T coord, SquareColors sqColor)

@@ -419,7 +419,18 @@ namespace Latrunculi.GUI
 
         private void board_BoardSquareClicked(object sender, Controls.BoardSquareClickedEventArgs e)
         {
+            try
+            {
+                if (ViewModel.IsGameWaitingForHumanPlayerMove && !ViewModel.IsMoveSuggestionComputing)
+                {
 
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(this, "Došlo k chybě." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private PlayerSettingsViewModel TryShowSettings()

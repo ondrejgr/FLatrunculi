@@ -115,13 +115,22 @@
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>
+                            <VisualStateGroup x:Name="SelectionStates">
+                                <VisualState x:Name="NotSelected">
+                                    <Storyboard>
+                                        <ColorAnimation To="Transparent" Duration="0:00:00.001" Storyboard.TargetName="bgSelected" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" />
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="InvalidSelection">
+                                    <Storyboard>
+                                        <ColorAnimation To="Red" Duration="0:00:00.001" Storyboard.TargetName="bgSelected" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" />
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-                        <Border x:Name="bg" BorderBrush="Navy" BorderThickness="0">
-                            <Border.Background>
-                                <SolidColorBrush Color="Transparent"/>
-                            </Border.Background>
-                            <ContentPresenter/>
-                        </Border>
+                        <Border x:Name="bg" BorderBrush="Navy" BorderThickness="0" Panel.ZIndex="1"/>
+                        <Border x:Name="bgSelected" Background="Transparent" Panel.ZIndex="2"/>
+                        <ContentPresenter Panel.ZIndex="3"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <DataTrigger Binding="{Binding Path=SquareColor}" Value="scWhite">

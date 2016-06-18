@@ -67,7 +67,7 @@ namespace Latrunculi.ViewModel
             {
                 foreach (BoardSquareViewModel sqVM in rowVM.Squares.OfType<BoardSquareViewModel>())
                 {
-                    sqVM.IsSuggestedMove = false;
+                    sqVM.SetIsSuggestedMove(false);
                 }
             }
         }
@@ -80,7 +80,7 @@ namespace Latrunculi.ViewModel
                         .OfType<BoardSquareViewModel>()
                         .Where(sq => sq.Coord.Equals(coord)))
                 {
-                    sqVM.IsSuggestedMove = true;
+                    sqVM.SetIsSuggestedMove(true);
                 }
             }
         }
@@ -91,7 +91,7 @@ namespace Latrunculi.ViewModel
             {
                 foreach (BoardSquareViewModel sqVM in rowVM.Squares.OfType<BoardSquareViewModel>())
                 {
-                    sqVM.ValidMoveExists = coords.Exists(c => c.Equals(sqVM.Coord));
+                    sqVM.SetValidMoveExists(coords.Exists(c => c.Equals(sqVM.Coord)));
                 }
             }
         }
