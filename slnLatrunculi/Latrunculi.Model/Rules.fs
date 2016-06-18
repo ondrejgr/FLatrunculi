@@ -39,22 +39,19 @@ module Rules =
                 | Success move -> yield move
                 | _ -> () }
 
-//        Seq.fold (fun result dir ->
-//                    match tryGetMoveWithDir dir with
-//                    | Success move -> move::result
-//                    | _ -> result) [] Coord.Directions
-
     let getValidMoves (board: Board.T) (color: Piece.Colors) =
         let getValidMovesForBoardColorCoord coord =
             Seq.toList <| getValidMovesForCoord board color coord
         List.collect getValidMovesForBoardColorCoord <| board.GetCoordsWithPieceColor color
 
-//    let getCoordsWithAnyValidMove (board: Board.T) (color: Piece.Colors) =
-//    List.
-//        Seq.fold (fun result coord ->
-//                    match List.tryHead getValidMovesForCoord coord
-//                    List.append result <| getValidMovesForCoord coord)
-//                [] <| board.GetCoordsWithPieceColor color
+    let getCoordsWithAnyValidMove (board: Board.T) (color: Piece.Colors) =
+        let getCoordIfValidMoveExists coord =
+            Seq.tryHead <| getValidMovesForCoord board color coord
+        seq {
+            for coord in board.GetCoordsWithPieceColor color do
+                match getCoordIfValidMoveExists coord with
+                | Some m -> yield m.Source
+                | _ -> () }
 
     let isMoveValid (board: Board.T) (color: Piece.Colors) (move: Move.T) =
         List.exists (fun m -> m = move) <| getValidMoves board color

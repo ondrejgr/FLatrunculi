@@ -77,7 +77,7 @@
                             </ctrls:Square>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type vm:BoardSquareViewModel}">
-                            <ctrls:Square 
+                            <ctrls:Square
                                 Height="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Row}, Path=SquareSize}"
                                 Width="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Row}, Path=SquareSize}">
                                 <ctrls:Piece/>
@@ -95,6 +95,7 @@
     </Style>
 
     <Style TargetType="{x:Type ctrls:Square}">
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Command" Value="{x:Static ctrls:ControlCommands.BoardSquareClick}"/>
         <Setter Property="CommandParameter" Value="{Binding}"/>
         <Setter Property="Template">
@@ -155,11 +156,13 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ctrls:Piece}">
-                    <Ellipse x:Name="ellipse" Stroke="Transparent" Margin="5,5,5,5">
-                        <Ellipse.Fill>
-                            <SolidColorBrush Color="Transparent"/>
-                        </Ellipse.Fill>
-                    </Ellipse>
+                    <Grid Background="Transparent">
+                        <Ellipse x:Name="ellipse" Stroke="Transparent" Margin="5,5,5,5">
+                            <Ellipse.Fill>
+                                <SolidColorBrush Color="Transparent"/>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                    </Grid>
                     <ControlTemplate.Triggers>
                         <DataTrigger Binding="{Binding Path=PieceType}" Value="ptWhite">
                             <Setter TargetName="ellipse" Property="Stroke" Value="Black" />

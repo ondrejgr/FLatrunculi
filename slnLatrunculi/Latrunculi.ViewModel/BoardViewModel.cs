@@ -85,6 +85,17 @@ namespace Latrunculi.ViewModel
             }
         }
 
+        public void ActivateSquaresWithValidMoves(List<Model.Coord.T> coords)
+        {
+            foreach (BoardRowViewModel rowVM in Rows)
+            {
+                foreach (BoardSquareViewModel sqVM in rowVM.Squares.OfType<BoardSquareViewModel>())
+                {
+                    sqVM.ValidMoveExists = coords.Exists(c => c.Equals(sqVM.Coord));
+                }
+            }
+        }
+
         public void RefreshFromModel(Latrunculi.Model.Board.T boardModel)
         {
             foreach (BoardRowViewModel rowVM in Rows)

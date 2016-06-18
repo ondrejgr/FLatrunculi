@@ -23,6 +23,13 @@ namespace Latrunculi.GUI.Controls
         }
 
 
+        private ViewModel.BoardSquareViewModel ViewModel
+        {
+            get
+            {
+                return DataContext as ViewModel.BoardSquareViewModel;
+            }
+        }
 
         private Board Board;
 
@@ -56,7 +63,7 @@ namespace Latrunculi.GUI.Controls
         private void UpdateMouseOverState()
         {
             bool isActive = (Board != null) && Board.IsActive && (DataContext is ViewModel.BoardSquareViewModel);
-            if (IsMouseOver && isActive)
+            if (IsMouseOver && isActive && ViewModel.ValidMoveExists)
                 VisualStateManager.GoToState(this, "Active", true);
             else
                 VisualStateManager.GoToState(this, "Normal", true);
@@ -64,14 +71,14 @@ namespace Latrunculi.GUI.Controls
 
         protected override void OnMouseEnter(MouseEventArgs e)
         {
-            base.OnMouseEnter(e);
             UpdateMouseOverState();
+            base.OnMouseEnter(e);
         }
 
         protected override void OnMouseLeave(MouseEventArgs e)
         {
-            base.OnMouseLeave(e);
             UpdateMouseOverState();
+            base.OnMouseLeave(e);
         }
     }
 }

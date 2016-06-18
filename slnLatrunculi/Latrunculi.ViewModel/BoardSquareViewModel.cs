@@ -69,6 +69,20 @@ namespace Latrunculi.ViewModel
             }
         }
 
+        private bool _validMoveExists = false;
+        public bool ValidMoveExists
+        {
+            get
+            {
+                return _validMoveExists;
+            }
+            set
+            {
+                _validMoveExists = value;
+                OnPropertyChanged("ValidMoveExists");
+            }
+        }
+
         public void Init(Model.Coord.T coord, SquareColors sqColor)
         {
             Coord = coord;

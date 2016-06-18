@@ -93,6 +93,7 @@ namespace Latrunculi.ViewModel
 
         private void Model_StatusChanged(object sender, EventArgs e)
         {
+            Board.ClearIsSuggestedMove();
             OnStatusChanged();
         }
 
@@ -104,6 +105,7 @@ namespace Latrunculi.ViewModel
         private void Model_ActivePlayerChanged(object sender, EventArgs e)
         {
             Board.ClearIsSuggestedMove();
+            Board.ActivateSquaresWithValidMoves(ModelException.TryThrow<List<Coord.T>>(Model.tryGetListOfCoordsWithAnyValidMove()));
             OnActivePlayerChanged();
         }
 
