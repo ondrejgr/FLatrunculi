@@ -6,7 +6,7 @@ module Brain =
 
     let tryGetBestMove (board: Board.T) (color: Piece.Colors): Async<Result<Move.T, Error>> =
         async {
-            do! Async.Sleep(2000)
+            do! Async.Sleep(10)
             let moves = Rules.getValidMoves board color
             match List.isEmpty moves with
             | false -> 
