@@ -13,33 +13,35 @@ module Rules =
         Piece.Colors.White
 
         
-    let getValidMoves (board: Board.T) (color: Piece.Colors) =
-        let getValidMovesForCoord src =
-            // src coord is already filtered - it is not empty and contains piece of active player
-            let tryGetMoveWithDir dir =
-                // we return Success move to relative coord in specified direction if possible or Error
-                let tryCreateMove tar tarsq =
-                    // we create move if target square is empty
-                    match tarsq with
-                    | Square.Nothing -> 
-                        let nsrcsq = Square.createEmpty
-                        let ntarsq = Square.createWithPiece <| Piece.create color
-                        Move.tryCreate src tar nsrcsq ntarsq
-                    | _ -> Error TargetSquareIsNotEmpty
+    let getValidMovesForCoord board color src =
+        // src coord is already filtered - it is not empty and contains piece of active player
+        let tryGetMoveWithDir dir =
+            // we return Success move to relative coord in specified direction if possible or Error
+            let tryCreateMove tar tarsq =
+                // we create move if target square is empty
+                match tarsq with
+                | Square.Nothing -> 
+                    let nsrcsq = Square.createEmpty
+                    let ntarsq = Square.createWithPiece <| Piece.create color
+                    Move.tryCreate src tar nsrcsq ntarsq
+                | _ -> Error TargetSquareIsNotEmpty
                     
-                maybe {
-                    // try to get relative coord
-                    let! tar = changeError RelativeCoordIsOutOfRange <| Coord.tryGetRelative src dir
-                    // get target square
-                    let! tarsq = Board.tryGetSquare board tar
-                    return! tryCreateMove tar tarsq }
-            Seq.fold (fun result dir ->
-                        match tryGetMoveWithDir dir with
-                        | Success move -> move::result
-                        | _ -> result) [] Coord.Directions
-    
-        List.collect (fun coord ->
-            getValidMovesForCoord coord) <| board.GetCoordsWithPieceColor color
+            maybe {
+                // try to get relative coord
+                let! tar = changeError RelativeCoordIsOutOfRange <| Coord.tryGetRelative src dir
+                // get target square
+                let! tarsq = Board.tryGetSquare board tar
+                return! tryCreateMove tar tarsq }
+            
+        Seq.fold (fun result dir ->
+                    match tryGetMoveWithDir dir with
+                    | Success move -> move::result
+                    | _ -> result) [] Coord.Directions
+
+    let getValidMoves (board: Board.T) (color: Piece.Colors) =
+        let getValidMovesForBoardColorCoord coord =
+            getValidMovesForCoord board color coord
+        List.collect getValidMovesForBoardColorCoord <| board.GetCoordsWithPieceColor color
 
 //    let getCoordsWithAnyValidMove (board: Board.T) (color: Piece.Colors) =
 //    List.
