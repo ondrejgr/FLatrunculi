@@ -84,6 +84,7 @@ namespace Latrunculi.ViewModel
             Items.Add(new HelpItem("O hře Latrunculi", "docAbout"));
             Items.Add(new HelpItem("Pravidla hry", "docRules"));
             Items.Add(new HelpItem("Ovládání hry", "docBoardControl"));
+            Items.Add(new HelpItem("Nápověda tahu", "docSuggestMove"));
             Items.Add(new HelpItem("Nastavení hry", "docPlayerSettings"));
 
             CurrentItem = Items[0];
