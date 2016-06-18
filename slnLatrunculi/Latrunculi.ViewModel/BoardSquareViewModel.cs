@@ -55,6 +55,20 @@ namespace Latrunculi.ViewModel
             }
         }
 
+        private bool _isSuggestedMove = false;
+        public bool IsSuggestedMove
+        {
+            get
+            {
+                return _isSuggestedMove;
+            }
+            set
+            {
+                _isSuggestedMove = value;
+                OnPropertyChanged("IsSuggestedMove");
+            }
+        }
+
         public void Init(Model.Coord.T coord, SquareColors sqColor)
         {
             Coord = coord;

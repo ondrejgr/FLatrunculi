@@ -57,6 +57,18 @@ namespace Latrunculi.ViewModel
         public event MoveSuggestionComputedEventHandler MoveSuggestionComputed;
         private void Model_MoveSuggestionComputed(object sender, MoveEventArgs e)
         {
+            if (e.Move.IsSuccess)
+            {
+                Move.T move = ((Common.Result<Move.T, ErrorDefinitions.Error>.Success)e.Move).Item;
+                Board.SetIsSuggestedMove(move.Source);
+                Board.SetIsSuggestedMove(move.Target);
+            }
+            else
+            {
+                Board.ClearIsSuggestedMove();
+            }
+
+
             if (MoveSuggestionComputed != null)
                 MoveSuggestionComputed(this, e);
         }

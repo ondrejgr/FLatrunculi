@@ -47,9 +47,6 @@ namespace Latrunculi.GUI
                 try
                 {
                     Model.Move.T move = ModelException.TryThrow<Model.Move.T>(e.Move);
-                    MessageBox.Show(this,
-                        string.Format("{0}", move),
-                        "Informace", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception exc)
                 {
@@ -497,6 +494,7 @@ namespace Latrunculi.GUI
             {
                 if (ViewModel.IsGameWaitingForHumanPlayerMove && !ViewModel.IsMoveSuggestionComputing)
                 {
+                    ViewModel.Board.ClearIsSuggestedMove();
                     ModelException.TryThrow<GameController.T>(Controller.TrySuggestMove());
                     CommandManager.InvalidateRequerySuggested();
                 }

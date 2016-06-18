@@ -61,6 +61,28 @@ namespace Latrunculi.ViewModel
             OnNumberOfRowsOrColsChanged();
         }
 
+        public void ClearIsSuggestedMove()
+        {
+            foreach (BoardRowViewModel rowVM in Rows)
+            {
+                foreach (BoardSquareViewModel sqVM in rowVM.Squares.OfType<BoardSquareViewModel>())
+                {
+                    sqVM.IsSuggestedMove = false;
+                }
+            }
+        }
+
+        public void SetIsSuggestedMove(Model.Coord.T coord)
+        {
+            foreach (BoardRowViewModel rowVM in Rows)
+            {
+                foreach (BoardSquareViewModel sqVM in rowVM.Squares.OfType<BoardSquareViewModel>())
+                {
+                    sqVM.IsSuggestedMove = sqVM.Coord.Equals(coord);
+                }
+            }
+        }
+
         public void RefreshFromModel(Latrunculi.Model.Board.T boardModel)
         {
             foreach (BoardRowViewModel rowVM in Rows)
