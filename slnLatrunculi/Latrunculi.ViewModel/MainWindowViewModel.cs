@@ -103,6 +103,7 @@ namespace Latrunculi.ViewModel
 
         private void Model_ActivePlayerChanged(object sender, EventArgs e)
         {
+            Board.ClearIsSuggestedMove();
             OnActivePlayerChanged();
         }
 

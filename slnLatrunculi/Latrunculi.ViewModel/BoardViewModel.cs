@@ -76,9 +76,11 @@ namespace Latrunculi.ViewModel
         {
             foreach (BoardRowViewModel rowVM in Rows)
             {
-                foreach (BoardSquareViewModel sqVM in rowVM.Squares.OfType<BoardSquareViewModel>())
+                foreach (BoardSquareViewModel sqVM in rowVM.Squares
+                        .OfType<BoardSquareViewModel>()
+                        .Where(sq => sq.Coord.Equals(coord)))
                 {
-                    sqVM.IsSuggestedMove = sqVM.Coord.Equals(coord);
+                    sqVM.IsSuggestedMove = true;
                 }
             }
         }

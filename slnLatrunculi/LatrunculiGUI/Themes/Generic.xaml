@@ -144,7 +144,6 @@
                                         </Setter.Value>
                                     </Setter>
                                 </DataTrigger>
-                                
                             </DataTemplate.Triggers>
                         </DataTemplate>
                         <Style TargetType="{x:Type Button}">
