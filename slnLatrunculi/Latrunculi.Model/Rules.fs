@@ -12,6 +12,7 @@ module Rules =
     let getInitialActiveColor =
         Piece.Colors.White
 
+        
     let getValidMoves (board: Board.T) (color: Piece.Colors) =
         let getValidMovesForCoord src =
             // src coord is already filtered - it is not empty and contains piece of active player
@@ -36,9 +37,16 @@ module Rules =
                         match tryGetMoveWithDir dir with
                         | Success move -> move::result
                         | _ -> result) [] Coord.Directions
-            
-        Seq.fold (fun result coord ->
-                    List.append result <| getValidMovesForCoord coord) [] <| board.GetCoordsWithPieceColor color
+    
+        List.collect (fun coord ->
+            getValidMovesForCoord coord) <| board.GetCoordsWithPieceColor color
+
+//    let getCoordsWithAnyValidMove (board: Board.T) (color: Piece.Colors) =
+//    List.
+//        Seq.fold (fun result coord ->
+//                    match List.tryHead getValidMovesForCoord coord
+//                    List.append result <| getValidMovesForCoord coord)
+//                [] <| board.GetCoordsWithPieceColor color
 
     let isMoveValid (board: Board.T) (color: Piece.Colors) (move: Move.T) =
         List.exists (fun m -> m = move) <| getValidMoves board color
