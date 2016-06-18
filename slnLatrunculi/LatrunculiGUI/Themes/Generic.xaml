@@ -67,14 +67,21 @@
                             <ctrls:Square Height="15" Width="15"/>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type vm:BoardSquareRowHeaderViewModel}">
-                            <ctrls:Square Height="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Row}, Path=SquareSize}" Width="15"/>
+                            <ctrls:Square Height="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Row}, Path=SquareSize}" Width="15">
+                                <TextBlock Text="{Binding Content}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </ctrls:Square>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type vm:BoardSquareColumnHeaderViewModel}">
-                            <ctrls:Square Height="15" Width="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Row}, Path=SquareSize}"/>
+                            <ctrls:Square Height="15" Width="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Row}, Path=SquareSize}">
+                                <TextBlock Text="{Binding Content}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </ctrls:Square>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type vm:BoardSquareViewModel}">
-                            <ctrls:Square Height="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Row}, Path=SquareSize}"
-                                  Width="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Row}, Path=SquareSize}"/>
+                            <ctrls:Square 
+                                Height="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Row}, Path=SquareSize}"
+                                Width="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Row}, Path=SquareSize}">
+                                <ctrls:Piece/>
+                            </ctrls:Square>
                         </DataTemplate>
                     </ControlTemplate.Resources>
                     <Border Background="{TemplateBinding Background}"
@@ -88,82 +95,91 @@
     </Style>
 
     <Style TargetType="{x:Type ctrls:Square}">
-        <Style.Resources>
-            <SolidColorBrush x:Key="scWhite" Color="WhiteSmoke"/>
-            <SolidColorBrush x:Key="scBlack" Color="DarkGray"/>
-        </Style.Resources>
+        <Setter Property="Command" Value="{x:Static ctrls:ControlCommands.BoardSquareClick}"/>
+        <Setter Property="CommandParameter" Value="{Binding}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ctrls:Square}">
-                    <ControlTemplate.Resources>
-                        <DataTemplate DataType="{x:Type vm:BoardSquareBottomLeftHeaderViewModel}">
-                            <TextBlock Text="{Binding Content}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </DataTemplate>
-                        <DataTemplate DataType="{x:Type vm:BoardSquareRowHeaderViewModel}">
-                           <TextBlock Text="{Binding Content}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </DataTemplate>
-                        <DataTemplate DataType="{x:Type vm:BoardSquareColumnHeaderViewModel}">
-                            <TextBlock Text="{Binding Content}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </DataTemplate>
-                        <DataTemplate DataType="{x:Type vm:BoardSquareViewModel}">
-                            <Border x:Name="bg">
-                                <Ellipse x:Name="ellipse" Stroke="Transparent" Margin="5,5,5,5">
-                                    <Ellipse.Fill>
-                                        <SolidColorBrush Color="Transparent"/>
-                                    </Ellipse.Fill>
-                                </Ellipse>
-                            </Border>
-                            <DataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding Path=SquareColor}" Value="scWhite">
-                                    <Setter TargetName="bg" Property="Background" Value="{StaticResource scWhite}" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Path=SquareColor}" Value="scBlack">
-                                    <Setter TargetName="bg" Property="Background" Value="{StaticResource scBlack}" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Path=IsSuggestedMove}" Value="True">
-                                    <Setter TargetName="bg" Property="Background">
-                                        <Setter.Value>
-                                            <SolidColorBrush Color="Yellow"/>
-                                        </Setter.Value>
-                                    </Setter>
-                                </DataTrigger>
-
-                                <DataTrigger Binding="{Binding Path=PieceType}" Value="ptWhite">
-                                    <Setter TargetName="ellipse" Property="Stroke" Value="Black" />
-                                    <Setter TargetName="ellipse" Property="Fill">
-                                        <Setter.Value>
-                                            <SolidColorBrush Color="White"/>
-                                        </Setter.Value>
-                                    </Setter>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Path=PieceType}" Value="ptBlack">
-                                    <Setter TargetName="ellipse" Property="Stroke" Value="White" />
-                                    <Setter TargetName="ellipse" Property="Fill">
-                                        <Setter.Value>
-                                            <SolidColorBrush Color="Black"/>
-                                        </Setter.Value>
-                                    </Setter>
-                                </DataTrigger>
-                            </DataTemplate.Triggers>
-                        </DataTemplate>
-                        <Style TargetType="{x:Type Button}">
-                            <Setter Property="Template">
+                    <Grid>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal">
+                                    <Storyboard>
+                                        <ThicknessAnimation From="1" To="0" Duration="0:00:00.001" Storyboard.TargetName="bg" Storyboard.TargetProperty="BorderThickness" />
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Active">
+                                    <Storyboard>
+                                        <ThicknessAnimation From="0" To="1" Duration="0:00:00.001" Storyboard.TargetName="bg" Storyboard.TargetProperty="BorderThickness" />
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Border x:Name="bg" BorderBrush="Navy" BorderThickness="0">
+                            <Border.Background>
+                                <SolidColorBrush Color="Transparent"/>
+                            </Border.Background>
+                            <ContentPresenter/>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Path=SquareColor}" Value="scWhite">
+                            <Setter TargetName="bg" Property="Background">
                                 <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type Button}">
-                                        <ContentControl Content="{Binding}" />
-                                    </ControlTemplate>
+                                    <SolidColorBrush Color="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Board}, Path=WhiteSquareColor}"/>
                                 </Setter.Value>
                             </Setter>
-                        </Style>
-                    </ControlTemplate.Resources>
-                    <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
-                        <Button Command="{x:Static ctrls:ControlCommands.BoardSquareClick}" CommandParameter="{Binding}" CommandTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"/>
-                    </Border>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=SquareColor}" Value="scBlack">
+                            <Setter TargetName="bg" Property="Background">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Board}, Path=BlackSquareColor}"/>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=IsSuggestedMove}" Value="True">
+                            <Setter TargetName="bg" Property="Background">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="Yellow"/>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
+
+    <Style TargetType="{x:Type ctrls:Piece}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ctrls:Piece}">
+                    <Ellipse x:Name="ellipse" Stroke="Transparent" Margin="5,5,5,5">
+                        <Ellipse.Fill>
+                            <SolidColorBrush Color="Transparent"/>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Path=PieceType}" Value="ptWhite">
+                            <Setter TargetName="ellipse" Property="Stroke" Value="Black" />
+                            <Setter TargetName="ellipse" Property="Fill">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="White"/>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=PieceType}" Value="ptBlack">
+                            <Setter TargetName="ellipse" Property="Stroke" Value="White" />
+                            <Setter TargetName="ellipse" Property="Fill">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="Black"/>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

@@ -59,6 +59,25 @@ namespace Latrunculi.GUI.Controls
         public static readonly DependencyProperty SquareSizeProperty =
             DependencyProperty.Register("SquareSize", typeof(int), typeof(Board), new PropertyMetadata(24));
 
+        public Color WhiteSquareColor
+        {
+            get { return (Color)GetValue(WhiteSquareColorProperty); }
+            set { SetValue(WhiteSquareColorProperty, value); }
+        }
+        public static readonly DependencyProperty WhiteSquareColorProperty =
+            DependencyProperty.Register("WhiteSquareColor", typeof(Color), typeof(Board), new PropertyMetadata(Colors.WhiteSmoke));
+
+
+        public Color BlackSquareColor
+        {
+            get { return (Color)GetValue(BlackSquareColorProperty); }
+            set { SetValue(BlackSquareColorProperty, value); }
+        }
+        public static readonly DependencyProperty BlackSquareColorProperty =
+            DependencyProperty.Register("BlackSquareColor", typeof(Color), typeof(Board), new PropertyMetadata(Colors.DarkGray));
+        
+
+
 
         public bool IsActive
         {
@@ -81,7 +100,7 @@ namespace Latrunculi.GUI.Controls
         private void BoardSquareClick_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = true;
+            e.CanExecute = IsActive;
         }
 
         private void BoardSquareClick_Executed(object sender, ExecutedRoutedEventArgs e)
