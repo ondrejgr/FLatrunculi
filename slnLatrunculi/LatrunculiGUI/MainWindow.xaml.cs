@@ -34,9 +34,30 @@ namespace Latrunculi.GUI
         {
             InitializeComponent();
             ViewModel = viewModel;
-            ViewModel.GameError += ViewModel_GameError;
             ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+            ViewModel.MoveSuggestionComputed += ViewModel_MoveSuggestionComputed;
+            ViewModel.GameError += ViewModel_GameError;
             Controller = controller;
+        }
+
+        private void ViewModel_MoveSuggestionComputed(object sender, Model.MoveEventArgs e)
+        {
+            Dispatcher.Invoke(new Action(() =>
+            {
+                try
+                {
+                    Model.Move.T move = ModelException.TryThrow<Model.Move.T>(e.Move);
+                    MessageBox.Show(this,
+                        string.Format("{0}", move),
+                        "Informace", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show(this,
+                        string.Format("Nepodařilo se vypočítat nejlepší tah: {0}", ViewModelCommon.ConvertExceptionToShortString(exc)),
+                        "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }));
         }
 
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)

@@ -9,11 +9,16 @@ type GameStatus =
     | WaitingForHumanPlayerMove
     | Finished
 
+type MoveEventArgs(move: Result<Move.T, Error>) =
+    inherit EventArgs()
+    member val Move = move
+
 type GameErrorEventArgs(error: ErrorDefinitions.Error) =
     inherit EventArgs()
     member val Error = error with get
 
 type ModelChangeEventHandler = delegate of obj * EventArgs -> unit
+type MoveSuggestionComputedEventHandler = delegate of obj * MoveEventArgs -> unit
 type GameErrorEventHandler = delegate of obj * GameErrorEventArgs -> unit
 
 module GameModel =
@@ -25,6 +30,7 @@ module GameModel =
         let playerSettingsChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let activePlayerChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let isMoveSuggestionComputingChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
+        let moveSuggestionComputedEvent = new Event<MoveSuggestionComputedEventHandler, MoveEventArgs>()
         let boardChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let gameErrorEvent = new Event<GameErrorEventHandler, GameErrorEventArgs>()
               
@@ -43,21 +49,31 @@ module GameModel =
         [<CLIEvent>]
         member this.IsMoveSuggestionComputingChanged = isMoveSuggestionComputingChangedEvent.Publish
         [<CLIEvent>]
+        member this.MoveSuggestionComputed = moveSuggestionComputedEvent.Publish
+        [<CLIEvent>]
         member this.BoardChanged = boardChangedEvent.Publish
         [<CLIEvent>]
         member this.GameError = gameErrorEvent.Publish
 
         member private this.OnStatusChanged() =
             statusChangedEvent.Trigger(this, EventArgs.Empty)
+
         member private this.OnPlayerSettingsChanged() =
             playerSettingsChangedEvent.Trigger(this, EventArgs.Empty)
+
         member private this.OnActivePlayerChanged() =
             activePlayerChangedEvent.Trigger(this, EventArgs.Empty)
+
         member private this.OnIsMoveSuggestionComputingChanged() =
             isMoveSuggestionComputingChangedEvent.Trigger(this, EventArgs.Empty)
+
+        member this.RaiseMoveSuggestionComputedEvent(move) =
+            moveSuggestionComputedEvent.Trigger(this, MoveEventArgs(move))
+
         member private this.OnBoardChanged() =
             boardChangedEvent.Trigger(this, EventArgs.Empty)
-        member this.ReportGameError(error) =
+
+        member this.RaiseGameErrorEvent(error) =
             gameErrorEvent.Trigger(this, GameErrorEventArgs(error))
 
         member this.setStatus x =

@@ -46,7 +46,7 @@ module GameController =
             
         member private this.ReportGameError e =
             this.Model.setStatus(GameStatus.Paused) |> ignore
-            this.Model.ReportGameError(e)
+            this.Model.RaiseGameErrorEvent(e)
 
         member private this.GameLoopCycle(): Async<Result<GameLoopCycleResult, Error>> =
             let getPlayerMoveWorkflow =
@@ -88,12 +88,6 @@ module GameController =
                     this.ReportGameError e
                     return () }
 
-        member private this.SuggestMove(color) =
-            async {
-                use! cnl = Async.OnCancel(fun () -> this.Model.setIsMoveSuggestionComputing false |> ignore)
-                let! move = Brain.tryGetBestMove this.Model.Board color
-                () }
-
         member private this.TryGetCts() =
             match this.cts with
             | Some cts -> Success cts
@@ -121,6 +115,14 @@ module GameController =
                 let! cts = this.TryGetMoveSuggestionCts()
                 cts.Cancel()
                 return this }
+
+        member private this.SuggestMove(color) =
+            async {
+                use! cnl = Async.OnCancel(fun () -> this.Model.setIsMoveSuggestionComputing false |> ignore)
+                let! move = Brain.tryGetBestMove this.Model.Board color
+                this.Model.setIsMoveSuggestionComputing false |> ignore
+                this.Model.RaiseMoveSuggestionComputedEvent(move)
+                () }
 
         member this.TrySuggestMove() =
             let checkGameStatus =

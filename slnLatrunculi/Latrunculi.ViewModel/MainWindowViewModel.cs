@@ -32,6 +32,7 @@ namespace Latrunculi.ViewModel
             Model.PlayerSettingsChanged -= new ModelChangeEventHandler(Model_PlayerSettingsChanged);
             Model.ActivePlayerChanged -= new ModelChangeEventHandler(Model_ActivePlayerChanged);
             Model.IsMoveSuggestionComputingChanged -= new ModelChangeEventHandler(Model_IsMoveSuggestionComputingChanged);
+            Model.MoveSuggestionComputed -= new MoveSuggestionComputedEventHandler(Model_MoveSuggestionComputed);
             Model.GameError -= new GameErrorEventHandler(Model_GameError);
         }
 
@@ -42,6 +43,7 @@ namespace Latrunculi.ViewModel
             Model.PlayerSettingsChanged += new ModelChangeEventHandler(Model_PlayerSettingsChanged);
             Model.ActivePlayerChanged += new ModelChangeEventHandler(Model_ActivePlayerChanged);
             Model.IsMoveSuggestionComputingChanged += new ModelChangeEventHandler(Model_IsMoveSuggestionComputingChanged);
+            Model.MoveSuggestionComputed += new MoveSuggestionComputedEventHandler(Model_MoveSuggestionComputed);
             Model.GameError += new GameErrorEventHandler(Model_GameError);
 
             Board.Init(Model.Board);
@@ -50,6 +52,13 @@ namespace Latrunculi.ViewModel
             OnActivePlayerChanged();
 
             OnStatusChanged();
+        }
+
+        public event MoveSuggestionComputedEventHandler MoveSuggestionComputed;
+        private void Model_MoveSuggestionComputed(object sender, MoveEventArgs e)
+        {
+            if (MoveSuggestionComputed != null)
+                MoveSuggestionComputed(this, e);
         }
 
         private void Model_IsMoveSuggestionComputingChanged(object sender, EventArgs e)
