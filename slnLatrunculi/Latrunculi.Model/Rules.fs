@@ -33,14 +33,20 @@ module Rules =
                 let! tarsq = Board.tryGetSquare board tar
                 return! tryCreateMove tar tarsq }
             
-        Seq.fold (fun result dir ->
-                    match tryGetMoveWithDir dir with
-                    | Success move -> move::result
-                    | _ -> result) [] Coord.Directions
+        seq {
+            for dir in Coord.Directions do
+                match tryGetMoveWithDir dir with
+                | Success move -> yield move
+                | _ -> () }
+
+//        Seq.fold (fun result dir ->
+//                    match tryGetMoveWithDir dir with
+//                    | Success move -> move::result
+//                    | _ -> result) [] Coord.Directions
 
     let getValidMoves (board: Board.T) (color: Piece.Colors) =
         let getValidMovesForBoardColorCoord coord =
-            getValidMovesForCoord board color coord
+            Seq.toList <| getValidMovesForCoord board color coord
         List.collect getValidMovesForBoardColorCoord <| board.GetCoordsWithPieceColor color
 
 //    let getCoordsWithAnyValidMove (board: Board.T) (color: Piece.Colors) =
