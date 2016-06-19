@@ -37,7 +37,7 @@ namespace Latrunculi.GUI.Controls
 
         public BoardSquareClickedEventArgs(ViewModel.BoardSquareViewModel viewModel)
         {
-            BlinkRed = true;
+            BlinkRed = false;
             Square = viewModel;
         }
     }

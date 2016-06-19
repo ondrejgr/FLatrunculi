@@ -1,4 +1,5 @@
 ﻿using Latrunculi.Controller;
+using Latrunculi.Model;
 using Latrunculi.ViewModel;
 using Microsoft.Win32;
 using System;
@@ -17,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static Common;
 
 namespace Latrunculi.GUI
 {
@@ -107,7 +109,7 @@ namespace Latrunculi.GUI
             e.Handled = true;
             if (WindowState == WindowState.Normal || WindowState == WindowState.Maximized)
             {
-                int width = ((int)e.NewSize.Width - 300) / ViewModel.Board.NumberOfCols;
+                int width = ((int)e.NewSize.Width - 300) / ViewModel.NumberOfCols;
                 if (width < 18)
                     width = 18;
                 if (width > 100)
@@ -408,6 +410,7 @@ namespace Latrunculi.GUI
                 if (ViewModel.IsGamePaused)
                 {
                     ModelException.TryThrow<GameController.T>(Controller.TryResume());
+                    FocusBoard();
                     CommandManager.InvalidateRequerySuggested();
                 }
             }
@@ -439,6 +442,7 @@ namespace Latrunculi.GUI
 
                 ModelException.TryThrow<GameController.T>(Controller.TryNewGame());
                 ModelException.TryThrow<GameController.T>(Controller.TryRun());
+                FocusBoard();
                 CommandManager.InvalidateRequerySuggested();
             }
         }
@@ -489,7 +493,7 @@ namespace Latrunculi.GUI
             {
                 if (ViewModel.IsGameWaitingForHumanPlayerMove && !ViewModel.IsMoveSuggestionComputing)
                 {
-                    ViewModel.Board.ClearIndications();
+                    ViewModel.ClearBoardIndications();
                     ModelException.TryThrow<GameController.T>(Controller.TrySuggestMove());
                     CommandManager.InvalidateRequerySuggested();
                 }
@@ -506,15 +510,70 @@ namespace Latrunculi.GUI
             {
                 if (ViewModel.IsGameWaitingForHumanPlayerMove)
                 {
-                    bool isValidMoveSource = ModelException.TryThrow<bool>(Controller.MoveExistsForCoord(e.Square.Coord));
-                    e.BlinkRed = !isValidMoveSource;
+                    if (ViewModel.Source != null)
+                    {
+                        if (e.Square.Coord.Equals(ViewModel.Source) && e.Square.IsSelected)
+                        {
+                            // clear selection if same source was clicked
+                            ViewModel.ClearSelection();
+                            return;
+                        }
+                        // source was selected, try create move from target
+                        Result<Move.T, ErrorDefinitions.Error> result = 
+                                Controller.TryGetValidMove(ViewModel.Source, e.Square.Coord);
+
+                        if (result.IsSuccess)
+                        {
+                            // user selected valid move
+                            Move.T move = ((Result<Move.T, ErrorDefinitions.Error>.Success)result).Item;
+                            ModelException.TryThrow<Move.T>(Controller.TrySetSelectedMove(move));
+                        }
+                        else
+                        {
+                            // unable to create move with specified target
+                            ErrorDefinitions.Error err = ((Result<Move.T, ErrorDefinitions.Error>.Error)result).Item;
+                            if (!err.IsNoValidMoveExists)
+                                throw new ModelException(err);
+                            else
+                            {
+                                // try to use it as new source
+                                bool isValidMoveSource = ModelException.TryThrow<bool>(Controller.TryMoveExistsForCoord(e.Square.Coord));
+                                if (!isValidMoveSource)
+                                {
+                                    e.BlinkRed = true;
+                                    return;
+                                }
+                                else
+                                    ViewModel.ClearSelection();
+                            }
+                        }
+                    }
+
+                    if (ViewModel.Source == null)
+                    {
+                        // no source exists, select this coord as new source
+                        bool isValidMoveSource = ModelException.TryThrow<bool>(Controller.TryMoveExistsForCoord(e.Square.Coord));
+                        e.BlinkRed = !isValidMoveSource;
+
+                        if (isValidMoveSource)
+                        {
+                            ViewModel.SetSource(e.Square.Coord);
+                            Controller.GetPossibleTargetCoords(ViewModel.Source).ForEach(ViewModel.SetIsSelected);
+                        }
+                    }
+
                     CommandManager.InvalidateRequerySuggested();
                 }
             }
             catch (Exception exc)
             {
-                MessageBox.Show(this, "Došlo k chybě." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(this, "Nebyl vybrán platný tah." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void FocusBoard()
+        {
+            Dispatcher.BeginInvoke(new Action(() => board.Focus()), System.Windows.Threading.DispatcherPriority.Background);
         }
     }
 }

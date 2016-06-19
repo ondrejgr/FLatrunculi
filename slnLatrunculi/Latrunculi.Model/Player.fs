@@ -19,7 +19,7 @@ module Player =
     type PlayerLevels = Levels * Levels
 
     let mutable Board: Board.T option = None
-    let mutable getHumanPlayerMoveFromUIWorkflow: (unit -> Async<Result<Move.T,Error>>) option = None
+    let mutable getHumanPlayerMoveFromUIWorkflow: (unit -> Async<Move.T>) option = None
 
     [<AbstractClass>]
     type T(name: Name, level: Levels, color: Piece.Colors) =
@@ -37,7 +37,7 @@ module Player =
                 match getHumanPlayerMoveFromUIWorkflow with
                 | Some getHumanPlayerMoveFromUI ->
                     let! move = getHumanPlayerMoveFromUI()
-                    return move
+                    return Success move
                 | None ->
                     return Error NoGetMoveFromUICallbackSpecified }
 

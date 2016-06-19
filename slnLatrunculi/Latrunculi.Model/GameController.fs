@@ -15,6 +15,7 @@ module GameController =
 
     type T(model: GameModel.T) = 
 
+        member val private humanSelectedMove: HumanSelectedMove.T option = None with get, set
         member val private cts: CancellationTokenSource option = None with get, set
         member val private ctsMoveSuggestion: CancellationTokenSource option = None with get, set
         member private this.Model = model
@@ -30,10 +31,19 @@ module GameController =
 
         member private this.GetHumanMoveFromUI() =
             async {
-                this.Model.setStatus(GameStatus.WaitingForHumanPlayerMove) |> ignore
                 let request = HumanSelectedMove.create
+                this.humanSelectedMove <- Some request
+
+                this.Model.setStatus(GameStatus.WaitingForHumanPlayerMove) |> ignore
                 let! move = Async.AwaitEvent(request.HumanMoveSelected)
                 return move.Move }
+
+        member this.TrySetSelectedMove move =
+            match this.humanSelectedMove with
+            | Some hsm -> 
+                hsm.SetMove move
+                Success move
+            | _ -> Error HumanSelectedMoveRequestDoesNotExists
 
         member this.TryNewGame() =
             Player.Board <- Some model.Board
@@ -168,7 +178,7 @@ module GameController =
                 Async.Start(this.GameLoop(), cts.Token)
                 return this }
 
-        member this.MoveExistsForCoord(coord): Result<bool, Error> =
+        member this.TryMoveExistsForCoord(coord): Result<bool, Error> =
             let tryGetValidMovesForCoord color =
                 let move = Seq.tryHead <| Rules.getValidMovesForCoord this.Model.Board color coord
                 match move with
@@ -178,6 +188,22 @@ module GameController =
                 let! color = this.Model.tryGetActiveColor()
                 let result = tryGetValidMovesForCoord color
                 return result }
+
+        member this.TryGetValidMove (src: Coord.T) (tar: Coord.T): Result<Move.T, Error> =
+            maybe {
+                let! color = this.Model.tryGetActiveColor()
+                let! move = match Seq.tryFind (fun (m: Move.T) -> m.Source = src && m.Target = tar) 
+                                        <| Rules.getValidMovesForCoord this.Model.Board color src with
+                            | Some m -> Success m
+                            | _ -> Error NoValidMoveExists
+                return move }
+
+        member this.GetPossibleTargetCoords (src: Coord.T) =
+            match this.Model.tryGetActiveColor() with
+            | Success color ->
+                        System.Collections.Generic.List<Coord.T>(Seq.map (fun (coord: Move.T) -> coord.Target) 
+                                <| Rules.getValidMovesForCoord this.Model.Board color src)
+            | _ -> System.Collections.Generic.List<Coord.T>(List.empty)
 
     let create (model: GameModel.T) =
         T(model)

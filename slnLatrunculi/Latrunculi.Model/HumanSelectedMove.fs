@@ -1,7 +1,7 @@
 ﻿namespace Latrunculi.Model
 open System
 
-type HumanMoveSelectedEventArgs(move: Result<Move.T, Error>) =
+type HumanMoveSelectedEventArgs(move: Move.T) =
     inherit EventArgs()
     member val Move = move with get
 
@@ -18,5 +18,11 @@ module HumanSelectedMove =
         member private this.OnHumanMoveSelected(move) =
             humanMoveSelectedEvent.Trigger(this, HumanMoveSelectedEventArgs(move))
 
+        member this.SetMove (move: Move.T) =
+            this.OnHumanMoveSelected(move)            
+
     let create =
         T()
+
+    let setMove (x: T) move =
+        x.SetMove move

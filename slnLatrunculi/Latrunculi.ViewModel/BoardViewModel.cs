@@ -92,10 +92,34 @@ namespace Latrunculi.ViewModel
                 foreach (BoardSquareViewModel sqVM in rowVM.Squares.OfType<BoardSquareViewModel>())
                 {
                     sqVM.SetIsSuggestedMove(false);
-                    sqVM.SetIsGreen(false);
                 }
             }
         }
+
+        public void ClearIsSelected()
+        {
+            foreach (BoardRowViewModel rowVM in Rows)
+            {
+                foreach (BoardSquareViewModel sqVM in rowVM.Squares.OfType<BoardSquareViewModel>())
+                {
+                    sqVM.SetIsSelected(false);
+                }
+            }
+        }
+
+        public void SetIsSelected(Model.Coord.T coord)
+        {
+            foreach (BoardRowViewModel rowVM in Rows)
+            {
+                foreach (BoardSquareViewModel sqVM in rowVM.Squares
+                        .OfType<BoardSquareViewModel>()
+                        .Where(sq => sq.Coord.Equals(coord)))
+                {
+                    sqVM.SetIsSelected(true);
+                }
+            }
+        }
+
 
         public void RefreshFromModel(Latrunculi.Model.Board.T boardModel)
         {

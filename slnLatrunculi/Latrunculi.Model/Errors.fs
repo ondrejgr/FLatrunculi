@@ -42,3 +42,4 @@ type Error =
     | UnableToGetPlayerMove
     | UnableToGetActivePlayer
     | MoveSuggestionAlreadyComputing
+    | HumanSelectedMoveRequestDoesNotExists

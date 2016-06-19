@@ -106,7 +106,46 @@ namespace Latrunculi.ViewModel
 
         public void ClearBoardIndicationsAndSelection()
         {
+            ClearBoardIndications();
+            ClearSelection();
+        }
+
+        public void ClearBoardIndications()
+        {
             Board.ClearIndications();
+        }
+
+        public void ClearSelection()
+        {
+            Board.ClearIsSelected();
+            Source = null;
+        }
+
+        public void SetSource(Coord.T coord)
+        {
+            if (coord == null)
+                ClearSelection();
+            else
+            {
+                Source = coord;
+                Board.SetIsSelected(coord);
+            }
+        }
+
+        public void SetIsSelected(Coord.T coord)
+        {
+            Board.SetIsSelected(coord);
+        }
+
+        public int NumberOfCols
+        {
+            get
+            {
+                if (Board != null)
+                    return Board.NumberOfCols;
+                else
+                    return 0;
+            }
         }
 
         private void OnPlayerSettingsChanged()
@@ -394,7 +433,7 @@ namespace Latrunculi.ViewModel
             {
                 return _source;
             }
-            set
+            private set
             {
                 _source = value;
                 OnPropertyChanged("Source");
