@@ -101,6 +101,22 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ctrls:Square}">
+                    <ControlTemplate.Resources>
+                        <Storyboard x:Key="blinkRedBorderAnimation" Duration="00:00:01.600" >
+                            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                        Storyboard.TargetName="{Binding}"
+                                                          AutoReverse="True">
+                                <ColorAnimationUsingKeyFrames.KeyFrames>
+                                    <DiscreteColorKeyFrame KeyTime="0:00:00.000" Value="Transparent"/>
+                                    <DiscreteColorKeyFrame KeyTime="0:00:00.100" Value="Red"/>
+                                    <DiscreteColorKeyFrame KeyTime="0:00:00.400" Value="Transparent"/>
+                                    <DiscreteColorKeyFrame KeyTime="0:00:00.700" Value="Red"/>
+                                    <DiscreteColorKeyFrame KeyTime="0:00:01.000" Value="Transparent"/>
+                                    <DiscreteColorKeyFrame KeyTime="0:00:01.300" Value="Red"/>
+                                </ColorAnimationUsingKeyFrames.KeyFrames>
+                            </ColorAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </ControlTemplate.Resources>
                     <Grid>
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
@@ -112,18 +128,6 @@
                                 <VisualState x:Name="Active">
                                     <Storyboard>
                                         <ThicknessAnimation From="0" To="1" Duration="0:00:00.001" Storyboard.TargetName="bg" Storyboard.TargetProperty="BorderThickness" />
-                                    </Storyboard>
-                                </VisualState>
-                            </VisualStateGroup>
-                            <VisualStateGroup x:Name="SelectionStates">
-                                <VisualState x:Name="NotSelected">
-                                    <Storyboard>
-                                        <ColorAnimation To="Transparent" Duration="0:00:00.001" Storyboard.TargetName="bgSelected" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" />
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="InvalidSelection">
-                                    <Storyboard>
-                                        <ColorAnimation To="Red" Duration="0:00:00.001" Storyboard.TargetName="bgSelected" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" />
                                     </Storyboard>
                                 </VisualState>
                             </VisualStateGroup>

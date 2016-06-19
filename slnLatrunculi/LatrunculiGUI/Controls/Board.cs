@@ -112,6 +112,8 @@ namespace Latrunculi.GUI.Controls
                 ViewModel.BoardSquareViewModel vm = ((ViewModel.BoardSquareViewModel)e.Parameter);
                 if (BoardSquareClicked != null)
                     BoardSquareClicked(this, new BoardSquareClickedEventArgs(vm));
+
+                sq.BlinkRed();
             }
         }
     }
