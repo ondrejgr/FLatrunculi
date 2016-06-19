@@ -45,12 +45,9 @@ namespace Latrunculi.ViewModel
             Model.IsMoveSuggestionComputingChanged += new ModelChangeEventHandler(Model_IsMoveSuggestionComputingChanged);
             Model.MoveSuggestionComputed += new MoveSuggestionComputedEventHandler(Model_MoveSuggestionComputed);
             Model.GameError += new GameErrorEventHandler(Model_GameError);
-
             Board.Init(Model.Board);
-            OnBoardChanged();
-            OnPlayerSettingsChanged();
-            OnActivePlayerChanged();
 
+            OnPlayerSettingsChanged();
             OnStatusChanged();
         }
 
@@ -89,35 +86,27 @@ namespace Latrunculi.ViewModel
         private void Model_BoardChanged(object sender, EventArgs e)
         {
             ClearBoardIndicationsAndSelection();
-            OnBoardChanged();
+            Board.RefreshFromModel(Model.Board);
         }
 
         private void Model_StatusChanged(object sender, EventArgs e)
         {
-            ClearBoardIndicationsAndSelection();
             OnStatusChanged();
         }
 
         private void Model_PlayerSettingsChanged(object sender, EventArgs e)
         {
-            ClearBoardIndicationsAndSelection();
             OnPlayerSettingsChanged();
         }
 
         private void Model_ActivePlayerChanged(object sender, EventArgs e)
         {
-            ClearBoardIndicationsAndSelection();
             OnActivePlayerChanged();
         }
 
         public void ClearBoardIndicationsAndSelection()
         {
             Board.ClearIndications();
-        }
-
-        private void OnBoardChanged()
-        {
-            Board.RefreshFromModel(Model.Board);
         }
 
         private void OnPlayerSettingsChanged()
@@ -128,6 +117,7 @@ namespace Latrunculi.ViewModel
 
         private void OnActivePlayerChanged()
         {
+            ClearBoardIndicationsAndSelection();
             WhitePlayer.IsActive = Model.isWhitePlayerActive;
             BlackPlayer.IsActive = Model.isBlackPlayerActive;
             Application.Current.Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
@@ -135,6 +125,8 @@ namespace Latrunculi.ViewModel
 
         private void OnStatusChanged()
         {
+            ClearBoardIndicationsAndSelection();
+
             OnPropertyChanged("Status");
             OnPropertyChanged("IsGameCreated");
             OnPropertyChanged("IsGameRunning");
@@ -392,6 +384,20 @@ namespace Latrunculi.ViewModel
             {
                 _statusBarText = value;
                 OnPropertyChanged("StatusBarText");
+            }
+        }
+
+        private Coord.T _source;
+        public Coord.T Source
+        {
+            get
+            {
+                return _source;
+            }
+            set
+            {
+                _source = value;
+                OnPropertyChanged("Source");
             }
         }
     }
