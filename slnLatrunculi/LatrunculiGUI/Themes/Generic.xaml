@@ -158,6 +158,13 @@
                                 </Setter.Value>
                             </Setter>
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding Path=IsGreen}" Value="True">
+                            <Setter TargetName="bg" Property="Background">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="Green"/>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

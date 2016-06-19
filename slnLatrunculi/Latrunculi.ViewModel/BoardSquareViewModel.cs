@@ -74,23 +74,23 @@ namespace Latrunculi.ViewModel
             IsSuggestedMove = value;
         }
 
-        private bool _validMoveExists = false;
-        public bool ValidMoveExists
+        private bool _isGreen = false;
+        public bool IsGreen
         {
             get
             {
-                return _validMoveExists;
+                return _isGreen;
             }
             private set
             {
-                _validMoveExists = value;
-                OnPropertyChanged("ValidMoveExists");
+                _isGreen = value;
+                OnPropertyChanged("IsGreen");
             }
         }
 
-        public void SetValidMoveExists(bool value)
+        public void SetIsGreen(bool value)
         {
-            ValidMoveExists = value;
+            IsGreen = value;
         }
 
         public void Init(Model.Coord.T coord, SquareColors sqColor)

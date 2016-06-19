@@ -110,6 +110,9 @@ module Coord =
                 let! coord = tryCreate col row
                 return coord }
 
+    let createExn x y =
+        unwrapResultExn <| tryCreate x y
+
     let createFromStringExn (s: string) =
         unwrapResultExn <| tryCreateFromString s
 

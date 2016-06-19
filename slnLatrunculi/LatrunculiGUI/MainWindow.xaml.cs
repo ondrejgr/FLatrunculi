@@ -417,22 +417,6 @@ namespace Latrunculi.GUI
             }
         }
 
-        private void board_BoardSquareClicked(object sender, Controls.BoardSquareClickedEventArgs e)
-        {
-            try
-            {
-                if (ViewModel.IsGameWaitingForHumanPlayerMove && !ViewModel.IsMoveSuggestionComputing)
-                {
-
-                    CommandManager.InvalidateRequerySuggested();
-                }
-            }
-            catch (Exception exc)
-            {
-                MessageBox.Show(this, "Došlo k chybě." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
         private PlayerSettingsViewModel TryShowSettings()
         {
             PlayerSettingsViewModel vm = (PlayerSettingsViewModel)ViewModel.Settings.Clone();
@@ -505,7 +489,7 @@ namespace Latrunculi.GUI
             {
                 if (ViewModel.IsGameWaitingForHumanPlayerMove && !ViewModel.IsMoveSuggestionComputing)
                 {
-                    ViewModel.Board.ClearIsSuggestedMove();
+                    ViewModel.Board.ClearIndications();
                     ModelException.TryThrow<GameController.T>(Controller.TrySuggestMove());
                     CommandManager.InvalidateRequerySuggested();
                 }
@@ -513,6 +497,23 @@ namespace Latrunculi.GUI
             catch (Exception exc)
             {
                 MessageBox.Show(this, "Nepodařilo se napovědět tah." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void board_BoardSquareClicked(object sender, Controls.BoardSquareClickedEventArgs e)
+        {
+            try
+            {
+                if (ViewModel.IsGameWaitingForHumanPlayerMove)
+                {
+                    bool isValidMoveSource = ModelException.TryThrow<bool>(Controller.MoveExistsForCoord(e.Square.Coord));
+                    e.BlinkRed = !isValidMoveSource;
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(this, "Došlo k chybě." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

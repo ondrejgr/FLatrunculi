@@ -12,6 +12,7 @@
         MinHeight="600" MinWidth="800"
         Height="700" Width="1000"
         Closing="Window_Closing"
+        ShowActivated="True"
         SizeChanged="Window_SizeChanged"
         x:Name="win">
     <Window.DataContext>
@@ -166,7 +167,7 @@
             <ctrls:Board x:Name="board" 
                          ItemsSource="{Binding Board.Rows}"
                          IsActive="{Binding IsGameWaitingForHumanPlayerMove}"
-                         BoardSquareClicked="board_BoardSquareClicked" 
+                         BoardSquareClicked="board_BoardSquareClicked"
                          Grid.Column="1" Grid.Row="0"/>
             <ctrls:PlayerControl Content="{Binding BlackPlayer}" Grid.Column="2"/>
         </Grid>

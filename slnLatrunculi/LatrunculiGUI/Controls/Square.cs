@@ -63,8 +63,8 @@ namespace Latrunculi.GUI.Controls
 
         private void UpdateMouseOverState()
         {
-            bool isActive = (Board != null) && Board.IsActive && (DataContext is ViewModel.BoardSquareViewModel);
-            if (IsMouseOver && isActive && ViewModel.ValidMoveExists)
+            bool isActive = (Board != null) && Board.IsActive;
+            if (IsMouseOver && isActive)
                 VisualStateManager.GoToState(this, "Active", true);
             else
                 VisualStateManager.GoToState(this, "Normal", true);

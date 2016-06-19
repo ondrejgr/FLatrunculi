@@ -127,12 +127,6 @@ module GameModel =
                 Success ()
             | None -> Error NoPlayerOnMove
 
-        member this.tryGetListOfCoordsWithAnyValidMove() =
-            maybe {
-                let! color = this.tryGetActiveColor()
-                let! coords = Success (Rules.getCoordsWithAnyValidMove this.Board color)
-                return System.Collections.Generic.List<Coord.T>(coords) }
-
         member this.tryInitBoard() =
             match Board.tryInit this.Board Rules.getInitialBoardSquares with
                     | Error e -> Error UnableToInitializeBoard

@@ -88,25 +88,31 @@ namespace Latrunculi.ViewModel
 
         private void Model_BoardChanged(object sender, EventArgs e)
         {
+            ClearBoardIndicationsAndSelection();
             OnBoardChanged();
         }
 
         private void Model_StatusChanged(object sender, EventArgs e)
         {
-            Board.ClearIsSuggestedMove();
+            ClearBoardIndicationsAndSelection();
             OnStatusChanged();
         }
 
         private void Model_PlayerSettingsChanged(object sender, EventArgs e)
         {
+            ClearBoardIndicationsAndSelection();
             OnPlayerSettingsChanged();
         }
 
         private void Model_ActivePlayerChanged(object sender, EventArgs e)
         {
-            Board.ClearIsSuggestedMove();
-            Board.ActivateSquaresWithValidMoves(ModelException.TryThrow<List<Coord.T>>(Model.tryGetListOfCoordsWithAnyValidMove()));
+            ClearBoardIndicationsAndSelection();
             OnActivePlayerChanged();
+        }
+
+        public void ClearBoardIndicationsAndSelection()
+        {
+            Board.ClearIndications();
         }
 
         private void OnBoardChanged()

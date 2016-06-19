@@ -85,13 +85,14 @@ namespace Latrunculi.ViewModel
             }
         }
 
-        public void ActivateSquaresWithValidMoves(List<Model.Coord.T> coords)
+        public void ClearIndications()
         {
             foreach (BoardRowViewModel rowVM in Rows)
             {
                 foreach (BoardSquareViewModel sqVM in rowVM.Squares.OfType<BoardSquareViewModel>())
                 {
-                    sqVM.SetValidMoveExists(coords.Exists(c => c.Equals(sqVM.Coord)));
+                    sqVM.SetIsSuggestedMove(false);
+                    sqVM.SetIsGreen(false);
                 }
             }
         }

@@ -25,4 +25,6 @@ let controller = GameController.create model
 
 unwrapResultExn <| controller.TryNewGame()
 
+unwrapResultExn <| controller.TryRun()
 
+let activeColor = unwrapResultExn <| model.tryGetActiveColor()

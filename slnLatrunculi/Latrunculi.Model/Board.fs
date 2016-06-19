@@ -46,9 +46,6 @@ module Board =
                                 | _ -> failwith "Souřadnici se nepodařilo vytvořit."
                     yield (coord, square) }
 
-    let getCoordsWithPieceColor (board: T) (color: Piece.Colors) =
-        board.GetCoordsWithPieceColor(color)
-
     let getSquare (board: T) coord =
         board.GetSquare coord
 
@@ -56,7 +53,7 @@ module Board =
         Success (getSquare board coord)
 
     let move (board: T) (move: BoardMove.T) =
-        let m = move.Move
+        let m = move.Move 
         board.ChangeSquare m.Source m.NewSourceSquare
         board.ChangeSquare m.Target m.NewTargetSquare
         List.iter (fun (x: RemovedPiece.T) ->

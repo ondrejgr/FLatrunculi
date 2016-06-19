@@ -23,15 +23,22 @@ namespace Latrunculi.GUI.Controls
     [ComVisible(true)]
     public class BoardSquareClickedEventArgs: EventArgs
     {
-        public ViewModel.BoardSquareViewModel vm
+        public ViewModel.BoardSquareViewModel Square
         {
             get;
             private set;
         }
 
+        public bool BlinkRed
+        {
+            get;
+            set;
+        }
+
         public BoardSquareClickedEventArgs(ViewModel.BoardSquareViewModel viewModel)
         {
-            vm = viewModel;
+            BlinkRed = true;
+            Square = viewModel;
         }
     }
 
@@ -111,9 +118,12 @@ namespace Latrunculi.GUI.Controls
                 Controls.Square sq = (Controls.Square)e.OriginalSource;
                 ViewModel.BoardSquareViewModel vm = ((ViewModel.BoardSquareViewModel)e.Parameter);
                 if (BoardSquareClicked != null)
-                    BoardSquareClicked(this, new BoardSquareClickedEventArgs(vm));
-
-                sq.BlinkRed();
+                {
+                    BoardSquareClickedEventArgs arg = new BoardSquareClickedEventArgs(vm);
+                    BoardSquareClicked(this, arg);
+                    if (arg.BlinkRed)
+                        sq.BlinkRed();
+                }
             }
         }
     }

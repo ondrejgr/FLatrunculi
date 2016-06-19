@@ -168,5 +168,16 @@ module GameController =
                 Async.Start(this.GameLoop(), cts.Token)
                 return this }
 
+        member this.MoveExistsForCoord(coord): Result<bool, Error> =
+            let tryGetValidMovesForCoord color =
+                let move = Seq.tryHead <| Rules.getValidMovesForCoord this.Model.Board color coord
+                match move with
+                | Some _ -> true
+                | None _ -> false
+            maybe {
+                let! color = this.Model.tryGetActiveColor()
+                let result = tryGetValidMovesForCoord color
+                return result }
+
     let create (model: GameModel.T) =
         T(model)
