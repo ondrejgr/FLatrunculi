@@ -32,26 +32,20 @@ module Rules =
                 // get target square
                 let! tarsq = Board.tryGetSquare board tar
                 return! tryCreateMove tar tarsq }
-            
-        seq {
-            for dir in Coord.Directions do
-                match tryGetMoveWithDir dir with
-                | Success move -> yield move
-                | _ -> () }
+           
+        match Board.tryGetSquare board src with
+        | Success sq when (Square.containsColor color sq) -> 
+            seq {
+                for dir in Coord.Directions do
+                    match tryGetMoveWithDir dir with
+                    | Success move -> yield move
+                    | _ -> () }
+        | _ -> Seq.empty 
 
     let getValidMoves (board: Board.T) (color: Piece.Colors) =
         let getValidMovesForBoardColorCoord coord =
             Seq.toList <| getValidMovesForCoord board color coord
         List.collect getValidMovesForBoardColorCoord <| board.GetCoordsWithPieceColor color
-
-    let getCoordsWithAnyValidMove (board: Board.T) (color: Piece.Colors) =
-        let getCoordIfValidMoveExists coord =
-            Seq.tryHead <| getValidMovesForCoord board color coord
-        seq {
-            for coord in board.GetCoordsWithPieceColor color do
-                match getCoordIfValidMoveExists coord with
-                | Some m -> yield m.Source
-                | _ -> () }
 
     let isMoveValid (board: Board.T) (color: Piece.Colors) (move: Move.T) =
         List.exists (fun m -> m = move) <| getValidMoves board color
