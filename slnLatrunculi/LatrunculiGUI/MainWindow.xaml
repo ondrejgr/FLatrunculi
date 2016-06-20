@@ -174,21 +174,27 @@
                                    IsWinning="{Binding IsWhiteWinning}"
                                    IsLosing="{Binding IsWhiteLosing}"/>
             </StackPanel>
-            <GroupBox Header="Max. počet tahů do konce hry" Grid.Column="1" HorizontalAlignment="Center">
+            <GroupBox Header="Max. počet tahů do konce hry" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center">
                 <TextBlock Text="{Binding NumberOfMovesRemaining}" TextAlignment="Center" FontWeight="Bold"/>
             </GroupBox>
             <ctrls:Board x:Name="board" 
                          ItemsSource="{Binding Board.Rows}"
                          IsActive="{Binding IsGameWaitingForHumanPlayerMove}"
                          BoardSquareClicked="board_BoardSquareClicked"
-                         Grid.Column="1" Grid.Row="1"/>
-            <StackPanel Orientation="Vertical" Grid.Column="2" Grid.RowSpan="2">
-                <ctrls:PlayerControl Content="{Binding BlackPlayer}"/>
-                <ctrls:PiecesCount DataContext="{Binding Board.PiecesCount}"
+                         Grid.Column="1" Grid.Row="0"/>
+            <Grid Grid.Column="2" Grid.RowSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <ctrls:PlayerControl Content="{Binding BlackPlayer}" Grid.Row="0"/>
+                <ctrls:PiecesCount DataContext="{Binding Board.PiecesCount}" Grid.Row="1"
                                    Count="{Binding BlackPiecesCount}"
                                    IsWinning="{Binding IsBlackWinning}"
                                    IsLosing="{Binding IsBlackLosing}"/>
-            </StackPanel>
+                <ctrls:History ItemsSource="{Binding Board.History}" Grid.Row="2"/>
+            </Grid>
         </Grid>
 
         <TextBlock Text="{Binding Error}" Visibility="{Binding ErrorExists, Converter={StaticResource bvis}}" FontWeight="Bold" FontSize="36" Background="LightGray" Foreground="Red" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2"/>

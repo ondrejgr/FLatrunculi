@@ -27,6 +27,15 @@ namespace Latrunculi.ViewModel
                 PropertyChanged(this, new PropertyChangedEventArgs(propName));
         }
 
+        private MoveHistoryCollection _history = new MoveHistoryCollection();
+        public MoveHistoryCollection History
+        {
+            get
+            {
+                return _history;
+            }
+        }
+
         private PiecesCountViewModel _piecesCount = new PiecesCountViewModel();
         public PiecesCountViewModel PiecesCount
         {
@@ -149,6 +158,7 @@ namespace Latrunculi.ViewModel
             try
             {
                 Clear();
+                History.Clear();
                 PiecesCount.Update(0, 0);
 
                 Func<SquareColors, SquareColors> swapColor = new Func<SquareColors, SquareColors>(c => {
