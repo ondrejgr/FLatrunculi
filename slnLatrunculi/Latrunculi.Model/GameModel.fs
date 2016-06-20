@@ -28,7 +28,7 @@ type GameErrorEventHandler = delegate of obj * GameErrorEventArgs -> unit
 
 module GameModel =
 
-    type T(board: Board.T, playerSettings: PlayerSettings.T) = 
+    type T(board: Board.T, historyBoard: Board.T, playerSettings: PlayerSettings.T) = 
         let status = Created
 
         let statusChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
@@ -43,6 +43,7 @@ module GameModel =
         let gameErrorEvent = new Event<GameErrorEventHandler, GameErrorEventArgs>()
               
         member val Board = board
+        member val HistoryBoard = historyBoard
         member val PlayerSettings = playerSettings with get, set
         member val Status = status with get, set
         member val ActiveColor = None with get, set
@@ -170,5 +171,6 @@ module GameModel =
     let tryCreate =
         maybe {
             let! board = Board.create |> Board.tryInit <| (fun _ -> Square.createEmpty)
+            let! historyBoard = Board.create |> Board.tryInit <| (fun _ -> Square.createEmpty)
             let! playerSettings = PlayerSettings.tryCreateDefault
-            return T(board, playerSettings) }
+            return T(board, historyBoard, playerSettings) }

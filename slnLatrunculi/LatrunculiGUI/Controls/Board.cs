@@ -82,9 +82,6 @@ namespace Latrunculi.GUI.Controls
         }
         public static readonly DependencyProperty BlackSquareColorProperty =
             DependencyProperty.Register("BlackSquareColor", typeof(Color), typeof(Board), new PropertyMetadata(Colors.DarkGray));
-        
-
-
 
         public bool IsActive
         {
@@ -125,6 +122,11 @@ namespace Latrunculi.GUI.Controls
                         sq.BlinkRed();
                 }
             }
+        }
+
+        protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
+        {
+            return new PointHitTestResult(this, hitTestParameters.HitPoint);
         }
     }
 }

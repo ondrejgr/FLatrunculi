@@ -92,6 +92,7 @@
     <FlowDocument x:Key="docHistory">
         <Paragraph Style="{StaticResource title}">Historie tahů</Paragraph>
         <Paragraph>V pravém dolním rohu hlavního okna je zobrazena historie tahů ve formátu: pořadové číslo tahu, barva hráče, výchozí a cílová souřadnice a v závorce uvedený počet zajatých nepřátelských kamenů (pokud je nenulový).</Paragraph>
+        <Paragraph>Pokud je zatrhnuto políčko Zobrazit na desce, je na desce zobrazen stav po provedení vybraného tahu.</Paragraph>
     </FlowDocument>
 
     <FlowDocument x:Key="docPlayerSettings">

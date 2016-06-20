@@ -177,10 +177,17 @@
             <GroupBox Header="Max. počet tahů do konce hry" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center">
                 <TextBlock Text="{Binding NumberOfMovesRemaining}" TextAlignment="Center" FontWeight="Bold"/>
             </GroupBox>
-            <ctrls:Board x:Name="board" 
+            <ctrls:Board x:Name="board"
                          ItemsSource="{Binding Board.Rows}"
                          IsActive="{Binding IsGameWaitingForHumanPlayerMove}"
                          BoardSquareClicked="board_BoardSquareClicked"
+                         Visibility="{Binding HideHistory, Converter={StaticResource bvis}, Mode=OneWay}"
+                         Grid.Column="1" Grid.Row="0"/>
+            <ctrls:Board x:Name="historyBoard"
+                         ItemsSource="{Binding HistoryBoard.Rows}"
+                         IsActive="False"
+                         Focusable="False"
+                         Visibility="{Binding ShowHistory, Converter={StaticResource bvis}, Mode=OneWay}"
                          Grid.Column="1" Grid.Row="0"/>
             <Grid Grid.Column="2" Grid.RowSpan="2">
                 <Grid.RowDefinitions>
@@ -193,7 +200,7 @@
                                    Count="{Binding BlackPiecesCount}"
                                    IsWinning="{Binding IsBlackWinning}"
                                    IsLosing="{Binding IsBlackLosing}"/>
-                <ctrls:History ItemsSource="{Binding Board.History}" Grid.Row="2"/>
+                <ctrls:History SelectionChanged="History_SelectionChanged" ShowHistory="{Binding ShowHistory, Mode=TwoWay}" ItemsSource="{Binding Board.History}" Grid.Row="2"/>
             </Grid>
         </Grid>
 

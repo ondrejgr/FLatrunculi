@@ -45,6 +45,11 @@ module GameController =
                 Success move
             | _ -> Error HumanSelectedMoveRequestDoesNotExists
 
+        member this.TryClearHistoryBoard() =
+            maybe {
+                let! historyBoard = Board.tryInit this.Model.HistoryBoard Rules.getInitialBoardSquares
+                return this }
+
         member this.TryNewGame() =
             maybe {
                 Player.Board <- Some this.Model.Board
@@ -57,6 +62,7 @@ module GameController =
 
                 // init board with default positions
                 let! board = Board.tryInit this.Model.Board Rules.getInitialBoardSquares
+                let! historyBoard = Board.tryInit this.Model.HistoryBoard Rules.getInitialBoardSquares
                 this.Model.RaiseBoardChanged()
                 this.Model.RaiseHistoryCleared()
                 return this }

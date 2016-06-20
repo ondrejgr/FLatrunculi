@@ -153,6 +153,8 @@ namespace Latrunculi.GUI
 
                 if (board.SquareSize != width)
                     board.SquareSize = width;
+                if (historyBoard.SquareSize != width)
+                    historyBoard.SquareSize = width;
             }
         }
 
@@ -613,6 +615,23 @@ namespace Latrunculi.GUI
         private void FocusBoard()
         {
             Dispatcher.BeginInvoke(new Action(() => board.Focus()), System.Windows.Threading.DispatcherPriority.Background);
+        }
+
+        private void History_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            e.Handled = true;
+            try
+            {
+                MoveHistoryItem item = e.AddedItems.OfType<MoveHistoryItem>().FirstOrDefault();
+                //if (item == null)
+                    ModelException.TryThrow<GameController.T>(Controller.TryClearHistoryBoard());
+
+                //ViewModel.HistoryBoard.RefreshFromModel(ViewModel.Model.HistoryBoard);
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(this, "Nelze zobrazit historii tahů na desce." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

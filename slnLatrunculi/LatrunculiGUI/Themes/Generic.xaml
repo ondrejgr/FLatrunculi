@@ -18,7 +18,8 @@
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <DataTemplate>
-                    <ctrls:Row ItemsSource="{Binding Squares}" SquareSize="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Board}, Path=SquareSize}"/>
+                    <ctrls:Row ItemsSource="{Binding Squares}" 
+                               SquareSize="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Board}, Path=SquareSize}"/>
                 </DataTemplate>
             </Setter.Value>
         </Setter>
@@ -307,6 +308,10 @@
                 <ControlTemplate TargetType="{x:Type ctrls:History}">
                     <GroupBox Header="Historie tahů" Margin="5,5,5,5">
                         <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="ValidationStates">
                                     <VisualState x:Name="Valid"/>
@@ -341,14 +346,15 @@
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
-                            <Border CornerRadius="2" 
-			                BorderBrush="{TemplateBinding BorderBrush}"
-			                BorderThickness="{TemplateBinding BorderThickness}">
+                            <CheckBox Content="zobrazit na desce" IsChecked="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ShowHistory, Mode=TwoWay}"/>
+                            <Border Grid.Row="1" CornerRadius="2" 
+			                    BorderBrush="{TemplateBinding BorderBrush}"
+			                    BorderThickness="{TemplateBinding BorderThickness}">
                                 <ScrollViewer x:Name="ScrollViewer" Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" BorderBrush="Transparent" BorderThickness="0">
                                     <ItemsPresenter />
                                 </ScrollViewer>
                             </Border>
-                            <Border x:Name="ValidationErrorElement" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2" BorderBrush="#FFDB000C" Visibility="Collapsed">
+                            <Border Grid.Row="1" x:Name="ValidationErrorElement" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2" BorderBrush="#FFDB000C" Visibility="Collapsed">
                                 <ToolTipService.ToolTip>
                                     <ToolTip x:Name="validationTooltip" Template="{StaticResource ValidationToolTipTemplate}" Placement="Right" 
                                              PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}" 

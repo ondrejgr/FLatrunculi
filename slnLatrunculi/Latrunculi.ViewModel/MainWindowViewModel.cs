@@ -46,6 +46,7 @@ namespace Latrunculi.ViewModel
             Model.MoveSuggestionComputed += Model_MoveSuggestionComputed;
             Model.NumberOfMovesWithoutRemovalChanged += Model_NumberOfMovesWithoutRemovalChanged;
             Board.Init(Model.Board);
+            HistoryBoard.Init(Model.HistoryBoard);
 
             OnPlayerSettingsChanged();
             OnStatusChanged();
@@ -88,6 +89,7 @@ namespace Latrunculi.ViewModel
         {
             ClearBoardIndicationsAndSelection();
             Board.RefreshFromModel(Model.Board);
+            HistoryBoard.RefreshFromModel(Model.HistoryBoard);
         }
 
         private void Model_StatusChanged(object sender, EventArgs e)
@@ -322,6 +324,29 @@ namespace Latrunculi.ViewModel
             }
         }
 
+        private bool _showHistory = false;
+        public bool ShowHistory
+        {
+            get
+            {
+                return _showHistory;
+            }
+            set
+            {
+                _showHistory = value;
+                OnPropertyChanged("ShowHistory");
+                OnPropertyChanged("HideHistory");
+            }
+        }
+
+        public bool HideHistory
+        {
+            get
+            {
+                return !ShowHistory;
+            }
+        }
+
         public void SetFileName(string fileName, string fileTitle)
         {
             FileName = fileName;
@@ -347,6 +372,15 @@ namespace Latrunculi.ViewModel
             get
             {
                 return _board;
+            }
+        }
+
+        private BoardViewModel _historyBoard = new BoardViewModel();
+        public BoardViewModel HistoryBoard
+        {
+            get
+            {
+                return _historyBoard;
             }
         }
 
