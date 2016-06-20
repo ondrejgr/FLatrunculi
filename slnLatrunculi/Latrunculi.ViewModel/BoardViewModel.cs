@@ -27,6 +27,15 @@ namespace Latrunculi.ViewModel
                 PropertyChanged(this, new PropertyChangedEventArgs(propName));
         }
 
+        private PiecesCountViewModel _piecesCount = new PiecesCountViewModel();
+        public PiecesCountViewModel PiecesCount
+        {
+            get
+            {
+                return _piecesCount;
+            }
+        }
+
         public int NumberOfRows
         {
             get
@@ -123,6 +132,8 @@ namespace Latrunculi.ViewModel
 
         public void RefreshFromModel(Latrunculi.Model.Board.T boardModel)
         {
+            PiecesCount.Update(boardModel.WhitePiecesCount, boardModel.BlackPiecesCount);
+
             foreach (BoardRowViewModel rowVM in Rows)
             {
                 foreach (BoardSquareViewModel sqVM in rowVM.Squares.OfType<BoardSquareViewModel>())
@@ -138,6 +149,7 @@ namespace Latrunculi.ViewModel
             try
             {
                 Clear();
+                PiecesCount.Update(0, 0);
 
                 Func<SquareColors, SquareColors> swapColor = new Func<SquareColors, SquareColors>(c => {
                     return (c == SquareColors.scBlack) ? SquareColors.scWhite : SquareColors.scBlack; });

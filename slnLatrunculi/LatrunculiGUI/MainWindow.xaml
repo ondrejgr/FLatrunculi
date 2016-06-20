@@ -163,13 +163,25 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <ctrls:PlayerControl Content="{Binding WhitePlayer}"/>
+            <StackPanel Orientation="Vertical">
+                <ctrls:PlayerControl Content="{Binding WhitePlayer}"/>
+                <ctrls:PiecesCount DataContext="{Binding Board.PiecesCount}"
+                                   Count="{Binding WhitePiecesCount}"
+                                   IsWinning="{Binding IsWhiteWinning}"
+                                   IsLosing="{Binding IsWhiteLosing}"/>
+            </StackPanel> 
             <ctrls:Board x:Name="board" 
                          ItemsSource="{Binding Board.Rows}"
                          IsActive="{Binding IsGameWaitingForHumanPlayerMove}"
                          BoardSquareClicked="board_BoardSquareClicked"
                          Grid.Column="1" Grid.Row="0"/>
-            <ctrls:PlayerControl Content="{Binding BlackPlayer}" Grid.Column="2"/>
+            <StackPanel Orientation="Vertical" Grid.Column="2">
+                <ctrls:PlayerControl Content="{Binding BlackPlayer}"/>
+                <ctrls:PiecesCount DataContext="{Binding Board.PiecesCount}"
+                                   Count="{Binding BlackPiecesCount}"
+                                   IsWinning="{Binding IsBlackWinning}"
+                                   IsLosing="{Binding IsBlackLosing}"/>
+            </StackPanel>
         </Grid>
 
         <TextBlock Text="{Binding Error}" Visibility="{Binding ErrorExists, Converter={StaticResource bvis}}" FontWeight="Bold" FontSize="36" Background="LightGray" Foreground="Red" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2"/>

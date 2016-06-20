@@ -32,6 +32,12 @@ module Board =
                                                         | _ -> 0) 0 row)
                         0 this.Squares
             
+        member this.WhitePiecesCount =
+            this.GetNumberOfPiecesByColor Piece.Colors.White
+
+        member this.BlackPiecesCount =
+            this.GetNumberOfPiecesByColor Piece.Colors.Black
+
         member this.GetRowNumbers =
             Coord.RowNumbers
 

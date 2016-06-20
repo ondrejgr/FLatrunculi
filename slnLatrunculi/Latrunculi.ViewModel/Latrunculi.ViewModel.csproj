@@ -59,6 +59,7 @@
     <Compile Include="BoardSquareViewModel.cs" />
     <Compile Include="BoardViewModel.cs" />
     <Compile Include="ModelException.cs" />
+    <Compile Include="PiecesCountViewModel.cs" />
     <Compile Include="ViewModelCommon.cs" />
     <Compile Include="HelpWindowViewModel.cs" />
     <Compile Include="MainWindowViewModel.cs" />
