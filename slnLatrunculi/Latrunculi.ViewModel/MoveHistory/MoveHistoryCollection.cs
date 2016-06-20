@@ -25,9 +25,10 @@ namespace Latrunculi.ViewModel
             else if (item.PlayerColor == Piece.Colors.White)
                 pt = PieceTypes.ptWhite;
             
-            Insert(0, new MoveHistoryItem(this.Count + 1, pt,
-                     Coord.toString(item.Move.Source), Coord.toString(item.Move.Target),
-                     item.RemovedPiecesCount));
+            Insert(0, new MoveHistoryItem(item.ID, pt,
+                     Coord.toString(BoardMove.getSourceCoord(item.BoardMove)), 
+                     Coord.toString(BoardMove.getTargetCoord(item.BoardMove)),
+                     BoardMove.getRemovedPiecesCount(item.BoardMove)));
         }
     }
 }

@@ -67,7 +67,8 @@ module Board =
         Success (getSquare board coord)
 
     let addHistoryItem (board: T) (playerColor: Piece.Colors) (boardMove: BoardMove.T) =
-        let item = HistoryItem.create playerColor boardMove
+        let id = 1 + List.length board.History
+        let item = HistoryItem.create id playerColor boardMove
         board.History <- item::board.History
         item
 

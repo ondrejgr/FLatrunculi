@@ -2,13 +2,12 @@
 
 module HistoryItem =
 
-    [<StructuralEquality;NoComparison>]
+    [<NoEquality;NoComparison>]
     type T = {
+        ID: int;
         PlayerColor: Piece.Colors;
-        Move: Move.T;
-        RemovedPiecesCount: int; }
+        BoardMove: BoardMove.T; }
        
-    let create (playerColor: Piece.Colors) (boardMove: BoardMove.T) =
-        let count = List.length boardMove.RemovedPieces
-        { PlayerColor = playerColor; Move = boardMove.Move; RemovedPiecesCount = count }
+    let create (id: int) (playerColor: Piece.Colors) (boardMove: BoardMove.T) =
+        { ID = id; PlayerColor = playerColor; BoardMove = boardMove }
 
