@@ -525,6 +525,9 @@ namespace Latrunculi.GUI
                         if (result.IsSuccess)
                         {
                             // user selected valid move
+                            if (MainWindowCommands.CancelSuggestMove.CanExecute(null, this))
+                                MainWindowCommands.CancelSuggestMove.Execute(null, this);
+
                             Move.T move = ((Result<Move.T, ErrorDefinitions.Error>.Success)result).Item;
                             ModelException.TryThrow<Move.T>(Controller.TrySetSelectedMove(move));
                         }
