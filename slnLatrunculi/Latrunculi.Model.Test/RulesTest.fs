@@ -227,6 +227,63 @@ let RulesTest() =
     Assert.AreEqual(empty, Board.getSquare board cy)    
     Assert.AreEqual(white, Board.getSquare board cz)   
 
+    let board = Board.create
+    // no winner -game continues
+    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+                            match c with
+                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 1 } -> black
+                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 2 } -> black
+                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 3 } -> white
+                            | _ -> Square.createEmpty ))
+    Assert.IsTrue(match Rules.checkVictory board 15 with
+                    | Rules.NoResult -> true
+                    | _ -> false)
+    // black winner -30 moves
+    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+                            match c with
+                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 1 } -> black
+                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 2 } -> black
+                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 3 } -> white
+                            | _ -> Square.createEmpty ))
+    Assert.IsTrue(match Rules.checkVictory board 30 with
+                    | Rules.GameOverResult v when v = Rules.Victory Rules.BlackWinner -> true
+                    | _ -> false)
+    // white winner -30 moves
+    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+                            match c with
+                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 1 } -> white
+                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 2 } -> black
+                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 3 } -> white
+                            | _ -> Square.createEmpty ))
+    Assert.IsTrue(match Rules.checkVictory board 30 with
+                    | Rules.GameOverResult v when v = Rules.Victory Rules.WhiteWinner -> true
+                    | _ -> false)
+    // draw
+    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+                            match c with
+                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 1 } -> white
+                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 2 } -> black
+                            | _ -> Square.createEmpty ))
+    Assert.IsTrue(match Rules.checkVictory board 30 with
+                    | Rules.GameOverResult v when v = Rules.Draw -> true
+                    | _ -> false)
+    // black winner
+    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+                            match c with
+                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 1 } -> black
+                            | _ -> Square.createEmpty ))
+    Assert.IsTrue(match Rules.checkVictory board 5 with
+                    | Rules.GameOverResult v when v = Rules.Victory Rules.BlackWinner -> true
+                    | _ -> false)
+    // white winner
+    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+                            match c with
+                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 1 } -> white
+                            | _ -> Square.createEmpty ))
+    Assert.IsTrue(match Rules.checkVictory board 10 with
+                    | Rules.GameOverResult v when v = Rules.Victory Rules.WhiteWinner -> true
+                    | _ -> false)
+
 
     ()
 

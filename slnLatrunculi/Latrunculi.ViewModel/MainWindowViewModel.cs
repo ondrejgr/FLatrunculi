@@ -33,6 +33,7 @@ namespace Latrunculi.ViewModel
             Model.ActivePlayerChanged -= new ModelChangeEventHandler(Model_ActivePlayerChanged);
             Model.IsMoveSuggestionComputingChanged -= new ModelChangeEventHandler(Model_IsMoveSuggestionComputingChanged);
             Model.MoveSuggestionComputed -= new MoveSuggestionComputedEventHandler(Model_MoveSuggestionComputed);
+            Model.NumberOfMovesWithoutRemovalChanged -= new ModelChangeEventHandler(Model_NumberOfMovesWithoutRemovalChanged);
             Model.GameError -= new GameErrorEventHandler(Model_GameError);
         }
 
@@ -44,6 +45,7 @@ namespace Latrunculi.ViewModel
             Model.ActivePlayerChanged += new ModelChangeEventHandler(Model_ActivePlayerChanged);
             Model.IsMoveSuggestionComputingChanged += new ModelChangeEventHandler(Model_IsMoveSuggestionComputingChanged);
             Model.MoveSuggestionComputed += new MoveSuggestionComputedEventHandler(Model_MoveSuggestionComputed);
+            Model.NumberOfMovesWithoutRemovalChanged += new ModelChangeEventHandler(Model_NumberOfMovesWithoutRemovalChanged);
             Model.GameError += new GameErrorEventHandler(Model_GameError);
             Board.Init(Model.Board);
 
@@ -70,10 +72,23 @@ namespace Latrunculi.ViewModel
                 MoveSuggestionComputed(this, e);
         }
 
+        private void Model_NumberOfMovesWithoutRemovalChanged(object sender, EventArgs e)
+        {
+            OnPropertyChanged("NumberOfMovesRemaining");
+        }
+
         private void Model_IsMoveSuggestionComputingChanged(object sender, EventArgs e)
         {
             OnPropertyChanged("IsMoveSuggestionComputing");
             Application.Current.Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
+        }
+
+        public int NumberOfMovesRemaining
+        {
+            get
+            {
+                return 30 - Model.NumberOfMovesWithoutRemoval;
+            }
         }
 
         public event GameErrorEventHandler GameError;
@@ -181,7 +196,26 @@ namespace Latrunculi.ViewModel
             else if (IsGameFinished)
             {
                 Error = string.Empty;
-                Info = "Hra skončila";
+                if (Model.Result.IsGameOverResult)
+                {
+                    Rules.GameOverResult result = ((Rules.GameResult.GameOverResult)Model.Result).Item;
+                    if (result.IsDraw)
+                        Info = "Konec hry - remíza";
+                    else if (result.IsVictory)
+                    {
+                        Rules.Victory vict = ((Rules.GameOverResult.Victory)result).Item;
+                        if (vict.IsBlackWinner)
+                            Info = string.Format("Konec hry - zvítězil {0} (černý)", this.BlackPlayer.Name);
+                        else if (vict.IsWhiteWinner)
+                            Info = string.Format("Konec hry - zvítězil {0} (bílý)", this.WhitePlayer.Name);
+                        else
+                            Info = "Hra skončila bez vítěze - chyba aplikace ??";
+                    }
+                    else
+                        Info = "Hra skončila s neznámým vítězem - chyba aplikace ??";
+                }
+                else
+                    Info = "Hra skončila bez výsledku - chyba aplikace ??";
             }
             else if (IsGamePaused)
             {

@@ -12,3 +12,6 @@ module BoardMove =
     let create (move: Move.T) =
         createWithRmPieces move []
 
+    let anyPiecesRemoved (move: T) =
+        let result = not (List.isEmpty move.RemovedPieces)
+        result

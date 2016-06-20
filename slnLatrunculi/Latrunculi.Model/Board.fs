@@ -52,6 +52,12 @@ module Board =
                                 | _ -> failwith "Souřadnici se nepodařilo vytvořit."
                     yield (coord, square) }
 
+    let whitePiecesCount (board: T) =
+        board.WhitePiecesCount
+
+    let blackPiecesCount (board: T) =
+        board.BlackPiecesCount
+
     let getSquare (board: T) coord =
         board.GetSquare coord
 

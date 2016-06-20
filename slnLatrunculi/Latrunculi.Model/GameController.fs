@@ -50,6 +50,8 @@ module GameController =
             Player.getHumanPlayerMoveFromUIWorkflow <- Some this.GetHumanMoveFromUI
 
             this.Model.setActiveColor(Some Rules.getInitialActiveColor) |> ignore
+            this.Model.ResetNumberOfMovesWithoutRemoval() |> ignore
+            this.Model.setResult Rules.NoResult |> ignore
             match this.Model.tryInitBoard() with
             | Success s -> Success this
             | Error _ -> Error UnableToInitializeBoard
@@ -65,17 +67,33 @@ module GameController =
                     return player.TryGetMove }    
             let applyMoveAndChangePlayer move =
                 maybe {
+                    // create move with removed pieces list
                     let! color = this.Model.tryGetActiveColor()
                     let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color move
+
+                    // apply move and check number of removed pieces
                     do! this.Model.tryBoardMove boardMove
-                    do! this.Model.trySwapActiveColor()
-                    return Continue }
+                    ignore <| match BoardMove.anyPiecesRemoved boardMove with
+                                | true -> this.Model.ResetNumberOfMovesWithoutRemoval()
+                                | false -> this.Model.IncNumberOfMovesWithoutRemoval()
+
+                    // check game over
+                    this.Model.setResult <| (Rules.checkVictory this.Model.Board this.Model.NumberOfMovesWithoutRemoval) |> ignore
+                    match this.Model.Result with
+                    | Rules.GameOverResult _ ->
+                        return Finished
+                    | Rules.NoResult ->
+                        // continue
+                        do! this.Model.trySwapActiveColor()
+                        return Continue }
             async {
                 match getPlayerMoveWorkflow with
                 | Success getPlayerMove ->
+                    // get player move
                     let! moveResult = getPlayerMove()
                     match moveResult with
                     | Success move ->
+                        // apply move
                         return applyMoveAndChangePlayer move
                     | Error e ->
                         return Error e

@@ -1,6 +1,7 @@
 ﻿namespace Latrunculi.Model
 
 module Coord =
+    [<StructuralEquality;NoComparison>]
     type Direction =
         | Up
         | Down

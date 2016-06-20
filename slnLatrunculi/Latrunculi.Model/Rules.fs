@@ -2,6 +2,33 @@
 
 
 module Rules =
+    [<StructuralEquality;NoComparison>]
+    type Victory =
+        | WhiteWinner
+        | BlackWinner
+
+    type GameOverResult =
+        | Draw
+        | Victory of Victory
+
+    [<StructuralEquality;NoComparison>]
+    type GameResult =
+        | NoResult
+        | GameOverResult of GameOverResult
+
+    let checkVictory board numOfMovesWithoutRemoval =
+        let whiteCount = Board.whitePiecesCount board
+        let blackCount = Board.blackPiecesCount board
+        let getResult =
+            if whiteCount = blackCount
+                then GameOverResult Draw
+                else if whiteCount > blackCount
+                    then GameOverResult (Victory WhiteWinner)
+                    else GameOverResult (Victory BlackWinner)
+
+        if whiteCount = 0 || blackCount = 0 || numOfMovesWithoutRemoval = 30
+            then getResult
+            else NoResult
 
     let getInitialBoardSquares (coord: Coord.T) =
         match coord with

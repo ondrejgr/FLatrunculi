@@ -32,6 +32,7 @@ module GameModel =
         let isMoveSuggestionComputingChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let moveSuggestionComputedEvent = new Event<MoveSuggestionComputedEventHandler, MoveEventArgs>()
         let boardChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
+        let numberOfMovesWithoutRemovalChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let gameErrorEvent = new Event<GameErrorEventHandler, GameErrorEventArgs>()
               
         member val Board = board
@@ -39,6 +40,8 @@ module GameModel =
         member val Status = status with get, set
         member val ActiveColor = None with get, set
         member val IsMoveSuggestionComputing = false with get, set
+        member val NumberOfMovesWithoutRemoval = 0 with get, set
+        member val Result = Rules.NoResult with get, set
         
         [<CLIEvent>]
         member this.StatusChanged = statusChangedEvent.Publish
@@ -52,6 +55,8 @@ module GameModel =
         member this.MoveSuggestionComputed = moveSuggestionComputedEvent.Publish
         [<CLIEvent>]
         member this.BoardChanged = boardChangedEvent.Publish
+        [<CLIEvent>]
+        member this.NumberOfMovesWithoutRemovalChanged = numberOfMovesWithoutRemovalChangedEvent.Publish
         [<CLIEvent>]
         member this.GameError = gameErrorEvent.Publish
 
@@ -73,6 +78,9 @@ module GameModel =
         member private this.OnBoardChanged() =
             boardChangedEvent.Trigger(this, EventArgs.Empty)
 
+        member private this.OnNumberOfMovesWithoutRemovalChanged() =
+            numberOfMovesWithoutRemovalChangedEvent.Trigger(this, EventArgs.Empty)
+
         member this.RaiseGameErrorEvent(error) =
             gameErrorEvent.Trigger(this, GameErrorEventArgs(error))
 
@@ -80,6 +88,10 @@ module GameModel =
             this.Status <- x
             this.OnStatusChanged()
             this.Status
+
+        member this.setResult x =
+            this.Result <- x
+            this.Result
 
         member this.setIsMoveSuggestionComputing x =
             this.IsMoveSuggestionComputing <- x
@@ -126,6 +138,16 @@ module GameModel =
                                                 | _ -> None)
                 Success ()
             | None -> Error NoPlayerOnMove
+
+        member this.IncNumberOfMovesWithoutRemoval() =
+            this.NumberOfMovesWithoutRemoval <- this.NumberOfMovesWithoutRemoval + 1
+            this.OnNumberOfMovesWithoutRemovalChanged()
+            this.NumberOfMovesWithoutRemoval
+
+        member this.ResetNumberOfMovesWithoutRemoval() =
+            this.NumberOfMovesWithoutRemoval <- 0
+            this.OnNumberOfMovesWithoutRemovalChanged()
+            this.NumberOfMovesWithoutRemoval
 
         member this.tryInitBoard() =
             match Board.tryInit this.Board Rules.getInitialBoardSquares with

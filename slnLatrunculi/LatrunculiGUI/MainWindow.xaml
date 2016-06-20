@@ -163,19 +163,26 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Vertical">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical" Grid.RowSpan="2">
                 <ctrls:PlayerControl Content="{Binding WhitePlayer}"/>
                 <ctrls:PiecesCount DataContext="{Binding Board.PiecesCount}"
                                    Count="{Binding WhitePiecesCount}"
                                    IsWinning="{Binding IsWhiteWinning}"
                                    IsLosing="{Binding IsWhiteLosing}"/>
-            </StackPanel> 
+            </StackPanel>
+            <GroupBox Header="Max. počet tahů do konce hry" Grid.Column="1" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding NumberOfMovesRemaining}" TextAlignment="Center" FontWeight="Bold"/>
+            </GroupBox>
             <ctrls:Board x:Name="board" 
                          ItemsSource="{Binding Board.Rows}"
                          IsActive="{Binding IsGameWaitingForHumanPlayerMove}"
                          BoardSquareClicked="board_BoardSquareClicked"
-                         Grid.Column="1" Grid.Row="0"/>
-            <StackPanel Orientation="Vertical" Grid.Column="2">
+                         Grid.Column="1" Grid.Row="1"/>
+            <StackPanel Orientation="Vertical" Grid.Column="2" Grid.RowSpan="2">
                 <ctrls:PlayerControl Content="{Binding BlackPlayer}"/>
                 <ctrls:PiecesCount DataContext="{Binding Board.PiecesCount}"
                                    Count="{Binding BlackPiecesCount}"
