@@ -17,7 +17,7 @@ module ErrorMessages =
         | InvalidTargetCoord -> error.ToString()
         | SourceAndTargetCoordMayNotBeSame -> error.ToString()
         // Board
-        | UnableToIterateBoard -> error.ToString()
+        | UnableToInitializeBoard -> "Nepodařilo se zinicializovat herní desku."
         // Rules
         | RelativeCoordIsOutOfRange -> error.ToString()
         | UnableToGetTargetSquare -> error.ToString()
@@ -36,7 +36,6 @@ module ErrorMessages =
         // GameModel
         | NoPlayerOnMove -> "Není známo, který hráč je na tahu."
         | NoActiveColor -> "Není známa barva hráče na tahu."
-        | UnableToInitializeBoard -> "Nepodařilo se zinicializovat herní desku."
         | UnableToCreateInitialPlayerSettings -> "Nepodařilo se zinicializovat nastavení hráčů."
         // GameController
         | UnableToSwapActiveColor -> "Změna aktivního hráče selhala."

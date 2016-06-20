@@ -13,7 +13,7 @@ type Error =
     | InvalidTargetCoord
     | SourceAndTargetCoordMayNotBeSame
     // Board
-    | UnableToIterateBoard
+    | UnableToInitializeBoard
     // Rules
     | RelativeCoordIsOutOfRange
     | UnableToGetTargetSquare
@@ -32,7 +32,6 @@ type Error =
     // GameModel
     | NoPlayerOnMove
     | NoActiveColor
-    | UnableToInitializeBoard
     | UnableToCreateInitialPlayerSettings
     // GameController
     | UnableToSwapActiveColor

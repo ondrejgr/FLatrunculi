@@ -53,6 +53,7 @@
     <Compile Include="Move.fs" />
     <Compile Include="RemovedPiece.fs" />
     <Compile Include="BoardMove.fs" />
+    <Compile Include="HistoryItem.fs" />
     <Compile Include="Board.fs" />
     <Compile Include="Rules.fs" />
     <Compile Include="Brain.fs" />

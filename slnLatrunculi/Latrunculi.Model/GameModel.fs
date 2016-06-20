@@ -13,12 +13,17 @@ type MoveEventArgs(move: Result<Move.T, Error>) =
     inherit EventArgs()
     member val Move = move
 
+type HistoryItemAddedEventArgs(item: HistoryItem.T) =
+    inherit EventArgs()
+    member val Item = item
+
 type GameErrorEventArgs(error: ErrorDefinitions.Error) =
     inherit EventArgs()
     member val Error = error with get
 
 type ModelChangeEventHandler = delegate of obj * EventArgs -> unit
 type MoveSuggestionComputedEventHandler = delegate of obj * MoveEventArgs -> unit
+type HistoryItemAddedEventHandler = delegate of obj * HistoryItemAddedEventArgs -> unit
 type GameErrorEventHandler = delegate of obj * GameErrorEventArgs -> unit
 
 module GameModel =
@@ -33,6 +38,8 @@ module GameModel =
         let moveSuggestionComputedEvent = new Event<MoveSuggestionComputedEventHandler, MoveEventArgs>()
         let boardChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let numberOfMovesWithoutRemovalChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
+        let historyItemAddedEvent = new Event<HistoryItemAddedEventHandler, HistoryItemAddedEventArgs>()
+        let historyClearedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let gameErrorEvent = new Event<GameErrorEventHandler, GameErrorEventArgs>()
               
         member val Board = board
@@ -58,6 +65,10 @@ module GameModel =
         [<CLIEvent>]
         member this.NumberOfMovesWithoutRemovalChanged = numberOfMovesWithoutRemovalChangedEvent.Publish
         [<CLIEvent>]
+        member this.HistoryItemAdded = historyItemAddedEvent.Publish
+        [<CLIEvent>]
+        member this.HistoryCleared = historyClearedEvent.Publish
+        [<CLIEvent>]
         member this.GameError = gameErrorEvent.Publish
 
         member private this.OnStatusChanged() =
@@ -72,14 +83,20 @@ module GameModel =
         member private this.OnIsMoveSuggestionComputingChanged() =
             isMoveSuggestionComputingChangedEvent.Trigger(this, EventArgs.Empty)
 
-        member this.RaiseMoveSuggestionComputedEvent(move) =
+        member this.RaiseMoveSuggestionComputed(move) =
             moveSuggestionComputedEvent.Trigger(this, MoveEventArgs(move))
 
-        member private this.OnBoardChanged() =
+        member this.RaiseBoardChanged() =
             boardChangedEvent.Trigger(this, EventArgs.Empty)
 
         member private this.OnNumberOfMovesWithoutRemovalChanged() =
             numberOfMovesWithoutRemovalChangedEvent.Trigger(this, EventArgs.Empty)
+
+        member this.RaiseHistoryItemAdded(x) =
+            historyItemAddedEvent.Trigger(this, HistoryItemAddedEventArgs(x))
+
+        member this.RaiseHistoryCleared() =
+            historyClearedEvent.Trigger(this, EventArgs.Empty)
 
         member this.RaiseGameErrorEvent(error) =
             gameErrorEvent.Trigger(this, GameErrorEventArgs(error))
@@ -149,17 +166,6 @@ module GameModel =
             this.OnNumberOfMovesWithoutRemovalChanged()
             this.NumberOfMovesWithoutRemoval
 
-        member this.tryInitBoard() =
-            match Board.tryInit this.Board Rules.getInitialBoardSquares with
-                    | Error e -> Error UnableToInitializeBoard
-                    | Success s -> 
-                        this.OnBoardChanged()
-                        Success s
-
-        member this.tryBoardMove(move) =
-            Board.move this.Board move   
-            this.OnBoardChanged()         
-            Success ()
 
     let tryCreate =
         maybe {

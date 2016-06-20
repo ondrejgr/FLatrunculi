@@ -46,15 +46,20 @@ module GameController =
             | _ -> Error HumanSelectedMoveRequestDoesNotExists
 
         member this.TryNewGame() =
-            Player.Board <- Some model.Board
-            Player.getHumanPlayerMoveFromUIWorkflow <- Some this.GetHumanMoveFromUI
+            maybe {
+                Player.Board <- Some this.Model.Board
+                Player.getHumanPlayerMoveFromUIWorkflow <- Some this.GetHumanMoveFromUI
 
-            this.Model.setActiveColor(Some Rules.getInitialActiveColor) |> ignore
-            this.Model.ResetNumberOfMovesWithoutRemoval() |> ignore
-            this.Model.setResult Rules.NoResult |> ignore
-            match this.Model.tryInitBoard() with
-            | Success s -> Success this
-            | Error _ -> Error UnableToInitializeBoard
+                // reset game result and set active player
+                this.Model.setActiveColor(Some Rules.getInitialActiveColor) |> ignore
+                this.Model.ResetNumberOfMovesWithoutRemoval() |> ignore
+                this.Model.setResult Rules.NoResult |> ignore
+
+                // init board with default positions
+                let! board = Board.tryInit this.Model.Board Rules.getInitialBoardSquares
+                this.Model.RaiseBoardChanged()
+                this.Model.RaiseHistoryCleared()
+                return this }
             
         member private this.ReportGameError e =
             this.Model.setStatus(GameStatus.Paused) |> ignore
@@ -72,7 +77,9 @@ module GameController =
                     let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color move
 
                     // apply move and check number of removed pieces
-                    do! this.Model.tryBoardMove boardMove
+                    Board.move this.Model.Board boardMove |> ignore
+                    this.Model.RaiseHistoryItemAdded(Board.addHistoryItem this.Model.Board color boardMove)
+                    this.Model.RaiseBoardChanged()
                     ignore <| match BoardMove.anyPiecesRemoved boardMove with
                                 | true -> this.Model.ResetNumberOfMovesWithoutRemoval()
                                 | false -> this.Model.IncNumberOfMovesWithoutRemoval()
@@ -149,7 +156,7 @@ module GameController =
                 use! cnl = Async.OnCancel(fun () -> this.Model.setIsMoveSuggestionComputing false |> ignore)
                 let! move = Brain.tryGetBestMove this.Model.Board color
                 this.Model.setIsMoveSuggestionComputing false |> ignore
-                this.Model.RaiseMoveSuggestionComputedEvent(move)
+                this.Model.RaiseMoveSuggestionComputed(move)
                 () }
 
         member this.TrySuggestMove() =

@@ -41,28 +41,14 @@ namespace Latrunculi.GUI.Controls
     /// Step 2)
     /// Go ahead and use your control in the XAML file.
     ///
-    ///     <MyNamespace:History/>
+    ///     <MyNamespace:HistoryItem/>
     ///
     /// </summary>
-    public class History : ListBox
+    public class HistoryItem : ListBoxItem
     {
-        static History()
+        static HistoryItem()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(History), new FrameworkPropertyMetadata(typeof(History)));
-        }
-
-        /// <summary> Create or identify the element used to display the given item. </summary>
-        protected override DependencyObject GetContainerForItemOverride()
-        {
-            return new HistoryItem();
-        }
-
-        /// <summary>
-        /// Return true if the item is (or is eligible to be) its own ItemContainer
-        /// </summary>
-        protected override bool IsItemItsOwnContainerOverride(object item)
-        {
-            return (item is HistoryItem);
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(HistoryItem), new FrameworkPropertyMetadata(typeof(HistoryItem)));
         }
     }
 }

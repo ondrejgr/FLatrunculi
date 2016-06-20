@@ -37,38 +37,74 @@ namespace Latrunculi.GUI
             InitializeComponent();
             ViewModel = viewModel;
             ViewModel.PropertyChanged += ViewModel_PropertyChanged;
-            ViewModel.MoveSuggestionComputed += ViewModel_MoveSuggestionComputed;
-            ViewModel.GameError += ViewModel_GameError;
+            ViewModel.Model.MoveSuggestionComputed += Model_MoveSuggestionComputed;
+            ViewModel.Model.HistoryItemAdded += Model_HistoryItemAdded;
+            ViewModel.Model.HistoryCleared += Model_HistoryCleared;
+            ViewModel.Model.GameError += Model_GameError;
             Controller = controller;
         }
 
-        private void ViewModel_MoveSuggestionComputed(object sender, Model.MoveEventArgs e)
+        private void Model_HistoryCleared(object sender, EventArgs e)
         {
-            Dispatcher.Invoke(new Action(() =>
+            Dispatcher.BeginInvoke(new Action(() =>
             {
                 try
                 {
-                    Model.Move.T move = ModelException.TryThrow<Model.Move.T>(e.Move);
+                    ViewModel.Board.History.Clear();
                 }
                 catch (Exception exc)
                 {
                     MessageBox.Show(this,
-                        string.Format("Nepodařilo se vypočítat nejlepší tah: {0}", ViewModelCommon.ConvertExceptionToShortString(exc)),
+                        string.Format("Nepodařilo se vymazat historii tahů: {0}", ViewModelCommon.ConvertExceptionToShortString(exc)),
                         "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }), System.Windows.Threading.DispatcherPriority.Background);
+        }
+
+        private void Model_HistoryItemAdded(object sender, HistoryItemAddedEventArgs e)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                try
+                {
+                    HistoryItem.T item = e.Item;
+                    ViewModel.Board.History.InsertItem(item);
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show(this,
+                        string.Format("Nepodařilo se uložit tah do historie: {0}", ViewModelCommon.ConvertExceptionToShortString(exc)),
+                        "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }), System.Windows.Threading.DispatcherPriority.Background);
+        }
+
+        private void Model_MoveSuggestionComputed(object sender, Model.MoveEventArgs e)
+        {
+            Dispatcher.Invoke(new Action(() =>
+            {
+                if (e.Move.IsError)
+                {
+                    string msg = ErrorMessages.toString(((Result<Move.T, ErrorDefinitions.Error>.Error)e.Move).Item);
+                    MessageBox.Show(this,
+                        string.Format("Nepodařilo se vypočítat nejlepší tah: {0}", msg),
+                        "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                    
                 }
             }));
         }
 
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            Dispatcher.Invoke(new Action(() =>
+            Dispatcher.BeginInvoke(new Action(() =>
             {
                 if (e.PropertyName == "Status" || e.PropertyName == "IsMoveSuggestionComputing")
                     Mouse.OverrideCursor = (ViewModel.Status == Model.GameStatus.Running || ViewModel.IsMoveSuggestionComputing) ? Cursors.AppStarting : null;
-            }));
+            }), System.Windows.Threading.DispatcherPriority.Background);
         }
 
-        private void ViewModel_GameError(object sender, Model.GameErrorEventArgs e)
+        private void Model_GameError(object sender, Model.GameErrorEventArgs e)
         {
             Dispatcher.Invoke(new Action(() =>
             {

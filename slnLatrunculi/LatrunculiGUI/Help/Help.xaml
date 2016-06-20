@@ -89,6 +89,11 @@
         <Paragraph>Nejlepší vypočítaný tah je poté na desce zvýrazněn žlutým podbarvením.</Paragraph>
     </FlowDocument>
 
+    <FlowDocument x:Key="docHistory">
+        <Paragraph Style="{StaticResource title}">Historie tahů</Paragraph>
+        <Paragraph>V pravém dolním rohu hlavního okna je zobrazena historie tahů ve formátu: pořadové číslo tahu, barva hráče, výchozí a cílová souřadnice a v závorce uvedený počet zajatých nepřátelských kamenů (pokud je nenulový).</Paragraph>
+    </FlowDocument>
+
     <FlowDocument x:Key="docPlayerSettings">
         <Paragraph Style="{StaticResource title}">Nastavení hry</Paragraph>
         <Paragraph>Okno Nastavení hry umožňuje zvolit, který hráč bude počítač a který hráč bude lidský.</Paragraph>

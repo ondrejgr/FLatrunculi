@@ -6,6 +6,7 @@
 #load "Move.fs"
 #load "RemovedPiece.fs"
 #load "BoardMove.fs"
+#load "HistoryItem.fs"
 #load "Board.fs"
 #load "Rules.fs"
 #load "Brain.fs"
@@ -28,3 +29,4 @@ unwrapResultExn <| controller.TryNewGame()
 unwrapResultExn <| controller.TryRun()
 
 let activeColor = unwrapResultExn <| model.tryGetActiveColor()
+

@@ -27,33 +27,30 @@ namespace Latrunculi.ViewModel
 
         void IDisposable.Dispose()
         {
-            Model.BoardChanged -= new ModelChangeEventHandler(Model_BoardChanged);
-            Model.StatusChanged -= new ModelChangeEventHandler(Model_StatusChanged);
-            Model.PlayerSettingsChanged -= new ModelChangeEventHandler(Model_PlayerSettingsChanged);
-            Model.ActivePlayerChanged -= new ModelChangeEventHandler(Model_ActivePlayerChanged);
-            Model.IsMoveSuggestionComputingChanged -= new ModelChangeEventHandler(Model_IsMoveSuggestionComputingChanged);
-            Model.MoveSuggestionComputed -= new MoveSuggestionComputedEventHandler(Model_MoveSuggestionComputed);
-            Model.NumberOfMovesWithoutRemovalChanged -= new ModelChangeEventHandler(Model_NumberOfMovesWithoutRemovalChanged);
-            Model.GameError -= new GameErrorEventHandler(Model_GameError);
+            Model.BoardChanged -= Model_BoardChanged;
+            Model.StatusChanged -= Model_StatusChanged;
+            Model.PlayerSettingsChanged -= Model_PlayerSettingsChanged;
+            Model.ActivePlayerChanged -= Model_ActivePlayerChanged;
+            Model.IsMoveSuggestionComputingChanged -= Model_IsMoveSuggestionComputingChanged;
+            Model.MoveSuggestionComputed -= Model_MoveSuggestionComputed;
+            Model.NumberOfMovesWithoutRemovalChanged -= Model_NumberOfMovesWithoutRemovalChanged;
         }
 
         private void InitModel()
         {
-            Model.BoardChanged += new ModelChangeEventHandler(Model_BoardChanged);
-            Model.StatusChanged += new ModelChangeEventHandler(Model_StatusChanged);
-            Model.PlayerSettingsChanged += new ModelChangeEventHandler(Model_PlayerSettingsChanged);
-            Model.ActivePlayerChanged += new ModelChangeEventHandler(Model_ActivePlayerChanged);
-            Model.IsMoveSuggestionComputingChanged += new ModelChangeEventHandler(Model_IsMoveSuggestionComputingChanged);
-            Model.MoveSuggestionComputed += new MoveSuggestionComputedEventHandler(Model_MoveSuggestionComputed);
-            Model.NumberOfMovesWithoutRemovalChanged += new ModelChangeEventHandler(Model_NumberOfMovesWithoutRemovalChanged);
-            Model.GameError += new GameErrorEventHandler(Model_GameError);
+            Model.BoardChanged += Model_BoardChanged;
+            Model.StatusChanged += Model_StatusChanged;
+            Model.PlayerSettingsChanged += Model_PlayerSettingsChanged;
+            Model.ActivePlayerChanged += Model_ActivePlayerChanged;
+            Model.IsMoveSuggestionComputingChanged += Model_IsMoveSuggestionComputingChanged;
+            Model.MoveSuggestionComputed += Model_MoveSuggestionComputed;
+            Model.NumberOfMovesWithoutRemovalChanged += Model_NumberOfMovesWithoutRemovalChanged;
             Board.Init(Model.Board);
 
             OnPlayerSettingsChanged();
             OnStatusChanged();
         }
 
-        public event MoveSuggestionComputedEventHandler MoveSuggestionComputed;
         private void Model_MoveSuggestionComputed(object sender, MoveEventArgs e)
         {
             if (e.Move.IsSuccess)
@@ -66,10 +63,6 @@ namespace Latrunculi.ViewModel
             {
                 Board.ClearIsSuggestedMove();
             }
-
-
-            if (MoveSuggestionComputed != null)
-                MoveSuggestionComputed(this, e);
         }
 
         private void Model_NumberOfMovesWithoutRemovalChanged(object sender, EventArgs e)
@@ -89,13 +82,6 @@ namespace Latrunculi.ViewModel
             {
                 return 30 - Model.NumberOfMovesWithoutRemoval;
             }
-        }
-
-        public event GameErrorEventHandler GameError;
-        private void Model_GameError(object sender, GameErrorEventArgs e)
-        {
-            if (GameError != null)
-                GameError(this, e);
         }
 
         private void Model_BoardChanged(object sender, EventArgs e)
@@ -343,13 +329,13 @@ namespace Latrunculi.ViewModel
         }
 
         private GameModel.T _model;
-        private GameModel.T Model
+        public GameModel.T Model
         {
             get
             {
                 return _model;
             }
-            set
+            private set
             {
                 _model = value;
             }

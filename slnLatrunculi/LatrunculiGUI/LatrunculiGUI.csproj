@@ -66,6 +66,7 @@
     </ApplicationDefinition>
     <Compile Include="Controls\ControlCommands.cs" />
     <Compile Include="Controls\History.cs" />
+    <Compile Include="Controls\HistoryItem.cs" />
     <Compile Include="Controls\Piece.cs" />
     <Compile Include="Controls\PiecesCount.cs" />
     <Compile Include="Controls\PlayerControl.xaml.cs">

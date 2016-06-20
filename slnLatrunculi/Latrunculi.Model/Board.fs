@@ -6,6 +6,8 @@ module Board =
         let sq = Array.init (Seq.length Coord.RowNumbers) (fun _ -> 
             Array.create (Seq.length Coord.ColumnNumbers) Square.createEmpty)
 
+        member val History: HistoryItem.T list = List.empty with get, set
+
         member val private Squares = sq
 
         member this.GetSquare (c: Coord.T) =
@@ -64,6 +66,14 @@ module Board =
     let tryGetSquare (board: T) coord =
         Success (getSquare board coord)
 
+    let addHistoryItem (board: T) (playerColor: Piece.Colors) (boardMove: BoardMove.T) =
+        let item = HistoryItem.create playerColor boardMove
+        board.History <- item::board.History
+        item
+
+    let clearHistory (board: T) =
+        board.History <- List.empty
+
     let move (board: T) (move: BoardMove.T) =
         let m = move.Move 
         board.ChangeSquare m.Source m.NewSourceSquare
@@ -80,11 +90,12 @@ module Board =
 
     let tryInit (board: T) (getInitalSquare: Coord.T -> Square.T) =
         try
+            clearHistory board
             Coord.iter (fun c ->
                     board.ChangeSquare c <| getInitalSquare c)
             Success board
         with
-        | _ -> Error UnableToIterateBoard
+        | _ -> Error UnableToInitializeBoard
 
     let create =
         T()

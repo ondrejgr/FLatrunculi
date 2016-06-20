@@ -156,3 +156,9 @@ module Coord =
                                 | _ -> failwith "Souřadnici se nepodařilo vytvořit.")
                         ColumnNumbers) RowNumbers
 
+
+    let toString (coord: T) =
+        let { Column = colNum; Row = rowNum } = coord
+        let (ColumnNumber col) = colNum
+        let (RowNumber row) = rowNum
+        sprintf "%O%O" col row

@@ -153,7 +153,7 @@ namespace Latrunculi.ViewModel
             }
         }
 
-        public void Init(Latrunculi.Model.Board.T boardModel)
+        public void Init(Model.Board.T boardModel)
         {
             try
             {
