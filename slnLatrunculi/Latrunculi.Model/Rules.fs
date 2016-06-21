@@ -16,9 +16,10 @@ module Rules =
         | NoResult
         | GameOverResult of GameOverResult
 
-    let checkVictory board numOfMovesWithoutRemoval =
+    let checkVictory board =
         let whiteCount = Board.whitePiecesCount board
         let blackCount = Board.blackPiecesCount board
+        let numOfMovesWithoutRemoval = History.getNumberOfMovesWithoutRemoval board.History
         let getResult =
             if whiteCount = blackCount
                 then GameOverResult Draw
@@ -145,7 +146,7 @@ module Rules =
                         | Success rmpiece -> rmpiece::result
                         | _ -> result) [] Coord.getBoardCornersSeq }
             
-            Success (BoardMove.createWithRmPieces move result)
+            Success (BoardMove.createWithRmPieces color move result)
 
 
     let getBoardMoveExn (board: Board.T) (color: Piece.Colors) (move: Move.T) =

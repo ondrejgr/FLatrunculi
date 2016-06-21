@@ -7,6 +7,7 @@ module Board =
             Array.create (Seq.length Coord.ColumnNumbers) Square.createEmpty)
 
         member val private Squares = sq
+        member val History = History.create() with get, set
 
         member this.GetSquare (c: Coord.T) =
             let col = Coord.ColIndex.[c.Column]
@@ -65,11 +66,17 @@ module Board =
         Success (getSquare board coord)
 
     let move (board: T) (move: BoardMove.T) =
+        let addMoveToHistory =
+            let id = 1 + List.length board.History
+            let item = HistoryItem.create id move.Color move
+            board.History <- History.getHistoryWithNewItem board.History item
+
         let m = move.Move 
         board.ChangeSquare m.Source m.NewSourceSquare
         board.ChangeSquare m.Target m.NewTargetSquare
         List.iter (fun (x: RemovedPiece.T) ->
                     board.ChangeSquare x.Coord Square.createEmpty) move.RemovedPieces
+        addMoveToHistory
 
     let invmove (board: T) (move: BoardMove.T) =
         let m = move.Move
@@ -80,6 +87,7 @@ module Board =
 
     let tryInit (board: T) (getInitalSquare: Coord.T -> Square.T) =
         try
+            board.History <- History.create()
             Coord.iter (fun c ->
                     board.ChangeSquare c <| getInitalSquare c)
             Success board
@@ -88,6 +96,7 @@ module Board =
 
     let clone (source: T) =
         let result = T()
+        result.History <- source.History
         unwrapResultExn <| tryInit result source.GetSquare
 
     let create() =

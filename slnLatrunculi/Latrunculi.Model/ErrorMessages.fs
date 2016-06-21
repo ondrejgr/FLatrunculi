@@ -30,6 +30,7 @@ module ErrorMessages =
         // Player
         | UnableToDeterminePlayerMove -> "Nepodařilo se zjistit tah hráče."
         | NoBoardInstanceSpecified -> "Nebyla předána platná instance hrací desky."
+        | NoHistoryInstanceSpecified -> "Nebyla předána platná instance historie."
         | NoGetMoveFromUICallbackSpecified -> "Nebyl předán odkaz na funkci UI pro získání tahu."
         // PlayerSettings
         | TwoPlayersMayNotBeSameColor -> error.ToString()

@@ -19,6 +19,7 @@ module Player =
     type PlayerLevels = Levels * Levels
 
     let mutable Board: Board.T option = None
+    let mutable History: History.T option = None
     let mutable getHumanPlayerMoveFromUIWorkflow: (unit -> Async<Move.T>) option = None
 
     [<AbstractClass>]

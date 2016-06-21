@@ -57,7 +57,7 @@ module GameController =
                 | _ -> Error RequestedHistoryMoveNotFound
             maybe {
                 let! historyBoard = Board.tryInit this.Model.HistoryBoard Rules.getInitialBoardSquares
-                let historyItems = List.filter (fun (a: HistoryItem.T) -> a.ID <= id) this.Model.History
+                let historyItems = List.filter (fun (a: HistoryItem.T) -> a.ID <= id) this.Model.Board.History
                 do! tryMoveFound historyItems
                 do! List.foldBack (fun (item: HistoryItem.T) result ->
                                 Board.move this.Model.HistoryBoard item.BoardMove
@@ -72,13 +72,12 @@ module GameController =
 
                 // reset game result and set active player
                 this.Model.setActiveColor(Some Rules.getInitialActiveColor) |> ignore
-                this.Model.ResetNumberOfMovesWithoutRemoval() |> ignore
                 this.Model.setResult Rules.NoResult |> ignore
 
                 // init board with default positions
                 let! board = Board.tryInit this.Model.Board Rules.getInitialBoardSquares
                 let! historyBoard = Board.tryInit this.Model.HistoryBoard Rules.getEmptyBoardSquares
-                this.Model.ClearHistory()
+                this.Model.RaiseHistoryCleared()
                 this.Model.RaiseBoardChanged()
                 return this }
             
@@ -99,14 +98,11 @@ module GameController =
 
                     // apply move and check number of removed pieces
                     Board.move this.Model.Board boardMove |> ignore
-                    do! this.Model.tryAddBoardMoveToHistory boardMove
+                    this.Model.RaiseHistoryItemAdded <| List.head this.Model.Board.History
                     this.Model.RaiseBoardChanged()
-                    ignore <| match BoardMove.anyPiecesRemoved boardMove with
-                                | true -> this.Model.ResetNumberOfMovesWithoutRemoval()
-                                | false -> this.Model.IncNumberOfMovesWithoutRemoval()
 
                     // check game over
-                    this.Model.setResult <| (Rules.checkVictory this.Model.Board this.Model.NumberOfMovesWithoutRemoval) |> ignore
+                    this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
                     match this.Model.Result with
                     | Rules.GameOverResult _ ->
                         return Finished

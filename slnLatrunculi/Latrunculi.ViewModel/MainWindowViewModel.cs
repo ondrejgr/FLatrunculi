@@ -33,7 +33,8 @@ namespace Latrunculi.ViewModel
             Model.ActivePlayerChanged -= Model_ActivePlayerChanged;
             Model.IsMoveSuggestionComputingChanged -= Model_IsMoveSuggestionComputingChanged;
             Model.MoveSuggestionComputed -= Model_MoveSuggestionComputed;
-            Model.NumberOfMovesWithoutRemovalChanged -= Model_NumberOfMovesWithoutRemovalChanged;
+            Model.HistoryCleared -= Model_HistoryCleared;
+            Model.HistoryItemAdded -= Model_HistoryItemAdded;
         }
 
         private void InitModel()
@@ -44,12 +45,23 @@ namespace Latrunculi.ViewModel
             Model.ActivePlayerChanged += Model_ActivePlayerChanged;
             Model.IsMoveSuggestionComputingChanged += Model_IsMoveSuggestionComputingChanged;
             Model.MoveSuggestionComputed += Model_MoveSuggestionComputed;
-            Model.NumberOfMovesWithoutRemovalChanged += Model_NumberOfMovesWithoutRemovalChanged;
+            Model.HistoryCleared += Model_HistoryCleared;
+            Model.HistoryItemAdded += Model_HistoryItemAdded;
             Board.Init(Model.Board);
             HistoryBoard.Init(Model.HistoryBoard);
 
             OnPlayerSettingsChanged();
             OnStatusChanged();
+        }
+
+        private void Model_HistoryCleared(object sender, EventArgs e)
+        {
+            OnPropertyChanged("NumberOfMovesRemaining");
+        }
+
+        private void Model_HistoryItemAdded(object sender, HistoryItemAddedEventArgs e)
+        {
+            OnPropertyChanged("NumberOfMovesRemaining");
         }
 
         private void Model_MoveSuggestionComputed(object sender, MoveEventArgs e)
@@ -65,12 +77,7 @@ namespace Latrunculi.ViewModel
                 Board.ClearIsSuggestedMove();
             }
         }
-
-        private void Model_NumberOfMovesWithoutRemovalChanged(object sender, EventArgs e)
-        {
-            OnPropertyChanged("NumberOfMovesRemaining");
-        }
-
+          
         private void Model_IsMoveSuggestionComputingChanged(object sender, EventArgs e)
         {
             OnPropertyChanged("IsMoveSuggestionComputing");
@@ -81,7 +88,7 @@ namespace Latrunculi.ViewModel
         {
             get
             {
-                return 30 - Model.NumberOfMovesWithoutRemoval;
+                return 30 - Model.getNumberOfMovesWithoutRemoval();
             }
         }
 

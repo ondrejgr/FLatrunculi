@@ -31,8 +31,8 @@ let RulesTest() =
     Assert.IsFalse(Rules.isMoveValid board Piece.Colors.White <| Move.createFromStrCoordExn "B2" "A3" empty white)
 
     // capture in line
-    Board.move board <| BoardMove.create (unwrapResultExn <| Move.tryCreateFromStrCoord "B2" "B5" empty white)
-    Board.move board <| BoardMove.create (unwrapResultExn <| Move.tryCreateFromStrCoord "A6" "A5" empty white)
+    Board.move board <| BoardMove.create Piece.Colors.White (unwrapResultExn <| Move.tryCreateFromStrCoord "B2" "B5" empty white)
+    Board.move board <| BoardMove.create Piece.Colors.White (unwrapResultExn <| Move.tryCreateFromStrCoord "A6" "A5" empty white)
 
     // voluntary passing between enemies - do not capture
     ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
@@ -235,9 +235,34 @@ let RulesTest() =
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 2 } -> black
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 3 } -> white
                             | _ -> Square.createEmpty ))
-    Assert.IsTrue(match Rules.checkVictory board 15 with
+    Assert.IsTrue(match Rules.checkVictory board with
                     | Rules.NoResult -> true
                     | _ -> false)
+    // black winner
+    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+                            match c with
+                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 1 } -> black
+                            | _ -> Square.createEmpty ))
+    Assert.IsTrue(match Rules.checkVictory board with
+                    | Rules.GameOverResult v when v = Rules.Victory Rules.BlackWinner -> true
+                    | _ -> false)
+    // white winner
+    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+                            match c with
+                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 1 } -> white
+                            | _ -> Square.createEmpty ))
+    Assert.IsTrue(match Rules.checkVictory board with
+                    | Rules.GameOverResult v when v = Rules.Victory Rules.WhiteWinner -> true
+                    | _ -> false)
+
+    // create some fake history
+    ignore <| (unwrapResultExn <| Board.tryInit board Rules.getInitialBoardSquares)
+    let c1 = unwrapResultExn <| Coord.tryCreate 'A' 2
+    let c2 = unwrapResultExn <| Coord.tryCreate 'A' 3
+    let m = unwrapResultExn <| Move.tryCreate c1 c2 empty white
+    let move = unwrapResultExn <| Rules.tryValidateAndGetBoardMove board Piece.Colors.White m
+    let hitem = HistoryItem.create 1 Piece.Colors.Black move
+    let lst: History.T = List.init 30 (fun i -> hitem)
     // black winner -30 moves
     ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
                             match c with
@@ -245,7 +270,8 @@ let RulesTest() =
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 2 } -> black
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 3 } -> white
                             | _ -> Square.createEmpty ))
-    Assert.IsTrue(match Rules.checkVictory board 30 with
+    board.History <- lst
+    Assert.IsTrue(match Rules.checkVictory board with
                     | Rules.GameOverResult v when v = Rules.Victory Rules.BlackWinner -> true
                     | _ -> false)
     // white winner -30 moves
@@ -255,7 +281,8 @@ let RulesTest() =
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 2 } -> black
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 3 } -> white
                             | _ -> Square.createEmpty ))
-    Assert.IsTrue(match Rules.checkVictory board 30 with
+    board.History <- lst
+    Assert.IsTrue(match Rules.checkVictory board with
                     | Rules.GameOverResult v when v = Rules.Victory Rules.WhiteWinner -> true
                     | _ -> false)
     // draw
@@ -264,26 +291,10 @@ let RulesTest() =
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 1 } -> white
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 2 } -> black
                             | _ -> Square.createEmpty ))
-    Assert.IsTrue(match Rules.checkVictory board 30 with
+    board.History <- lst
+    Assert.IsTrue(match Rules.checkVictory board with
                     | Rules.GameOverResult v when v = Rules.Draw -> true
                     | _ -> false)
-    // black winner
-    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
-                            match c with
-                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 1 } -> black
-                            | _ -> Square.createEmpty ))
-    Assert.IsTrue(match Rules.checkVictory board 5 with
-                    | Rules.GameOverResult v when v = Rules.Victory Rules.BlackWinner -> true
-                    | _ -> false)
-    // white winner
-    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
-                            match c with
-                            | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 1 } -> white
-                            | _ -> Square.createEmpty ))
-    Assert.IsTrue(match Rules.checkVictory board 10 with
-                    | Rules.GameOverResult v when v = Rules.Victory Rules.WhiteWinner -> true
-                    | _ -> false)
-
 
     ()
 

@@ -3,14 +3,15 @@
 module BoardMove =
     [<StructuralEquality;NoComparison>]
     type T = {
+        Color: Piece.Colors;
         Move: Move.T;
         RemovedPieces: RemovedPiece.T list }
 
-    let createWithRmPieces (move: Move.T) pcs =
-        { Move = move; RemovedPieces = pcs}
+    let createWithRmPieces (color: Piece.Colors) (move: Move.T) pcs =
+        { Color = color; Move = move; RemovedPieces = pcs}
         
-    let create (move: Move.T) =
-        createWithRmPieces move []
+    let create (color: Piece.Colors) (move: Move.T) =
+        createWithRmPieces color move []
 
     let getSourceCoord (move: T) =
         move.Move.Source

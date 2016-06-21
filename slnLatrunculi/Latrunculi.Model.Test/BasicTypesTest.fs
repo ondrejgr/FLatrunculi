@@ -96,7 +96,7 @@ let BasicTypesTest() =
     // move with pieces removal
     let move = unwrapResultExn <| Move.tryCreate boardCoord1 boardCoord2 squareEmpty squareWithWhitePiece
     let rmPieces = (RemovedPiece.create boardCoord3 whitePiece)::(RemovedPiece.create boardCoord4 whitePiece)::[]
-    let boardMove = BoardMove.createWithRmPieces move rmPieces
+    let boardMove = BoardMove.createWithRmPieces Piece.Colors.White move rmPieces
     Assert.AreEqual(squareWithWhitePiece, Board.getSquare board boardCoord1)
     Assert.AreEqual(squareEmpty, Board.getSquare board boardCoord2)
     Assert.AreEqual(squareWithWhitePiece, Board.getSquare board boardCoord3)

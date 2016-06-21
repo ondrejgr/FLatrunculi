@@ -37,19 +37,16 @@ module GameModel =
         let isMoveSuggestionComputingChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let moveSuggestionComputedEvent = new Event<MoveSuggestionComputedEventHandler, MoveEventArgs>()
         let boardChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
-        let numberOfMovesWithoutRemovalChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let historyItemAddedEvent = new Event<HistoryItemAddedEventHandler, HistoryItemAddedEventArgs>()
         let historyClearedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let gameErrorEvent = new Event<GameErrorEventHandler, GameErrorEventArgs>()
               
         member val Board = board
         member val HistoryBoard = historyBoard
-        member val History = History.create() with get, set
         member val PlayerSettings = playerSettings with get, set
         member val Status = status with get, set
         member val ActiveColor = None with get, set
         member val IsMoveSuggestionComputing = false with get, set
-        member val NumberOfMovesWithoutRemoval = 0 with get, set
         member val Result = Rules.NoResult with get, set
         
         [<CLIEvent>]
@@ -64,8 +61,6 @@ module GameModel =
         member this.MoveSuggestionComputed = moveSuggestionComputedEvent.Publish
         [<CLIEvent>]
         member this.BoardChanged = boardChangedEvent.Publish
-        [<CLIEvent>]
-        member this.NumberOfMovesWithoutRemovalChanged = numberOfMovesWithoutRemovalChangedEvent.Publish
         [<CLIEvent>]
         member this.HistoryItemAdded = historyItemAddedEvent.Publish
         [<CLIEvent>]
@@ -91,13 +86,10 @@ module GameModel =
         member this.RaiseBoardChanged() =
             boardChangedEvent.Trigger(this, EventArgs.Empty)
 
-        member private this.OnNumberOfMovesWithoutRemovalChanged() =
-            numberOfMovesWithoutRemovalChangedEvent.Trigger(this, EventArgs.Empty)
-
-        member private this.OnHistoryItemAdded(x) =
+        member this.RaiseHistoryItemAdded(x) =
             historyItemAddedEvent.Trigger(this, HistoryItemAddedEventArgs(x))
 
-        member private this.OnHistoryCleared() =
+        member this.RaiseHistoryCleared() =
             historyClearedEvent.Trigger(this, EventArgs.Empty)
 
         member this.RaiseGameErrorEvent(error) =
@@ -158,30 +150,8 @@ module GameModel =
                 Success ()
             | None -> Error NoPlayerOnMove
 
-        member this.IncNumberOfMovesWithoutRemoval() =
-            this.NumberOfMovesWithoutRemoval <- this.NumberOfMovesWithoutRemoval + 1
-            this.OnNumberOfMovesWithoutRemovalChanged()
-            this.NumberOfMovesWithoutRemoval
-
-        member this.ResetNumberOfMovesWithoutRemoval() =
-            this.NumberOfMovesWithoutRemoval <- 0
-            this.OnNumberOfMovesWithoutRemovalChanged()
-            this.NumberOfMovesWithoutRemoval
-
-        member this.ClearHistory() =
-            this.History <- History.create()
-            this.OnHistoryCleared()
-
-        member this.tryAddBoardMoveToHistory (boardMove: BoardMove.T) =
-            maybe {
-                let! color = this.tryGetActiveColor()
-                let board = this.Board
-                let history = this.History
-                let id = 1 + List.length history
-                let item = HistoryItem.create id color boardMove
-                this.History <- History.getHistoryWithNewItem history item
-                this.OnHistoryItemAdded item
-                return () }
+        member this.getNumberOfMovesWithoutRemoval() =
+            History.getNumberOfMovesWithoutRemoval this.Board.History
 
     let tryCreate() =
         maybe {
