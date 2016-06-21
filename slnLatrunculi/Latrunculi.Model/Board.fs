@@ -86,5 +86,9 @@ module Board =
         with
         | _ -> Error UnableToInitializeBoard
 
+    let clone (source: T) =
+        let result = T()
+        unwrapResultExn <| tryInit result source.GetSquare
+
     let create() =
         T()
