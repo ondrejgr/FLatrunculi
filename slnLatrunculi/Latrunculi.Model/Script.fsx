@@ -9,6 +9,7 @@
 #load "HistoryItem.fs"
 #load "Board.fs"
 #load "Rules.fs"
+#load "MoveTree.fs"
 #load "Brain.fs"
 #load "HumanSelectedMove.fs"
 #load "Player.fs"

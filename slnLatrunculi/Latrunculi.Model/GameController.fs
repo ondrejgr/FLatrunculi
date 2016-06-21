@@ -57,7 +57,7 @@ module GameController =
                 | _ -> Error RequestedHistoryMoveNotFound
             maybe {
                 let! historyBoard = Board.tryInit this.Model.HistoryBoard Rules.getInitialBoardSquares
-                let historyItems = List.filter (fun (a: HistoryItem.T) -> a.ID <= id) <| Board.getHistory this.Model.Board
+                let historyItems = List.filter (fun (a: HistoryItem.T) -> a.ID <= id) this.Model.History
                 do! tryMoveFound historyItems
                 do! List.foldBack (fun (item: HistoryItem.T) result ->
                                 Board.move this.Model.HistoryBoard item.BoardMove
@@ -78,8 +78,8 @@ module GameController =
                 // init board with default positions
                 let! board = Board.tryInit this.Model.Board Rules.getInitialBoardSquares
                 let! historyBoard = Board.tryInit this.Model.HistoryBoard Rules.getEmptyBoardSquares
+                this.Model.ClearHistory()
                 this.Model.RaiseBoardChanged()
-                this.Model.RaiseHistoryCleared()
                 return this }
             
         member private this.ReportGameError e =
@@ -99,7 +99,7 @@ module GameController =
 
                     // apply move and check number of removed pieces
                     Board.move this.Model.Board boardMove |> ignore
-                    this.Model.RaiseHistoryItemAdded(Board.addHistoryItem this.Model.Board color boardMove)
+                    do! this.Model.tryAddBoardMoveToHistory boardMove
                     this.Model.RaiseBoardChanged()
                     ignore <| match BoardMove.anyPiecesRemoved boardMove with
                                 | true -> this.Model.ResetNumberOfMovesWithoutRemoval()

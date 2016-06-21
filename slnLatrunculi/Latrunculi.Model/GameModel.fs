@@ -44,6 +44,7 @@ module GameModel =
               
         member val Board = board
         member val HistoryBoard = historyBoard
+        member val History = History.create() with get, set
         member val PlayerSettings = playerSettings with get, set
         member val Status = status with get, set
         member val ActiveColor = None with get, set
@@ -93,10 +94,10 @@ module GameModel =
         member private this.OnNumberOfMovesWithoutRemovalChanged() =
             numberOfMovesWithoutRemovalChangedEvent.Trigger(this, EventArgs.Empty)
 
-        member this.RaiseHistoryItemAdded(x) =
+        member private this.OnHistoryItemAdded(x) =
             historyItemAddedEvent.Trigger(this, HistoryItemAddedEventArgs(x))
 
-        member this.RaiseHistoryCleared() =
+        member private this.OnHistoryCleared() =
             historyClearedEvent.Trigger(this, EventArgs.Empty)
 
         member this.RaiseGameErrorEvent(error) =
@@ -167,6 +168,20 @@ module GameModel =
             this.OnNumberOfMovesWithoutRemovalChanged()
             this.NumberOfMovesWithoutRemoval
 
+        member this.ClearHistory() =
+            this.History <- History.create()
+            this.OnHistoryCleared()
+
+        member this.tryAddBoardMoveToHistory (boardMove: BoardMove.T) =
+            maybe {
+                let! color = this.tryGetActiveColor()
+                let board = this.Board
+                let history = this.History
+                let id = 1 + List.length history
+                let item = HistoryItem.create id color boardMove
+                this.History <- History.getHistoryWithNewItem history item
+                this.OnHistoryItemAdded item
+                return () }
 
     let tryCreate() =
         maybe {

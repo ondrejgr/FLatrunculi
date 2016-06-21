@@ -478,6 +478,7 @@ namespace Latrunculi.GUI
                     new Tuple<string, string>(vm.WhitePlayer.Name, vm.BlackPlayer.Name),
                     new Tuple<Model.Player.Levels, Model.Player.Levels>((Model.Player.Levels)vm.WhitePlayer.Level, (Model.Player.Levels)vm.BlackPlayer.Level));
 
+                ViewModel.ShowHistory = false;
                 ModelException.TryThrow<GameController.T>(Controller.TryNewGame());
                 ModelException.TryThrow<GameController.T>(Controller.TryRun());
                 FocusBoard();
