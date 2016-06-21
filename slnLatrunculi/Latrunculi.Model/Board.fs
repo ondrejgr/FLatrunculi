@@ -98,5 +98,5 @@ module Board =
         with
         | _ -> Error UnableToInitializeBoard
 
-    let create =
+    let create() =
         T()

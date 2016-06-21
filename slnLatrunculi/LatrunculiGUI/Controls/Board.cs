@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Latrunculi.ViewModel;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +45,7 @@ namespace Latrunculi.GUI.Controls
 
     [TemplateVisualState(Name = "Normal", GroupName = "CommonStates")]
     [TemplateVisualState(Name = "Active", GroupName = "CommonStates")]
-    public class Board : ItemsControl
+    public class Board : Control
     {
         static Board()
         {
@@ -127,6 +128,37 @@ namespace Latrunculi.GUI.Controls
         protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
         {
             return new PointHitTestResult(this, hitTestParameters.HitPoint);
+        }
+
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            UpdateIcItemsSource();
+        }
+
+        private void UpdateIcItemsSource()
+        {
+            IEnumerable<BoardRowViewModel> rows = null;
+            if (BoardViewModel != null)
+                rows = BoardViewModel.Rows;            
+
+            ItemsControl ic = GetTemplateChild("ic") as ItemsControl;
+            if (ic != null)
+                ic.ItemsSource = rows;
+        }
+
+        public BoardViewModel BoardViewModel
+        {
+            get { return GetValue(BoardViewModelProperty) as BoardViewModel; }
+            set { SetValue(BoardViewModelProperty, value); }
+        }
+        public static readonly DependencyProperty BoardViewModelProperty
+                = DependencyProperty.Register("BoardViewModel", typeof(BoardViewModel), typeof(Board),
+                                  new FrameworkPropertyMetadata(null, new PropertyChangedCallback(OnBoardViewModelChanged)));
+        private static void OnBoardViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Board b = (Board)d;
+            b.UpdateIcItemsSource();
         }
     }
 }

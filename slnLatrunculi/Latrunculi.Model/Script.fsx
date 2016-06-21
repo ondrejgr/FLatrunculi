@@ -21,7 +21,7 @@ open Latrunculi.Model
 open Latrunculi.Controller
 open System.Threading
 
-let model = unwrapResultExn <| GameModel.tryCreate
+let model = unwrapResultExn <| GameModel.tryCreate()
 let controller = GameController.create model
 
 unwrapResultExn <| controller.TryNewGame()
@@ -29,4 +29,7 @@ unwrapResultExn <| controller.TryNewGame()
 unwrapResultExn <| controller.TryRun()
 
 let activeColor = unwrapResultExn <| model.tryGetActiveColor()
+
+Board.getSquare model.Board <| Coord.createExn 'A' 1
+Board.getSquare model.HistoryBoard <| Coord.createExn 'A' 1
 

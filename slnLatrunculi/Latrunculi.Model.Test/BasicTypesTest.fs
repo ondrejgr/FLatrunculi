@@ -79,7 +79,7 @@ let BasicTypesTest() =
                     | _ -> false)
 
     // physical moves (without rules checking)
-    let board = Board.create
+    let board = Board.create()
     let boardCoord1 = unwrapResultExn <| Coord.tryCreate 'B' 1
     let boardCoord2 = unwrapResultExn <| Coord.tryCreate 'B' 3
     let boardCoord3 = unwrapResultExn <| Coord.tryCreate 'B' 4
@@ -119,7 +119,7 @@ let BasicTypesTest() =
     Assert.IsTrue(blackPlayer :? Player.ComputerPlayer)
 
     // player settings change
-    let model = unwrapResultExn <| GameModel.tryCreate
+    let model = unwrapResultExn <| GameModel.tryCreate()
     let controller = GameController.create model
     let playerSettings = controller.changePlayerSettingsFromPlayers whitePlayer  blackPlayer
     Assert.AreEqual(playerSettings, model.PlayerSettings)

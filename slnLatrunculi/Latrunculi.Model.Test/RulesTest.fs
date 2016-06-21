@@ -7,7 +7,7 @@ open NUnit.Framework.Constraints
 
 [<Test>]
 let RulesTest() =
-    let model = unwrapResultExn <| GameModel.tryCreate
+    let model = unwrapResultExn <| GameModel.tryCreate()
     let board = model.Board
     let controller = GameController.create model
     ignore <| (unwrapResultExn <| controller.TryNewGame())
@@ -227,7 +227,7 @@ let RulesTest() =
     Assert.AreEqual(empty, Board.getSquare board cy)    
     Assert.AreEqual(white, Board.getSquare board cz)   
 
-    let board = Board.create
+    let board = Board.create()
     // no winner -game continues
     ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
                             match c with

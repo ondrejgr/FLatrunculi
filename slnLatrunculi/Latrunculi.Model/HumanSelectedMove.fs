@@ -21,7 +21,7 @@ module HumanSelectedMove =
         member this.SetMove (move: Move.T) =
             this.OnHumanMoveSelected(move)            
 
-    let create =
+    let create() =
         T()
 
     let setMove (x: T) move =

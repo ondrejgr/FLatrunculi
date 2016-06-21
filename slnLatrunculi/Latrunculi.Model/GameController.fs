@@ -31,7 +31,7 @@ module GameController =
 
         member private this.GetHumanMoveFromUI() =
             async {
-                let request = HumanSelectedMove.create
+                let request = HumanSelectedMove.create()
                 this.humanSelectedMove <- Some request
 
                 this.Model.setStatus(GameStatus.WaitingForHumanPlayerMove) |> ignore
@@ -62,7 +62,7 @@ module GameController =
 
                 // init board with default positions
                 let! board = Board.tryInit this.Model.Board Rules.getInitialBoardSquares
-                let! historyBoard = Board.tryInit this.Model.HistoryBoard Rules.getInitialBoardSquares
+                let! historyBoard = Board.tryInit this.Model.HistoryBoard Rules.getEmptyBoardSquares
                 this.Model.RaiseBoardChanged()
                 this.Model.RaiseHistoryCleared()
                 return this }

@@ -8,21 +8,6 @@
     <Style TargetType="{x:Type ctrls:Board}">
         <Setter Property="MinHeight" Value="192"/>
         <Setter Property="MinWidth" Value="192"/>
-        <Setter Property="ItemsPanel">
-            <Setter.Value>
-                <ItemsPanelTemplate>
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                </ItemsPanelTemplate>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="ItemTemplate">
-            <Setter.Value>
-                <DataTemplate>
-                    <ctrls:Row ItemsSource="{Binding Squares}" 
-                               SquareSize="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Board}, Path=SquareSize}"/>
-                </DataTemplate>
-            </Setter.Value>
-        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ctrls:Board}">
@@ -45,7 +30,19 @@
                                 BorderBrush="Navy"
                                 BorderThickness="0" x:Name="border"
                                 CornerRadius="8,8,8,8">
-                            <ItemsPresenter/>
+                            <ItemsControl x:Name="ic">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <ctrls:Row ItemsSource="{Binding Squares}" 
+                                                   SquareSize="{Binding RelativeSource={RelativeSource AncestorType=ctrls:Board}, Path=SquareSize}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
                         </Border>
                     </Grid>
                 </ControlTemplate>

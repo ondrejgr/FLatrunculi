@@ -36,6 +36,9 @@ module Rules =
         | { Row = Coord.RowNumber 2 } | { Row = Coord.RowNumber 1 } -> Square.createWithPiece <| Piece.createWhite
         | _ -> Square.createEmpty
 
+    let getEmptyBoardSquares (coord: Coord.T) =
+        Square.createEmpty
+
     let getInitialActiveColor =
         Piece.Colors.White
 

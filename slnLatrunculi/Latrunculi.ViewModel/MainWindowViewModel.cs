@@ -15,7 +15,7 @@ namespace Latrunculi.ViewModel
         public MainWindowViewModel()
         {
             if (Model == null)
-                Model = ModelException.TryThrow<GameModel.T>(GameModel.tryCreate);
+                Model = ModelException.TryThrow<GameModel.T>(GameModel.tryCreate());
             InitModel();
         }
 

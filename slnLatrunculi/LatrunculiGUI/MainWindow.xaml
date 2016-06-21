@@ -178,13 +178,13 @@
                 <TextBlock Text="{Binding NumberOfMovesRemaining}" TextAlignment="Center" FontWeight="Bold"/>
             </GroupBox>
             <ctrls:Board x:Name="board"
-                         ItemsSource="{Binding Board.Rows}"
+                         BoardViewModel="{Binding Board}"
                          IsActive="{Binding IsGameWaitingForHumanPlayerMove}"
                          BoardSquareClicked="board_BoardSquareClicked"
                          Visibility="{Binding HideHistory, Converter={StaticResource bvis}, Mode=OneWay}"
                          Grid.Column="1" Grid.Row="0"/>
             <ctrls:Board x:Name="historyBoard"
-                         ItemsSource="{Binding HistoryBoard.Rows}"
+                         BoardViewModel="{Binding HistoryBoard}"
                          IsActive="False"
                          Focusable="False"
                          Visibility="{Binding ShowHistory, Converter={StaticResource bvis}, Mode=OneWay}"

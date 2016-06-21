@@ -168,9 +168,9 @@ module GameModel =
             this.NumberOfMovesWithoutRemoval
 
 
-    let tryCreate =
+    let tryCreate() =
         maybe {
-            let! board = Board.create |> Board.tryInit <| (fun _ -> Square.createEmpty)
-            let! historyBoard = Board.create |> Board.tryInit <| (fun _ -> Square.createEmpty)
-            let! playerSettings = PlayerSettings.tryCreateDefault
+            let! board = Board.create() |> Board.tryInit <| Rules.getEmptyBoardSquares
+            let! historyBoard = Board.create() |> Board.tryInit <| Rules.getEmptyBoardSquares
+            let! playerSettings = PlayerSettings.tryCreateDefault()
             return T(board, historyBoard, playerSettings) }

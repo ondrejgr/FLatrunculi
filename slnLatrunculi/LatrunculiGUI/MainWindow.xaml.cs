@@ -614,7 +614,11 @@ namespace Latrunculi.GUI
 
         private void FocusBoard()
         {
-            Dispatcher.BeginInvoke(new Action(() => board.Focus()), System.Windows.Threading.DispatcherPriority.Background);
+            Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    if (ViewModel.HideHistory)
+                        board.Focus();
+                }), System.Windows.Threading.DispatcherPriority.Input);
         }
 
         private void History_SelectionChanged(object sender, SelectionChangedEventArgs e)
