@@ -46,3 +46,4 @@ module ErrorMessages =
         | UnableToGetActivePlayer -> "Nepodařilo se zjistit hráče na tahu."
         | MoveSuggestionAlreadyComputing -> "Výpočet nejlepšího tahu již probíhá."
         | HumanSelectedMoveRequestDoesNotExists -> "Neexistuje požadavek na výběr tahu lidského hráče."
+        | RequestedHistoryMoveNotFound -> "Požadovaný tah nebyl v historii desky nalezen."

@@ -616,7 +616,7 @@ namespace Latrunculi.GUI
         {
             Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    if (ViewModel.HideHistory)
+                    if (!ViewModel.ShowHistory)
                         board.Focus();
                 }), System.Windows.Threading.DispatcherPriority.Input);
         }
@@ -627,10 +627,13 @@ namespace Latrunculi.GUI
             try
             {
                 MoveHistoryItem item = e.AddedItems.OfType<MoveHistoryItem>().FirstOrDefault();
-                //if (item == null)
+
+                if (item != null)
+                    ModelException.TryThrow<GameController.T>(Controller.TryGoToHistoryMove(item.ID));
+                else
                     ModelException.TryThrow<GameController.T>(Controller.TryClearHistoryBoard());
 
-                //ViewModel.HistoryBoard.RefreshFromModel(ViewModel.Model.HistoryBoard);
+                ViewModel.HistoryBoard.RefreshFromModel(ViewModel.Model.HistoryBoard);
             }
             catch (Exception exc)
             {

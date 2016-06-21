@@ -75,6 +75,9 @@ module Board =
     let clearHistory (board: T) =
         board.History <- List.empty
 
+    let getHistory (board: T) =
+        board.History
+
     let move (board: T) (move: BoardMove.T) =
         let m = move.Move 
         board.ChangeSquare m.Source m.NewSourceSquare
