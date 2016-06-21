@@ -7,6 +7,7 @@
 #load "RemovedPiece.fs"
 #load "BoardMove.fs"
 #load "HistoryItem.fs"
+#load "History.fs"
 #load "Board.fs"
 #load "Rules.fs"
 #load "MoveTree.fs"
@@ -30,7 +31,4 @@ unwrapResultExn <| controller.TryNewGame()
 unwrapResultExn <| controller.TryRun()
 
 let activeColor = unwrapResultExn <| model.tryGetActiveColor()
-
-Board.getSquare model.Board <| Coord.createExn 'A' 1
-Board.getSquare model.HistoryBoard <| Coord.createExn 'A' 1
 
