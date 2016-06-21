@@ -59,7 +59,6 @@
     <Compile Include="Rules.fs" />
     <Compile Include="MoveValue.fs" />
     <Compile Include="MoveTree.fs" />
-    <Compile Include="MiniMax.fs" />
     <Compile Include="Brain.fs" />
     <Compile Include="HumanSelectedMove.fs" />
     <Compile Include="Player.fs" />

@@ -62,3 +62,9 @@ module MoveValue =
 
     let getValue (x: int) =
         Value x
+
+    let getInvValue (x: T) =
+        match x with
+        | Value v -> Value -v
+        | MAX -> MIN
+        | MIN -> MAX

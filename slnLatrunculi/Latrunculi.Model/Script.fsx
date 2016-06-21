@@ -12,7 +12,6 @@
 #load "Rules.fs"
 #load "MoveValue.fs"
 #load "MoveTree.fs"
-#load "MiniMax.fs"
 #load "Brain.fs"
 #load "HumanSelectedMove.fs"
 #load "Player.fs"
