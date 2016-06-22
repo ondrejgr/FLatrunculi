@@ -148,8 +148,3 @@ module Rules =
             
             Success (BoardMove.createWithRmPieces color move result)
 
-
-    let getBoardMoveExn (board: Board.T) (color: Piece.Colors) (move: Move.T) =
-        match tryValidateAndGetBoardMove board color move with
-        | Success bmove -> bmove
-        | Error _ -> failwith "Nepodařilo se vytvořit herní tah."
