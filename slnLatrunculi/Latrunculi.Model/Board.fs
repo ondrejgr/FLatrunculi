@@ -79,11 +79,16 @@ module Board =
         addMoveToHistory
 
     let invmove (board: T) (move: BoardMove.T) =
+        let removeMoveFromHistory =
+            board.History <- match List.length board.History with
+                             | l when l > 0 -> List.tail board.History
+                             | _ -> board.History
         let m = move.Move
         board.ChangeSquare m.Source m.NewTargetSquare
         board.ChangeSquare m.Target m.NewSourceSquare
         List.iter (fun (x: RemovedPiece.T) ->
                     board.ChangeSquare x.Coord (Square.createWithPiece x.Piece)) move.RemovedPieces
+        removeMoveFromHistory
 
     let tryInit (board: T) (getInitalSquare: Coord.T -> Square.T) =
         try

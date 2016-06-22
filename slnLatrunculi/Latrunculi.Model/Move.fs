@@ -31,3 +31,4 @@ module Move =
         match tryCreateFromStrCoord src tar nsrcsq ntarsq with
         | Success m -> m
         | _ -> failwith "Unable to create move from string coordinates."
+        
