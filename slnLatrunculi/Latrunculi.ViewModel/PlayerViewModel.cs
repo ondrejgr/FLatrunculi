@@ -109,7 +109,12 @@ namespace Latrunculi.ViewModel
             PlayerType = (PlayerTypes)Model.Player.getPlayerType(player);
             Name = player.Name;
             Level = (PlayerLevels)player.Level;
-            Color = (PlayerColors)player.Color;
+            if (player.Color == Model.Piece.Colors.Black)
+                Color = PlayerColors.pcBlack;
+            else if (player.Color == Model.Piece.Colors.White)
+                Color = PlayerColors.pcWhite;
+            else
+                throw new NotSupportedException();
         }
 
         public object Clone()

@@ -55,7 +55,7 @@ module Brain =
 
     let rec minimax (node: MoveTree.T) (depth: Depth.T) (searchType: SearchType.T): Async<MoveValue.T> =
         async {
-            if (Depth.isZero depth) || (MoveTree.isTerminalNode node)
+            if (Depth.isZero depth) || (MoveTree.isGameOverNode node)
                 then return evaluatePosition <| MoveTree.getPosition node
             else match searchType with
                     | SearchType.Maximizing ->
@@ -71,12 +71,13 @@ module Brain =
                             bestValue <- min bestValue v
                         return bestValue }
 
-    let tryGetBestMove (board: Board.T) (color: Piece.Colors): Async<Result<Move.T, Error>> =
+    let tryGetBestMove (b: Board.T) (c: Piece.Colors): Async<Result<Move.T, Error>> =
         async {
-            let board = Board.clone board
-            let depth = Depth.create 3
+            let board = Board.clone b
+            let mutable color = c
+            let depth = Depth.create 120
             let initialPosition = MoveTree.createPosition board color Rules.NoResult
-            let root = MoveTree.createLeaf initialPosition
+            let mutable root = MoveTree.createLeaf initialPosition
 
             let getValidBoardMovesResult = List.fold (fun result (move: Move.T) ->
                                                     match Rules.tryValidateAndGetBoardMove board color move with
@@ -85,6 +86,7 @@ module Brain =
                                                 (Error NoValidMoveExists, [])
                                                 <| Rules.getValidMoves board color 
 
+            color <- Piece.swapColor color
             match getValidBoardMovesResult with
             | (Error e, _) -> return Error e
             | (Success _, moves) ->                        
@@ -95,11 +97,12 @@ module Brain =
                     Board.move board move
                     let victory = Rules.checkVictory board 
                     let position = MoveTree.createPosition (Board.clone board) color victory
-                    let child = MoveTree.createWithChildAdded root position
+                    let child = MoveTree.createLeaf position
+                    root <- MoveTree.getNodeWithChildAdded root child
                     Board.invmove board move
 
                     // TODO: search type minim/maximi
-                    let! value = minimax child depth SearchType.createMaximizing
+                    let! value = minimax child depth SearchType.createMinimizing
                     if value > bestValue then
                         bestValue <- value
                         bestMove <- move

@@ -22,9 +22,12 @@ module MoveTree =
         | LeafNode _ -> List.empty
         | InnerNode (_, children) -> children
 
-    let isTerminalNode (node: T) =
+    let isGameOverNode (node: T) =
         match node with
-        | LeafNode _ -> true
+        | LeafNode position | InnerNode (position, _) -> 
+            match position.Result with
+            | Rules.GameOverResult _ -> true
+            | _ -> false
         | _ -> false
 
     let createPosition (board: Board.T) (activePlayerColor: Piece.Colors) (result: Rules.GameResult) =
@@ -33,8 +36,7 @@ module MoveTree =
     let createLeaf (position: Position) =
         LeafNode position
 
-    let createWithChildAdded (parent: T) (position: Position) =
-        let child = createLeaf position
+    let getNodeWithChildAdded (parent: T) (child: T) =
         match parent with
         | LeafNode position ->
             InnerNode (position, child::[])

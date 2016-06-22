@@ -3,18 +3,23 @@
 module Piece =
     
     type Colors = 
-        | White = 0
-        | Black = 1
+        | White
+        | Black
 
     [<StructuralEquality;NoComparison>]
     type T = {
         Color: Colors }
     
+    let swapColor (x: Colors) =
+        match x with
+        | White -> Black
+        | Black -> White
+
     let create x =
         { Color = x }
 
     let createWhite =
-        create Colors.White
+        create White
 
     let createBlack =
-        create Colors.Black
+        create Black
