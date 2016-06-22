@@ -370,6 +370,12 @@ V metodě GameLoop je nekonečná (tokenem zrušitelná) herní smyčka, která 
 		\item změní hráče na tahu
 	\end{itemize}
 
+\subsection{Realizace počítačového hráče - modul \texttt{Brain}}
+Pokud je instance třídy reprezentujícího hráče na tahu typu \texttt{ComputerPlayer}, je v~její metodě \texttt{GetMove} volán modul \texttt{Brain}, který obsahuje algoritmus pro zjištění nejlepšího tahu.
+
+Použit byl algoritmus \texttt{MiniMax} (viz \cite{kuhr2011}).
+
+
 \section{Systémové požadavky}
 Pro vývoj i~běh aplikace jsou na počítač kladeny tyto nároky:
 	\begin{itemize}  
