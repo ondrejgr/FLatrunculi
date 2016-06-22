@@ -60,8 +60,16 @@ module MoveValue =
     let getMin =
         MIN
 
+    let getZero =
+        Value 0
+
     let getValue (x: int) =
         Value x
+
+    let add (x: T) (y: int) =
+        match x with
+        | Value v -> Value (v + y)
+        | _ -> x
 
     let getInvValue (x: T) =
         match x with

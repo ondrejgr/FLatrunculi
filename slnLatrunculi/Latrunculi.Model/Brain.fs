@@ -35,16 +35,23 @@ module Brain =
             let board = position.Board
             let ownPieces = Board.whitePiecesCount board
             let enemyPieces = Board.blackPiecesCount board
-            let mutable result = 0
+            let mutable result = MoveValue.getZero
+           
+            match position.Result with
+            | Rules.GameOverResult r ->
+                match r with
+                | Rules.Victory v when v = Rules.WhiteWinner -> result <- MoveValue.getMax
+                | Rules.Victory v when v = Rules.BlackWinner -> result <- MoveValue.getMin
+                | Rules.Draw -> result <- MoveValue.add result -20
+            | Rules.NoResult ->
+                result <- MoveValue.add result (ownPieces * 5 - enemyPieces * 5)
 
-            result <- ownPieces * 5 - enemyPieces * 5
-
-            MoveValue.getValue result
+            result
 
         match position.ActivePlayerColor with
         | Piece.Colors.White -> calcValue
         | Piece.Colors.Black -> MoveValue.getInvValue <| calcValue
-        | _ -> MoveValue.getValue 0
+        | _ -> MoveValue.getZero
 
     let rec minimax (node: MoveTree.T) (depth: Depth.T) (searchType: SearchType.T): Async<MoveValue.T> =
         async {
@@ -81,6 +88,7 @@ module Brain =
 
                 for move in moves do
                     Board.move board move
+
                     // TODO: change color + get game result after move
                     let position = MoveTree.createPosition board color Rules.NoResult
 
