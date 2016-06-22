@@ -20,9 +20,9 @@ namespace Latrunculi.ViewModel
         public void InsertItem(HistoryItem.T item)
         {
             PieceTypes pt = PieceTypes.ptNone;
-            if (item.PlayerColor == Piece.Colors.Black)
+            if (item.BoardMove.Color == Piece.Colors.Black)
                 pt = PieceTypes.ptBlack;
-            else if (item.PlayerColor == Piece.Colors.White)
+            else if (item.BoardMove.Color == Piece.Colors.White)
                 pt = PieceTypes.ptWhite;
             
             Insert(0, new MoveHistoryItem(item.ID, pt,

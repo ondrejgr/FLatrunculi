@@ -5,9 +5,8 @@ module HistoryItem =
     [<NoEquality;NoComparison>]
     type T = {
         ID: int;
-        PlayerColor: Piece.Colors;
         BoardMove: BoardMove.T; }
        
-    let create (id: int) (playerColor: Piece.Colors) (boardMove: BoardMove.T) =
-        { ID = id; PlayerColor = playerColor; BoardMove = boardMove }
+    let create (id: int) (boardMove: BoardMove.T) =
+        { ID = id; BoardMove = boardMove }
 

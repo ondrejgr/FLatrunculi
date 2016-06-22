@@ -68,7 +68,7 @@ module Board =
     let move (board: T) (move: BoardMove.T) =
         let addMoveToHistory =
             let id = 1 + List.length board.History
-            let item = HistoryItem.create id move.Color move
+            let item = HistoryItem.create id move
             board.History <- History.getHistoryWithNewItem board.History item
 
         let m = move.Move 

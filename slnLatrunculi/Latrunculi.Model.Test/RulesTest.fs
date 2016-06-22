@@ -261,7 +261,7 @@ let RulesTest() =
     let c2 = unwrapResultExn <| Coord.tryCreate 'A' 3
     let m = unwrapResultExn <| Move.tryCreate c1 c2 empty white
     let move = unwrapResultExn <| Rules.tryValidateAndGetBoardMove board Piece.Colors.White m
-    let hitem = HistoryItem.create 1 Piece.Colors.Black move
+    let hitem = HistoryItem.create 1 move
     let lst: History.T = List.init 30 (fun i -> hitem)
     // black winner -30 moves
     ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
