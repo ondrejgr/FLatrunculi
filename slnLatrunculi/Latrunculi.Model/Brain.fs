@@ -51,7 +51,6 @@ module Brain =
         match position.ActivePlayerColor with
         | Piece.Colors.White -> calcValue
         | Piece.Colors.Black -> MoveValue.getInvValue <| calcValue
-        | _ -> MoveValue.getZero
 
     let rec minimax (node: MoveTree.T) (depth: Depth.T) (searchType: SearchType.T): Async<MoveValue.T> =
         async {
@@ -71,11 +70,19 @@ module Brain =
                             bestValue <- min bestValue v
                         return bestValue }
 
+    let getGameTree (depth: Depth.T): Async<MoveTree.T> =
+        async {
+            
+        }
+//(* Initial call for maximizing player *)
+//minimax(origin, depth, TRUE)
+
+
     let tryGetBestMove (b: Board.T) (c: Piece.Colors): Async<Result<Move.T, Error>> =
         async {
             let board = Board.clone b
             let mutable color = c
-            let depth = Depth.create 120
+            let depth = Depth.create 4
             let initialPosition = MoveTree.createPosition board color Rules.NoResult
             let mutable root = MoveTree.createLeaf initialPosition
 
