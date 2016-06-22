@@ -73,26 +73,31 @@ module Brain =
 
     let tryGetBestMove (board: Board.T) (color: Piece.Colors): Async<Result<Move.T, Error>> =
         async {
+            let board = Board.clone board
             let depth = Depth.create 3
             let initialPosition = MoveTree.createPosition board color Rules.NoResult
             let root = MoveTree.createLeaf initialPosition
 
-            let getBoardMoveExnFn = Rules.getBoardMoveExn board color
-            let moves = List.map getBoardMoveExnFn <| Rules.getValidMoves board color 
-                        
-            match List.isEmpty moves with
-            | true -> return Error NoValidMoveExists
-            | false ->
+            let getValidBoardMovesResult = List.fold (fun result (move: Move.T) ->
+                                                    match Rules.tryValidateAndGetBoardMove board color move with
+                                                    | Success bmove -> (Success (), bmove::(snd result))
+                                                    | Error e -> (Error e, [])) 
+                                                (Error NoValidMoveExists, [])
+                                                <| Rules.getValidMoves board color 
+
+            match getValidBoardMovesResult with
+            | (Error e, _) -> return Error e
+            | (Success _, moves) ->                        
                 let mutable bestValue = MoveValue.getMin
                 let mutable bestMove = List.head moves
 
                 for move in moves do
                     Board.move board move
-
-                    // TODO: change color + get game result after move
-                    let position = MoveTree.createPosition board color Rules.NoResult
-
+                    let victory = Rules.checkVictory board 
+                    let position = MoveTree.createPosition (Board.clone board) color victory
                     let child = MoveTree.createWithChildAdded root position
+                    Board.invmove board move
+
                     // TODO: search type minim/maximi
                     let! value = minimax child depth SearchType.createMaximizing
                     if value > bestValue then

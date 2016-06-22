@@ -28,7 +28,7 @@ module MoveTree =
         | _ -> false
 
     let createPosition (board: Board.T) (activePlayerColor: Piece.Colors) (result: Rules.GameResult) =
-        { Board = (Board.clone board); ActivePlayerColor = activePlayerColor; Result = result }
+        { Board = board; ActivePlayerColor = activePlayerColor; Result = result }
 
     let createLeaf (position: Position) =
         LeafNode position
