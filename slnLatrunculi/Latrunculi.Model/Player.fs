@@ -22,6 +22,13 @@ module Player =
     let mutable History: History.T option = None
     let mutable getHumanPlayerMoveFromUIWorkflow: (unit -> Async<Move.T>) option = None
 
+    let levelToDepth (x: Levels) =
+        match x with
+        | Levels.Easy -> Depth.create 1
+        | Levels.Medium -> Depth.create 2
+        | Levels.Hard -> Depth.create 3
+        | _ -> Depth.create 1
+
     [<AbstractClass>]
     type T(name: Name, level: Levels, color: Piece.Colors) =
         member val Name = name with get, set
@@ -54,7 +61,7 @@ module Player =
             async {
                 match tryGetBoard with
                 | Success board ->
-                    return! Brain.tryGetBestMove board this.Color 
+                    return! Brain.tryGetBestMove board this.Color <| levelToDepth this.Level
                 | Error e ->
                     return Error e }
                 

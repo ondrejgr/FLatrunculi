@@ -148,3 +148,9 @@ module Rules =
             
             Success (BoardMove.createWithRmPieces color move result)
 
+    let getValidBoardMoveExnFn (board: Board.T) (color: Piece.Colors) =
+        let x (move: Move.T) =
+            match tryValidateAndGetBoardMove board color move with
+            | Success bmove -> bmove
+            | Error _ -> failwith "Nepodařilo se vytvořit herní tah desky."
+        x

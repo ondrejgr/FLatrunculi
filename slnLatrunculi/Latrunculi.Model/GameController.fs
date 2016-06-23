@@ -168,10 +168,10 @@ module GameController =
                 cts.Cancel()
                 return this }
 
-        member private this.SuggestMove(color) =
+        member private this.SuggestMove color level =
             async {
                 use! cnl = Async.OnCancel(fun () -> this.Model.setIsMoveSuggestionComputing false |> ignore)
-                let! move = Brain.tryGetBestMove this.Model.Board color
+                let! move = Brain.tryGetBestMove this.Model.Board color <| Player.levelToDepth level
                 this.Model.setIsMoveSuggestionComputing false |> ignore
                 this.Model.RaiseMoveSuggestionComputed(move)
                 () }
@@ -185,8 +185,9 @@ module GameController =
                 do! checkGameStatus
                 let! cts = this.TryCreateMoveSuggestionCts()
                 let! color = this.Model.tryGetActiveColor()
+                let! activePlayer = this.Model.tryGetActivePlayer()
                 this.Model.setIsMoveSuggestionComputing true |> ignore
-                Async.Start(this.SuggestMove(color), cts.Token)
+                Async.Start(this.SuggestMove color activePlayer.Level, cts.Token)
                 return this }
 
         member this.TryPause() =

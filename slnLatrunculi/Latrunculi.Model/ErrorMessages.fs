@@ -27,6 +27,7 @@ module ErrorMessages =
         | UnableToRemovePiece -> error.ToString()
         // Brain
         | NoValidMoveExists -> "Žádný tah není možný."
+        | BrainException s -> sprintf "Při výpočtu tahu došlo k výjimce: %O" s
         // Player
         | UnableToDeterminePlayerMove -> "Nepodařilo se zjistit tah hráče."
         | NoBoardInstanceSpecified -> "Nebyla předána platná instance hrací desky."

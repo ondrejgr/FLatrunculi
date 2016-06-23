@@ -2,119 +2,131 @@
 
 module Brain =
 
-    module Depth =
-        [<StructuralEquality;StructuralComparison>]
-        type T = T of int
-        let create (x: int) =
-            if x < 0 then invalidArg "x" "Hloubka výpočtu nesmí být menší než nula."
-                else T x
-        let isZero (depth: T) =
-            match depth with
-            | T d when d = 0 -> true
-            | _ -> false
-        let dec (depth: T) =
-            let (T value) = depth
-            T (value - 1)
+    let rnd = System.Random()
 
     module SearchType =
         [<StructuralEquality;NoComparison>]
         type T =
-            | Maximizing
-            | Minimizing
-        let createMaximizing =
-            Maximizing
-        let createMinimizing =
-            Minimizing
+            | Maximizing of Piece.Colors
+            | Minimizing of Piece.Colors
+        let getColor (x: T) =
+            match x with
+            | Maximizing c | Minimizing c -> c
+        let createMaximizing (x: Piece.Colors) =
+            Maximizing x
+        let createMinimizing (x: Piece.Colors) =
+            Minimizing x
         let swap (x: T) =
             match x with
-            | Maximizing -> createMinimizing
-            | Minimizing -> createMaximizing
+            | Maximizing c -> createMinimizing <| Piece.swapColor c
+            | Minimizing c -> createMaximizing <| Piece.swapColor c
 
-    let evaluatePosition (position: MoveTree.Position): MoveValue.T =
+    let evaluatePosition (position: MoveTree.Position.T): MoveValue.T =
         let calcValue =
             let board = position.Board
             let ownPieces = Board.whitePiecesCount board
             let enemyPieces = Board.blackPiecesCount board
             let mutable result = MoveValue.getZero
-           
+            // eval from white point of view
             match position.Result with
             | Rules.GameOverResult r ->
                 match r with
-                | Rules.Victory v when v = Rules.WhiteWinner -> result <- MoveValue.getMax
-                | Rules.Victory v when v = Rules.BlackWinner -> result <- MoveValue.getMin
+                // eval victory
+                | Rules.Victory Rules.WhiteWinner -> result <- MoveValue.getMax
+                | Rules.Victory Rules.BlackWinner -> result <- MoveValue.getMin
                 | Rules.Draw -> result <- MoveValue.add result -20
             | Rules.NoResult ->
-                result <- MoveValue.add result (ownPieces * 5 - enemyPieces * 5)
-
+                // first 2 moves random
+                if List.length board.History < 2 then
+                    result <- MoveValue.add result <| rnd.Next(0, 8)
+                // eval by number of pieces
+                result <- MoveValue.add result ((ownPieces - enemyPieces) * 10)
             result
 
         match position.ActivePlayerColor with
         | Piece.Colors.White -> calcValue
         | Piece.Colors.Black -> MoveValue.getInvValue <| calcValue
 
-    let rec minimax (node: MoveTree.T) (depth: Depth.T) (searchType: SearchType.T): Async<MoveValue.T> =
+    let getNodeWithChildren (node: MoveTree.T) =
         async {
-            if (Depth.isZero depth) || (MoveTree.isGameOverNode node)
-                then return evaluatePosition <| MoveTree.getPosition node
-            else match searchType with
-                    | SearchType.Maximizing ->
+            let mutable result = node
+            let nodePosition = MoveTree.getPosition result
+            let board = nodePosition.Board
+            let color = nodePosition.ActivePlayerColor
+
+            // get valid moves for current position
+            let getValidBoardMoveExn = Rules.getValidBoardMoveExnFn board color
+            let boardMoves = 
+                seq {
+                    for move in Rules.getValidMoves board color do
+                        yield getValidBoardMoveExn move }
+
+            // set color after move
+            let childColor = Piece.swapColor color
+            for move in boardMoves do
+                // apply move to the copy of a board
+                let childBoard = Board.clone board
+                Board.move childBoard move
+                let victory = Rules.checkVictory childBoard 
+                let childPosition = MoveTree.Position.create childBoard color victory
+                let child = MoveTree.createLeaf childPosition
+                // add child to node      
+                result <- match result with
+                            | MoveTree.RootNode _ ->
+                                MoveTree.getRootNodeWithChildAdded result child move.Move                         
+                            | MoveTree.LeafNode _ | MoveTree.InnerNode _ -> 
+                                MoveTree.getNodeWithChildAdded result child
+            return result }
+
+    let rec minimax (depth: Depth.T) (n: MoveTree.T) (searchType: SearchType.T): Async<MoveValue.T> =
+        async {
+            if (Depth.isZero depth) || (MoveTree.isGameOverNode n)
+                then return evaluatePosition <| MoveTree.getPosition n
+            else
+                let! node = getNodeWithChildren n 
+                match searchType with
+                    | SearchType.Maximizing color ->
                         let mutable bestValue = MoveValue.getMin
                         for child in MoveTree.getChildren node do
-                            let! v = minimax child (Depth.dec depth) (SearchType.swap searchType)
+                            let! v = minimax (Depth.dec depth) child (SearchType.swap searchType)
                             bestValue <- max bestValue v
                         return bestValue
-                    | SearchType.Minimizing ->
+                    | SearchType.Minimizing color ->
                         let mutable bestValue = MoveValue.getMax
                         for child in MoveTree.getChildren node do
-                            let! v = minimax child (Depth.dec depth) (SearchType.swap searchType)
+                            let! v = minimax (Depth.dec depth) child (SearchType.swap searchType)
                             bestValue <- min bestValue v
                         return bestValue }
 
-    let getGameTree (depth: Depth.T): Async<MoveTree.T> =
+    let tryGetBestMove (b: Board.T) (color: Piece.Colors) (depth: Depth.T): Async<Result<Move.T, Error>> =
         async {
-            
-        }
-//(* Initial call for maximizing player *)
-//minimax(origin, depth, TRUE)
+            try
+                let board = Board.clone b
+                let rootPosition = MoveTree.Position.create board color <| Rules.checkVictory board
+                // create root node
+                let! root = getNodeWithChildren <| MoveTree.createRoot rootPosition
 
-
-    let tryGetBestMove (b: Board.T) (c: Piece.Colors): Async<Result<Move.T, Error>> =
-        async {
-            let board = Board.clone b
-            let mutable color = c
-            let depth = Depth.create 4
-            let initialPosition = MoveTree.createPosition board color Rules.NoResult
-            let mutable root = MoveTree.createLeaf initialPosition
-
-            let getValidBoardMovesResult = List.fold (fun result (move: Move.T) ->
-                                                    match Rules.tryValidateAndGetBoardMove board color move with
-                                                    | Success bmove -> (Success (), bmove::(snd result))
-                                                    | Error e -> (Error e, [])) 
-                                                (Error NoValidMoveExists, [])
-                                                <| Rules.getValidMoves board color 
-
-            color <- Piece.swapColor color
-            match getValidBoardMovesResult with
-            | (Error e, _) -> return Error e
-            | (Success _, moves) ->                        
                 let mutable bestValue = MoveValue.getMin
-                let mutable bestMove = List.head moves
+                let mutable bestMove: Move.T option = None
 
-                for move in moves do
-                    Board.move board move
-                    let victory = Rules.checkVictory board 
-                    let position = MoveTree.createPosition (Board.clone board) color victory
-                    let child = MoveTree.createLeaf position
-                    root <- MoveTree.getNodeWithChildAdded root child
-                    Board.invmove board move
-
-                    // TODO: search type minim/maximi
-                    let! value = minimax child depth SearchType.createMinimizing
+                for data in MoveTree.getRootNodeChildren root do
+                    let move = fst data
+                    let child = snd data
+                    let! value = minimax (Depth.dec depth) child <| SearchType.createMaximizing color
                     if value > bestValue then
                         bestValue <- value
-                        bestMove <- move
+                        bestMove <- Some move
+                        
+                match bestMove with
+                | Some m -> 
+                    return Success m
+                | None -> 
+                    return Error NoValidMoveExists
+            with
+            | e -> return Error (BrainException e.Message)
+        }
 
-                return Success bestMove.Move }
+
 
 //function nej tah(pozice, hloubka)
 //2: tahy ← generuj tahy(pozice)
@@ -129,24 +141,3 @@ module Brain =
 //11: end for
 //12: return nejlepsi tah
 //13: end function
-
-//
-//01 function minimax(node, depth, maximizingPlayer)
-//02     if depth = 0 or node is a terminal node
-//03         return the heuristic value of node
-//
-//04     if maximizingPlayer
-//05         bestValue := −∞
-//06         for each child of node
-//07             v := minimax(child, depth − 1, FALSE)
-//08             bestValue := max(bestValue, v)
-//09         return bestValue
-//
-//10     else    (* minimizing player *)
-//11         bestValue := +∞
-//12         for each child of node
-//13             v := minimax(child, depth − 1, TRUE)
-//14             bestValue := min(bestValue, v)
-//15         return bestValue
-// (* Initial call for maximizing player *)
-//minimax(origin, depth, TRUE)

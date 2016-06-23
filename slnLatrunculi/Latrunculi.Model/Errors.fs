@@ -23,6 +23,7 @@ type Error =
     | UnableToRemovePiece
     // Brain
     | NoValidMoveExists
+    | BrainException of string
     // Player
     | UnableToDeterminePlayerMove
     | NoBoardInstanceSpecified
