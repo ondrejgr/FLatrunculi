@@ -42,6 +42,9 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
@@ -64,6 +67,8 @@
     <Compile Include="HumanSelectedMove.fs" />
     <Compile Include="Player.fs" />
     <Compile Include="PlayerSettings.fs" />
+    <Compile Include="GameFile.fs" />
+    <Compile Include="GameFileSerializer.fs" />
     <Compile Include="GameModel.fs" />
     <Compile Include="GameController.fs" />
     <Compile Include="ErrorMessages.fs" />

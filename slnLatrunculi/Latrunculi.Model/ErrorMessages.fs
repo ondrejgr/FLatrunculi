@@ -49,3 +49,6 @@ module ErrorMessages =
         | MoveSuggestionAlreadyComputing -> "Výpočet nejlepšího tahu již probíhá."
         | HumanSelectedMoveRequestDoesNotExists -> "Neexistuje požadavek na výběr tahu lidského hráče."
         | RequestedHistoryMoveNotFound -> "Požadovaný tah nebyl v historii desky nalezen."
+        | UnableToSaveGame s -> sprintf "Při ukládání hry došlo k chybě: %O" s
+        | UnableToLoadGame s -> sprintf "Při načítání hry došlo k chybě: %O" s
+        | UnableToDeserializeObject s -> sprintf "Objekt %O se nepodařilo ze souboru načíst." s

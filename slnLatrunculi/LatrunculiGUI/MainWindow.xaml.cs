@@ -256,7 +256,7 @@ namespace Latrunculi.GUI
                 if (!GetFileNameToViewModel(true, isSaveAsDialog))
                     return false;
 
-                SaveGame(ViewModel.FileName);
+                ModelException.TryThrow<GameController.T>(Controller.TrySaveGame(ViewModel.FileName));
 
                 if (showSuccess)
                     MessageBox.Show(this, "Hra byla uložena.", "Informace", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -265,7 +265,7 @@ namespace Latrunculi.GUI
             }
             catch (Exception exc)
             {
-                MessageBox.Show(this, "Soubor se nepodařilo uložit." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(this, ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
         }
@@ -278,7 +278,7 @@ namespace Latrunculi.GUI
                 if (!GetFileNameToViewModel(false, false))
                     return false;
 
-                LoadGame(ViewModel.FileName);
+                ModelException.TryThrow<GameController.T>(Controller.TryLoadGame(ViewModel.FileName));
 
                 if (showSuccess)
                     MessageBox.Show(this, "Hra byla načtena.", "Informace", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -288,7 +288,7 @@ namespace Latrunculi.GUI
             catch (Exception exc)
             {
                 ViewModel.SetFileName(oldFileName, oldFileTitle);
-                MessageBox.Show(this, "Soubor se nepodařilo načíst." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(this, ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
         }
@@ -308,9 +308,9 @@ namespace Latrunculi.GUI
                 if (vm != null)
                 {
                     Controller.changePlayerSettings(
-                        new Tuple<Model.Player.Types, Model.Player.Types>((Model.Player.Types)vm.WhitePlayer.PlayerType, (Model.Player.Types)vm.BlackPlayer.PlayerType),
+                        new Tuple<Model.Player.Types, Model.Player.Types>(PlayerViewModel.PlayerTypeToModel(vm.WhitePlayer), PlayerViewModel.PlayerTypeToModel(vm.BlackPlayer)),
                         new Tuple<string, string>(vm.WhitePlayer.Name, vm.BlackPlayer.Name),
-                        new Tuple<Model.Player.Levels, Model.Player.Levels>((Model.Player.Levels)vm.WhitePlayer.Level, (Model.Player.Levels)vm.BlackPlayer.Level));
+                        new Tuple<Model.Player.Levels, Model.Player.Levels>(PlayerViewModel.PlayerLevelToModel(vm.WhitePlayer), PlayerViewModel.PlayerLevelToModel(vm.BlackPlayer)));
                 }
             }
         }
@@ -474,9 +474,9 @@ namespace Latrunculi.GUI
             if (vm != null)
             {
                 Controller.changePlayerSettings(
-                    new Tuple<Model.Player.Types, Model.Player.Types>((Model.Player.Types)vm.WhitePlayer.PlayerType, (Model.Player.Types)vm.BlackPlayer.PlayerType),
+                    new Tuple<Model.Player.Types, Model.Player.Types>(PlayerViewModel.PlayerTypeToModel(vm.WhitePlayer), PlayerViewModel.PlayerTypeToModel(vm.BlackPlayer)),
                     new Tuple<string, string>(vm.WhitePlayer.Name, vm.BlackPlayer.Name),
-                    new Tuple<Model.Player.Levels, Model.Player.Levels>((Model.Player.Levels)vm.WhitePlayer.Level, (Model.Player.Levels)vm.BlackPlayer.Level));
+                    new Tuple<Model.Player.Levels, Model.Player.Levels>(PlayerViewModel.PlayerLevelToModel(vm.WhitePlayer), PlayerViewModel.PlayerLevelToModel(vm.BlackPlayer)));
 
                 ViewModel.ShowHistory = false;
                 ModelException.TryThrow<GameController.T>(Controller.TryNewGame());
@@ -484,16 +484,6 @@ namespace Latrunculi.GUI
                 FocusBoard();
                 CommandManager.InvalidateRequerySuggested();
             }
-        }
-
-        private void LoadGame(string fileName)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void SaveGame(string fileName)
-        {
-            throw new NotImplementedException();
         }
 
         private void CancelSuggestMove_CanExecute(object sender, CanExecuteRoutedEventArgs e)

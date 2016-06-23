@@ -45,3 +45,6 @@ type Error =
     | MoveSuggestionAlreadyComputing
     | HumanSelectedMoveRequestDoesNotExists
     | RequestedHistoryMoveNotFound
+    | UnableToSaveGame of string
+    | UnableToLoadGame of string
+    | UnableToDeserializeObject of string

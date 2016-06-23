@@ -1,16 +1,19 @@
 ﻿namespace Latrunculi.Model
 open System
+open System.Xml.Serialization
 
 module Player =
 
+    [<XmlType("Types")>]
     type Types =
-        | Human = 0
-        | Computer = 1
+        | Human
+        | Computer
 
+    [<XmlType("Levels")>]
     type Levels =
-        | Easy = 0
-        | Medium = 1
-        | Hard = 2
+        | Easy
+        | Medium
+        | Hard
 
     type Name = string
 
@@ -27,7 +30,6 @@ module Player =
         | Levels.Easy -> Depth.create 1
         | Levels.Medium -> Depth.create 2
         | Levels.Hard -> Depth.create 3
-        | _ -> Depth.create 1
 
     [<AbstractClass>]
     type T(name: Name, level: Levels, color: Piece.Colors) =
@@ -84,5 +86,4 @@ module Player =
         match ptype with
         | Types.Human -> createHumanPlayer name level color :> T   
         | Types.Computer -> createComputerPlayer name level color :> T
-        | _ -> failwith "Invalid Player Type"
     

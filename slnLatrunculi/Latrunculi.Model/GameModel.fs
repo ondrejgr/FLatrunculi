@@ -145,8 +145,7 @@ module GameModel =
             | Some color ->
                 ignore <| this.setActiveColor (match color with
                                                 | Piece.Colors.Black -> Some Piece.Colors.White 
-                                                | Piece.Colors.White -> Some Piece.Colors.Black
-                                                | _ -> None)
+                                                | Piece.Colors.White -> Some Piece.Colors.Black)
                 Success ()
             | None -> Error NoPlayerOnMove
 

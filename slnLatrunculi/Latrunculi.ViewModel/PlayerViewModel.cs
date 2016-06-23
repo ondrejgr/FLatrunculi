@@ -106,9 +106,26 @@ namespace Latrunculi.ViewModel
         
         public void RefreshFromModel(Model.Player.T player)
         {
-            PlayerType = (PlayerTypes)Model.Player.getPlayerType(player);
+            Model.Player.Types pt = Model.Player.getPlayerType(player);
+            if (pt == Model.Player.Types.Computer)
+                PlayerType = PlayerTypes.ptComputer;
+            else if (pt == Model.Player.Types.Human)
+                PlayerType = PlayerTypes.ptHuman;
+            else
+                throw new NotSupportedException();
+
             Name = player.Name;
-            Level = (PlayerLevels)player.Level;
+
+            Model.Player.Levels lev = player.Level;
+            if (lev == Model.Player.Levels.Easy)
+                Level = PlayerLevels.plEasy;
+            else if (lev == Model.Player.Levels.Medium)
+                Level = PlayerLevels.plMedium;
+            else if (lev == Model.Player.Levels.Hard)
+                Level = PlayerLevels.plHard;
+            else
+                throw new NotSupportedException();
+
             if (player.Color == Model.Piece.Colors.Black)
                 Color = PlayerColors.pcBlack;
             else if (player.Color == Model.Piece.Colors.White)
@@ -125,5 +142,32 @@ namespace Latrunculi.ViewModel
             result.Name = Name;
             return result;
         }
+
+        static public Model.Player.Types PlayerTypeToModel(PlayerViewModel vm)
+        {
+            if (vm.PlayerType == PlayerTypes.ptComputer)
+                return Model.Player.Types.Computer;
+            else if (vm.PlayerType == PlayerTypes.ptHuman)
+                return Model.Player.Types.Human;
+            else
+                throw new NotSupportedException();
+        }
+
+        static public Model.Player.Levels PlayerLevelToModel(PlayerViewModel vm)
+        {
+            switch (vm.Level)
+            {
+                case PlayerLevels.plEasy:
+                    return Model.Player.Levels.Easy;
+                case PlayerLevels.plMedium:
+                    return Model.Player.Levels.Medium;
+                case PlayerLevels.plHard:
+                    return Model.Player.Levels.Hard;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
     }
+
+    
 }

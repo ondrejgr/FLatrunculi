@@ -248,5 +248,16 @@ module GameController =
                                 <| Rules.getValidMovesForCoord this.Model.Board color src)
             | _ -> System.Collections.Generic.List<Coord.T>(List.empty)
 
+        member this.TrySaveGame (fileName: string) =
+            maybe {
+                let file = GameFile.create(model.PlayerSettings)
+                do! GameFileSerializer.TrySaveFile fileName file
+                return this }
+
+        member this.TryLoadGame (fileName: string) =
+            maybe {
+                let! file = GameFileSerializer.TryLoadFile fileName
+                return this }
+
     let create (model: GameModel.T) =
         T(model)
