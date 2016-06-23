@@ -249,14 +249,27 @@ module GameController =
             | _ -> System.Collections.Generic.List<Coord.T>(List.empty)
 
         member this.TrySaveGame (fileName: string) =
+            let checkGameStatus =
+                if this.Model.Status = GameStatus.Running then Error GameIsRunning else Success ()
             maybe {
+                do! checkGameStatus
                 let file = GameFile.create(model.PlayerSettings)
                 do! GameFileSerializer.TrySaveFile fileName file
                 return this }
 
         member this.TryLoadGame (fileName: string) =
+            let checkGameStatus =
+                if this.Model.Status = GameStatus.Running then Error GameIsRunning else Success ()
             maybe {
+                do! checkGameStatus
+                let! controller = this.TryNewGame()
                 let! file = GameFileSerializer.TryLoadFile fileName
+
+                let white = file.GameSettings.WhitePlayer
+                let black = file.GameSettings.BlackPlayer
+                this.changePlayerSettings (white.Type, black.Type) (white.Name, black.Name) (white.Level, black.Level) |> ignore
+
+                model.setStatus GameStatus.Paused |> ignore
                 return this }
 
     let create (model: GameModel.T) =

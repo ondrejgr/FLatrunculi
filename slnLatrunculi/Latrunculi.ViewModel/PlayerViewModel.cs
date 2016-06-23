@@ -107,9 +107,9 @@ namespace Latrunculi.ViewModel
         public void RefreshFromModel(Model.Player.T player)
         {
             Model.Player.Types pt = Model.Player.getPlayerType(player);
-            if (pt == Model.Player.Types.Computer)
+            if (pt.Equals(Model.Player.Types.Computer))
                 PlayerType = PlayerTypes.ptComputer;
-            else if (pt == Model.Player.Types.Human)
+            else if (pt.Equals(Model.Player.Types.Human))
                 PlayerType = PlayerTypes.ptHuman;
             else
                 throw new NotSupportedException();
@@ -117,18 +117,18 @@ namespace Latrunculi.ViewModel
             Name = player.Name;
 
             Model.Player.Levels lev = player.Level;
-            if (lev == Model.Player.Levels.Easy)
+            if (lev.Equals(Model.Player.Levels.Easy))
                 Level = PlayerLevels.plEasy;
-            else if (lev == Model.Player.Levels.Medium)
+            else if (lev.Equals(Model.Player.Levels.Medium))
                 Level = PlayerLevels.plMedium;
-            else if (lev == Model.Player.Levels.Hard)
+            else if (lev.Equals(Model.Player.Levels.Hard))
                 Level = PlayerLevels.plHard;
             else
                 throw new NotSupportedException();
 
-            if (player.Color == Model.Piece.Colors.Black)
+            if (player.Color.Equals(Model.Piece.Colors.Black))
                 Color = PlayerColors.pcBlack;
-            else if (player.Color == Model.Piece.Colors.White)
+            else if (player.Color.Equals(Model.Piece.Colors.White))
                 Color = PlayerColors.pcWhite;
             else
                 throw new NotSupportedException();

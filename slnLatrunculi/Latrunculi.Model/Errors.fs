@@ -40,6 +40,7 @@ type Error =
     | CancellationTokenDoesNotExist
     | GameIsAlreadyRunning
     | GameIsNotRunning
+    | GameIsRunning
     | UnableToGetPlayerMove
     | UnableToGetActivePlayer
     | MoveSuggestionAlreadyComputing

@@ -44,6 +44,7 @@ module ErrorMessages =
         | CancellationTokenDoesNotExist -> "Požadavek na zrušení akce neexistuje."
         | GameIsAlreadyRunning -> "Hra je již spuštěna."
         | GameIsNotRunning -> "Hra nebyla spuštěna."
+        | GameIsRunning -> "Hra je spuštěna, pozastavte ji."
         | UnableToGetPlayerMove -> "Nepodařilo se získat tah hráče."
         | UnableToGetActivePlayer -> "Nepodařilo se zjistit hráče na tahu."
         | MoveSuggestionAlreadyComputing -> "Výpočet nejlepšího tahu již probíhá."

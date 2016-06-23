@@ -1,5 +1,5 @@
 ﻿namespace Latrunculi.Model
-open System.Xml.Serialization
+open System.Runtime.Serialization
 
 module GameFile =
 
@@ -10,11 +10,14 @@ module GameFile =
 
     module GameSettings =
         module Player =
-            [<CLIMutable>] 
-            [<XmlType("Player")>]
+            [<CLIMutable>]
+            [<DataContract>]
             type T = {
+                [<DataMember>]
                 Type: Player.Types;
+                [<DataMember>]
                 Name: Player.Name;
+                [<DataMember>]
                 Level: Player.Levels }
 
             let tryCheck (x: T) =
@@ -31,10 +34,12 @@ module GameFile =
                     Level= player.Level }
             
 
-        [<CLIMutable>] 
-        [<XmlType("GameSettings")>]
+        [<CLIMutable>]
+        [<DataContract>]
         type T = {
+            [<DataMember>]
             WhitePlayer: Player.T;
+            [<DataMember>]
             BlackPlayer: Player.T }
 
         let createFromPlayerSettings (playerSettings: PlayerSettings.T) =
@@ -43,9 +48,10 @@ module GameFile =
             {   WhitePlayer = white;
                 BlackPlayer = black }
 
-    [<CLIMutable>] 
-    [<XmlRoot("GameFile")>]
+    [<CLIMutable>]
+    [<DataContract>]
     type T = {
+        [<DataMember>]
         GameSettings: GameSettings.T }
 
     let tryCheck (x: T) =

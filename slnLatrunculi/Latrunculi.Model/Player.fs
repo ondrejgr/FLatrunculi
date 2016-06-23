@@ -6,20 +6,22 @@ open Microsoft.FSharp.Reflection
 
 module Player =
 
-    [<KnownType("KnownTypes")>]
+    [<KnownType("GetKnownTypes")>]
+    [<StructuralEquality;NoComparison>]
     type Types =
         | Human
         | Computer
-        static member KnownTypes() = 
-            typeof<Types>.GetNestedTypes(BindingFlags.Public ||| BindingFlags.NonPublic) |> Array.filter FSharpType.IsUnion
+        static member GetKnownTypes() = 
+            typedefof<Types>.GetNestedTypes(BindingFlags.Public ||| BindingFlags.NonPublic) |> Array.filter FSharpType.IsUnion
 
-    [<KnownType("KnownTypes")>]
+    [<KnownType("GetKnownTypes")>]
+    [<StructuralEquality;NoComparison>]
     type Levels =
         | Easy
         | Medium
         | Hard
-        static member KnownTypes() = 
-            typeof<Types>.GetNestedTypes(BindingFlags.Public ||| BindingFlags.NonPublic) |> Array.filter FSharpType.IsUnion
+        static member GetKnownTypes() = 
+            typedefof<Levels>.GetNestedTypes(BindingFlags.Public ||| BindingFlags.NonPublic) |> Array.filter FSharpType.IsUnion
 
     type Name = string
 

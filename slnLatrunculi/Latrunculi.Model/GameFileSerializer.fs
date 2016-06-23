@@ -1,6 +1,6 @@
 ﻿namespace Latrunculi.Model
+open System.Runtime.Serialization
 open System.Xml
-open System.Xml.Serialization
 
 module GameFileSerializer =
 
@@ -10,9 +10,9 @@ module GameFileSerializer =
             let sett = XmlWriterSettings()
             sett.CloseOutput <- true
             sett.Indent <- true
-            let ser = XmlSerializer(typeof<GameFile.T>)
+            let ser = DataContractSerializer(typeof<GameFile.T>)
             use xml = XmlWriter.Create(fileName, sett)
-            ser.Serialize(xml, file)
+            ser.WriteObject(xml, file)
             Success ()
         with
         | e -> Error (UnableToSaveGame e.Message) 
@@ -23,9 +23,9 @@ module GameFileSerializer =
                  Unchecked.defaultof<_>
             let sett = XmlReaderSettings()
             sett.CloseInput <- true
-            let ser = XmlSerializer(typeof<GameFile.T>)
+            let ser = DataContractSerializer(typeof<GameFile.T>)
             use xml = XmlReader.Create(fileName, sett)
-            let file = unbox<GameFile.T>(ser.Deserialize(xml))
+            let file = unbox<GameFile.T>(ser.ReadObject(xml))
             maybe {
                 do! GameFile.tryCheck file
                 return file
