@@ -1,19 +1,25 @@
 ﻿namespace Latrunculi.Model
 open System
-open System.Xml.Serialization
+open System.Runtime.Serialization
+open System.Reflection
+open Microsoft.FSharp.Reflection
 
 module Player =
 
-    [<XmlType("Types")>]
+    [<KnownType("KnownTypes")>]
     type Types =
         | Human
         | Computer
+        static member KnownTypes() = 
+            typeof<Types>.GetNestedTypes(BindingFlags.Public ||| BindingFlags.NonPublic) |> Array.filter FSharpType.IsUnion
 
-    [<XmlType("Levels")>]
+    [<KnownType("KnownTypes")>]
     type Levels =
         | Easy
         | Medium
         | Hard
+        static member KnownTypes() = 
+            typeof<Types>.GetNestedTypes(BindingFlags.Public ||| BindingFlags.NonPublic) |> Array.filter FSharpType.IsUnion
 
     type Name = string
 
