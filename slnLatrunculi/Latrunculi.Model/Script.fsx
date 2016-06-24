@@ -19,6 +19,7 @@
 #load "HumanSelectedMove.fs"
 #load "Player.fs"
 #load "PlayerSettings.fs"
+#load "GameMovesList.fs"
 #load "GameFile.fs"
 #load "GameFileSerializer.fs"
 #load "GameModel.fs"

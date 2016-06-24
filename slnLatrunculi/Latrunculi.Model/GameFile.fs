@@ -52,7 +52,9 @@ module GameFile =
     [<DataContract>]
     type T = {
         [<DataMember>]
-        GameSettings: GameSettings.T }
+        GameSettings: GameSettings.T
+        [<DataMember>]
+        GameMoves: GameMovesList.T }
 
     let tryCheck (x: T) =
         maybe {
@@ -64,8 +66,9 @@ module GameFile =
             do! GameSettings.Player.tryCheck x.GameSettings.BlackPlayer
             return () }
 
-    let create (playerSettings: PlayerSettings.T) =
+    let create (playerSettings: PlayerSettings.T) (history: History.T) =
         let result = 
-            {   GameSettings = GameSettings.createFromPlayerSettings playerSettings }
+            {   GameSettings = GameSettings.createFromPlayerSettings playerSettings;
+                GameMoves = GameMovesList.createFromHistory history }
         result
 

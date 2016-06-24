@@ -253,7 +253,7 @@ module GameController =
                 if this.Model.Status = GameStatus.Running then Error GameIsRunning else Success ()
             maybe {
                 do! checkGameStatus
-                let file = GameFile.create(model.PlayerSettings)
+                let file = GameFile.create model.PlayerSettings model.Board.History
                 do! GameFileSerializer.TrySaveFile fileName file
                 return this }
 

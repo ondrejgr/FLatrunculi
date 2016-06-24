@@ -1,4 +1,5 @@
 ﻿namespace Latrunculi.Model
+open System.Runtime.Serialization
 
 module Coord =
     [<StructuralEquality;NoComparison>]
@@ -72,6 +73,8 @@ module Coord =
                 lst ((Error ColumnOutOfRange), false)
 
     [<StructuralEquality;NoComparison>]
+    [<CLIMutable>]
+    [<DataContract>]
     type T = {
         Column: ColumnNumber;
         Row: RowNumber }

@@ -1,12 +1,20 @@
 ﻿namespace Latrunculi.Model
+open System.Runtime.Serialization
+open System.Reflection
+open Microsoft.FSharp.Reflection
 
 module Piece =
     
+    [<KnownType("GetKnownTypes")>]
     type Colors = 
         | White
         | Black
+        static member GetKnownTypes() = 
+            typedefof<Colors>.GetNestedTypes(BindingFlags.Public ||| BindingFlags.NonPublic) |> Array.filter FSharpType.IsUnion
 
     [<StructuralEquality;NoComparison>]
+    [<CLIMutable>]
+    [<DataContract>]
     type T = {
         Color: Colors }
     

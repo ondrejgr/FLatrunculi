@@ -67,6 +67,7 @@
     <Compile Include="HumanSelectedMove.fs" />
     <Compile Include="Player.fs" />
     <Compile Include="PlayerSettings.fs" />
+    <Compile Include="GameMovesList.fs" />
     <Compile Include="GameFile.fs" />
     <Compile Include="GameFileSerializer.fs" />
     <Compile Include="GameModel.fs" />
