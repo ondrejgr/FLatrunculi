@@ -8,5 +8,6 @@ module GameMovesList =
 
 
     let createFromHistory (history: History.T) =
-        let result: T = List.toArray <| List.map (fun (item: HistoryItem.T) -> item.BoardMove.Move) history
+        let result: T = List.toArray <| (List.map (fun (item: HistoryItem.T) -> item.BoardMove.Move) 
+                                                <| List.rev history)
         result

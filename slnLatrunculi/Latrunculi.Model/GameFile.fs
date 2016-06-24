@@ -64,6 +64,7 @@ module GameFile =
             do! tryCheckObject x.GameSettings.BlackPlayer "GameSettings.BlackPlayer"
             do! GameSettings.Player.tryCheck x.GameSettings.WhitePlayer
             do! GameSettings.Player.tryCheck x.GameSettings.BlackPlayer
+            do! tryCheckObject x.GameMoves "GameMoves"
             return () }
 
     let create (playerSettings: PlayerSettings.T) (history: History.T) =

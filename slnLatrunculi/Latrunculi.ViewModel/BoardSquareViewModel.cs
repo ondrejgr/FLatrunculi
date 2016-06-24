@@ -104,9 +104,9 @@ namespace Latrunculi.ViewModel
             if (model.IsPiece)
             {
                 Latrunculi.Model.Square.T.Piece p = (Latrunculi.Model.Square.T.Piece)model;
-                if (p.Item.Color == Model.Piece.Colors.Black)
+                if (p.Item.Color.Equals(Model.Piece.Colors.Black))
                     PieceType = PieceTypes.ptBlack;
-                else if (p.Item.Color == Model.Piece.Colors.White)
+                else if (p.Item.Color.Equals(Model.Piece.Colors.White))
                     PieceType = PieceTypes.ptWhite;
                 else
                     throw new NotSupportedException();
