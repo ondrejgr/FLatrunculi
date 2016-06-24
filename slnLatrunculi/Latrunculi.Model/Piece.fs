@@ -16,6 +16,7 @@ module Piece =
     [<CLIMutable>]
     [<DataContract>]
     type T = {
+        [<DataMember>]
         Color: Colors }
     
     let swapColor (x: Colors) =

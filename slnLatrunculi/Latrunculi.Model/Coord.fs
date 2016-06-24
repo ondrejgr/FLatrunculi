@@ -76,7 +76,9 @@ module Coord =
     [<CLIMutable>]
     [<DataContract>]
     type T = {
+        [<DataMember>]
         Column: ColumnNumber;
+        [<DataMember>]
         Row: RowNumber }
 
     type BoardCorner = T * (T * T)
