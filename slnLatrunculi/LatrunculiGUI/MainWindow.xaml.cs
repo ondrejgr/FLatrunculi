@@ -635,7 +635,7 @@ namespace Latrunculi.GUI
         private void Undo_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = ViewModel.IsGameRunning;
+            e.CanExecute = !ViewModel.IsGameCreated && ViewModel.IsUndoStackNotEmpty;
         }
 
         private void Undo_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -643,7 +643,7 @@ namespace Latrunculi.GUI
             e.Handled = true;
             try
             {
-                if (ViewModel.IsGameRunning)
+                if (!ViewModel.IsGameCreated && ViewModel.IsUndoStackNotEmpty)
                 {
                     ModelException.TryThrow<GameController.T>(Controller.TryUndo());
                     CommandManager.InvalidateRequerySuggested();
@@ -658,7 +658,7 @@ namespace Latrunculi.GUI
         private void Redo_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = ViewModel.IsGameRunning;
+            e.CanExecute = !ViewModel.IsGameCreated && ViewModel.IsRedoStackNotEmpty;
         }
 
         private void Redo_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -666,7 +666,7 @@ namespace Latrunculi.GUI
             e.Handled = true;
             try
             {
-                if (ViewModel.IsGameRunning)
+                if (!ViewModel.IsGameCreated && ViewModel.IsRedoStackNotEmpty)
                 {
                     ModelException.TryThrow<GameController.T>(Controller.TryRedo());
                     CommandManager.InvalidateRequerySuggested();

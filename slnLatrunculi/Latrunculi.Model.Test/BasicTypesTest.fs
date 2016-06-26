@@ -107,11 +107,11 @@ let BasicTypesTest() =
     Assert.AreEqual(squareEmpty, Board.getSquare board boardCoord3)
     Assert.AreEqual(squareEmpty, Board.getSquare board boardCoord4)
     // inv move
-    Board.invmove board boardMove
-    Assert.AreEqual(squareWithWhitePiece, Board.getSquare board boardCoord1)
-    Assert.AreEqual(squareEmpty, Board.getSquare board boardCoord2)
-    Assert.AreEqual(squareWithWhitePiece, Board.getSquare board boardCoord3)
-    Assert.AreEqual(squareWithWhitePiece, Board.getSquare board boardCoord4)
+    //Board.invmove board boardMove
+    //Assert.AreEqual(squareWithWhitePiece, Board.getSquare board boardCoord1)
+    //Assert.AreEqual(squareEmpty, Board.getSquare board boardCoord2)
+    //Assert.AreEqual(squareWithWhitePiece, Board.getSquare board boardCoord3)
+    //Assert.AreEqual(squareWithWhitePiece, Board.getSquare board boardCoord4)
 
     let whitePlayer = Player.createHumanPlayer "White" Player.Levels.Easy Piece.Colors.White :> Player.T
     let blackPlayer = Player.createComputerPlayer "Black" Player.Levels.Hard Piece.Colors.Black :> Player.T

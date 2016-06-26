@@ -8,6 +8,7 @@
 #load "Move.fs"
 #load "RemovedPiece.fs"
 #load "BoardMove.fs"
+#load "MoveStack.fs"
 #load "HistoryItem.fs"
 #load "History.fs"
 #load "Board.fs"

@@ -50,3 +50,4 @@ type Error =
     | UnableToLoadGame of string
     | UnableToDeserializeObject of string
     | ErrorLoadingFile of Error
+    | StackIsEmpty

@@ -54,3 +54,4 @@ module ErrorMessages =
         | UnableToLoadGame s -> sprintf "Při načítání hry došlo k chybě: %O" s
         | UnableToDeserializeObject s -> sprintf "Objekt %O se nepodařilo ze souboru načíst." s
         | ErrorLoadingFile e -> sprintf "Chyba při načítání souboru: %O" (toString e)
+        | StackIsEmpty -> sprintf "Zásobník tahů je prázdný."

@@ -104,6 +104,25 @@ namespace Latrunculi.ViewModel
             ClearBoardIndicationsAndSelection();
             Board.RefreshFromModel(Model.Board);
             HistoryBoard.RefreshFromModel(Model.HistoryBoard);
+            OnPropertyChanged("IsUndoStackNotEmpty");
+            OnPropertyChanged("IsRedoStackNotEmpty");
+            Application.Current.Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
+        }
+
+        public bool IsUndoStackNotEmpty
+        {
+            get
+            {
+                return !MoveStack.isEmpty(Model.Board.UndoStack);
+            }
+        }
+
+        public bool IsRedoStackNotEmpty
+        {
+            get
+            {
+                return !MoveStack.isEmpty(Model.Board.RedoStack);
+            }
         }
 
         private void Model_StatusChanged(object sender, EventArgs e)

@@ -313,19 +313,22 @@ module GameController =
 
         member this.TryUndo() =
             let checkGameStatus =
-                if (this.Model.Status <> GameStatus.Running) && (this.Model.Status <> GameStatus.WaitingForHumanPlayerMove) 
+                if this.Model.Status = GameStatus.Created 
                     then Error GameIsNotRunning else Success ()
             maybe {
                 do! checkGameStatus
-                return this }
+                let! controller = this.TryPause()
+                return controller }
 
         member this.TryRedo() =
             let checkGameStatus =
-                if (this.Model.Status <> GameStatus.Running) && (this.Model.Status <> GameStatus.WaitingForHumanPlayerMove) 
+                if this.Model.Status = GameStatus.Created 
                     then Error GameIsNotRunning else Success ()
             maybe {
                 do! checkGameStatus
-                return this }
+                let! controller = this.TryPause()
+
+                return controller }
             
     let create (model: GameModel.T) =
         T(model)
