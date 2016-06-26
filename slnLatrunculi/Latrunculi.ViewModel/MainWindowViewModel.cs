@@ -35,6 +35,7 @@ namespace Latrunculi.ViewModel
             Model.MoveSuggestionComputed -= Model_MoveSuggestionComputed;
             Model.HistoryCleared -= Model_HistoryCleared;
             Model.HistoryItemAdded -= Model_HistoryItemAdded;
+            Model.ComputerPlayerThinking -= Model_ComputerPlayerThinking;
         }
 
         private void InitModel()
@@ -47,11 +48,17 @@ namespace Latrunculi.ViewModel
             Model.MoveSuggestionComputed += Model_MoveSuggestionComputed;
             Model.HistoryCleared += Model_HistoryCleared;
             Model.HistoryItemAdded += Model_HistoryItemAdded;
+            Model.ComputerPlayerThinking += Model_ComputerPlayerThinking;
             Board.Init(Model.Board);
             HistoryBoard.Init(Model.HistoryBoard);
 
             OnPlayerSettingsChanged();
             OnStatusChanged();
+        }
+
+        private void Model_ComputerPlayerThinking(object sender, EventArgs e)
+        {
+            StatusBarText = string.Format("Počítačový hráč \"{0}\" přemýšlí…", ActivePlayerName);
         }
 
         private void Model_HistoryCleared(object sender, EventArgs e)
@@ -166,10 +173,19 @@ namespace Latrunculi.ViewModel
 
         private void OnActivePlayerChanged()
         {
+            OnPropertyChanged("ActivePlayerName");
             ClearBoardIndicationsAndSelection();
             WhitePlayer.IsActive = Model.isWhitePlayerActive;
             BlackPlayer.IsActive = Model.isBlackPlayerActive;
             Application.Current.Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
+        }
+
+        public string ActivePlayerName
+        {
+            get
+            {
+                return Model.getActivePlayerName();
+            }
         }
 
         private void OnStatusChanged()
@@ -224,7 +240,7 @@ namespace Latrunculi.ViewModel
             }
 
             if (IsGameWaitingForHumanPlayerMove)
-                StatusBarText = "Čekám na tah lidského hráče...";
+                StatusBarText = string.Format("Čekám na tah lidského hráče \"{0}\"…", ActivePlayerName);
             else if (IsGameRunning)
                 StatusBarText = "Hra běží...";
             else if (IsGamePaused)

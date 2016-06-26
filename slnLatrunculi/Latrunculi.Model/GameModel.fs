@@ -40,6 +40,7 @@ module GameModel =
         let historyItemAddedEvent = new Event<HistoryItemAddedEventHandler, HistoryItemAddedEventArgs>()
         let historyClearedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let gameErrorEvent = new Event<GameErrorEventHandler, GameErrorEventArgs>()
+        let computerPlayerThinkingEvent = new Event<ModelChangeEventHandler, EventArgs>()
               
         member val Board = board
         member val HistoryBoard = historyBoard
@@ -67,6 +68,8 @@ module GameModel =
         member this.HistoryCleared = historyClearedEvent.Publish
         [<CLIEvent>]
         member this.GameError = gameErrorEvent.Publish
+        [<CLIEvent>]
+        member this.ComputerPlayerThinking = computerPlayerThinkingEvent.Publish
 
         member private this.OnStatusChanged() =
             statusChangedEvent.Trigger(this, EventArgs.Empty)
@@ -94,6 +97,9 @@ module GameModel =
 
         member this.RaiseGameErrorEvent(error) =
             gameErrorEvent.Trigger(this, GameErrorEventArgs(error))
+
+        member this.RaiseComputerPlayerThinking() =
+            computerPlayerThinkingEvent.Trigger(this, EventArgs.Empty)
 
         member this.setStatus x =
             this.Status <- x
@@ -129,6 +135,11 @@ module GameModel =
             | Some p when p = Piece.Colors.Black -> Success this.PlayerSettings.BlackPlayer
             | Some p when p = Piece.Colors.White -> Success this.PlayerSettings.WhitePlayer
             | _ -> Error NoPlayerOnMove
+
+        member this.getActivePlayerName() =
+            match this.tryGetActivePlayer() with 
+            | Success p -> p.Name
+            | _ -> String.Empty
 
         member this.tryGetActiveColor() = 
             match this.ActiveColor with

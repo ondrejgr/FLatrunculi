@@ -89,7 +89,12 @@ module GameController =
             let getPlayerMoveWorkflow =
                 maybe {
                     let! player = this.Model.tryGetActivePlayer()
-                    return player.TryGetMove }    
+                    match player with
+                    | :? Player.ComputerPlayer ->
+                        this.Model.RaiseComputerPlayerThinking()
+                        return player.TryGetMove
+                    | _ ->
+                        return player.TryGetMove }    
             let applyMoveAndChangePlayer move =
                 maybe {
                     // create move with removed pieces list
