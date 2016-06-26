@@ -49,3 +49,4 @@ type Error =
     | UnableToSaveGame of string
     | UnableToLoadGame of string
     | UnableToDeserializeObject of string
+    | ErrorLoadingFile of Error

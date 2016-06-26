@@ -4,7 +4,7 @@ open Latrunculi.Model
 
 module ErrorMessages =
    
-    let toString error =
+    let rec toString error =
         match error with
         // Coord
         | InvalidColumnNumber -> error.ToString()
@@ -53,3 +53,4 @@ module ErrorMessages =
         | UnableToSaveGame s -> sprintf "Při ukládání hry došlo k chybě: %O" s
         | UnableToLoadGame s -> sprintf "Při načítání hry došlo k chybě: %O" s
         | UnableToDeserializeObject s -> sprintf "Objekt %O se nepodařilo ze souboru načíst." s
+        | ErrorLoadingFile e -> sprintf "Chyba při načítání souboru: %O" (toString e)

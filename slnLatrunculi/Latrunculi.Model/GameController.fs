@@ -285,24 +285,26 @@ module GameController =
         member this.TryLoadGame (fileName: string) =
             let checkGameStatus =
                 if this.Model.Status = GameStatus.Running then Error GameIsRunning else Success ()
-            maybe {
-                do! checkGameStatus
-                let! file = GameFileSerializer.TryLoadFile fileName
+            match maybe {
+                        do! checkGameStatus
+                        let! file = GameFileSerializer.TryLoadFile fileName
 
-                let white = file.GameSettings.WhitePlayer
-                let black = file.GameSettings.BlackPlayer
-                this.changePlayerSettings (white.Type, black.Type) (white.Name, black.Name) (white.Level, black.Level) |> ignore
-                model.setStatus GameStatus.Paused |> ignore
+                        let white = file.GameSettings.WhitePlayer
+                        let black = file.GameSettings.BlackPlayer
+                        this.changePlayerSettings (white.Type, black.Type) (white.Name, black.Name) (white.Level, black.Level) |> ignore
+                        model.setStatus GameStatus.Paused |> ignore
 
-                let! gameResult = this.TryApplyLoadedFile file
-                this.Model.RaiseBoardChanged()
+                        let! gameResult = this.TryApplyLoadedFile file
+                        this.Model.RaiseBoardChanged()
 
-                match this.Model.Result with
-                | Rules.GameOverResult _ ->
-                    this.Model.setStatus(GameStatus.Finished) |> ignore
-                    return this
-                | _ -> 
-                    return this }
+                        match this.Model.Result with
+                        | Rules.GameOverResult _ ->
+                            this.Model.setStatus(GameStatus.Finished) |> ignore
+                            return this
+                        | _ -> 
+                            return this } with
+            | Success s -> Success s
+            | Error e -> Error (ErrorLoadingFile e)
 
     let create (model: GameModel.T) =
         T(model)
