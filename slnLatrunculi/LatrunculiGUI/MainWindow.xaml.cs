@@ -631,5 +631,51 @@ namespace Latrunculi.GUI
                 MessageBox.Show(this, "Nelze zobrazit historii tahů na desce." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private void Undo_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = ViewModel.IsGameRunning;
+        }
+
+        private void Undo_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            try
+            {
+                if (ViewModel.IsGameRunning)
+                {
+                    ModelException.TryThrow<GameController.T>(Controller.TryUndo());
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(this, "Tah nelze vzít zpět." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void Redo_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = ViewModel.IsGameRunning;
+        }
+
+        private void Redo_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            try
+            {
+                if (ViewModel.IsGameRunning)
+                {
+                    ModelException.TryThrow<GameController.T>(Controller.TryRedo());
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(this, "Tah nelze opakovat." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
 }

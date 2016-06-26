@@ -311,5 +311,21 @@ module GameController =
             | Success s -> Success s
             | Error e -> Error (ErrorLoadingFile e)
 
+        member this.TryUndo() =
+            let checkGameStatus =
+                if (this.Model.Status <> GameStatus.Running) && (this.Model.Status <> GameStatus.WaitingForHumanPlayerMove) 
+                    then Error GameIsNotRunning else Success ()
+            maybe {
+                do! checkGameStatus
+                return this }
+
+        member this.TryRedo() =
+            let checkGameStatus =
+                if (this.Model.Status <> GameStatus.Running) && (this.Model.Status <> GameStatus.WaitingForHumanPlayerMove) 
+                    then Error GameIsNotRunning else Success ()
+            maybe {
+                do! checkGameStatus
+                return this }
+            
     let create (model: GameModel.T) =
         T(model)

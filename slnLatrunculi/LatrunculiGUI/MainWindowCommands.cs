@@ -136,6 +136,24 @@ namespace Latrunculi.GUI
             }
         }
 
+        static private MainWindowCommand _undo = new MainWindowCommand("_Zpět", "Undo", new KeyGesture(Key.Z, ModifierKeys.Control));
+        static public MainWindowCommand Undo
+        {
+            get
+            {
+                return _undo;
+            }
+        }
+
+        static private MainWindowCommand _redo = new MainWindowCommand("O_pakovat", "Redo", new KeyGesture(Key.Y, ModifierKeys.Control));
+        static public MainWindowCommand Redo
+        {
+            get
+            {
+                return _redo;
+            }
+        }
+
         static private MainWindowCommand _cancelSuggestMove = new MainWindowCommand("_Zrušit nápovědu tahu", "CancelSuggestMove", null, true);
         static public MainWindowCommand CancelSuggestMove
         {

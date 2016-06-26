@@ -32,6 +32,8 @@
         <CommandBinding Command="{x:Static local:MainWindowCommands.Resume}" CanExecute="Resume_CanExecute" Executed="Resume_Executed"/>
         <CommandBinding Command="{x:Static local:MainWindowCommands.SuggestMove}" CanExecute="SuggestMove_CanExecute" Executed="SuggestMove_Executed"/>
         <CommandBinding Command="{x:Static local:MainWindowCommands.CancelSuggestMove}" CanExecute="CancelSuggestMove_CanExecute" Executed="CancelSuggestMove_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindowCommands.Undo}" CanExecute="Undo_CanExecute" Executed="Undo_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindowCommands.Redo}" CanExecute="Redo_CanExecute" Executed="Redo_Executed"/>
     </Window.CommandBindings>
 
     <Window.Resources>
@@ -89,12 +91,36 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
+            <MenuItem Header="_Úpravy">
+                <MenuItem 
+                    Command="{x:Static local:MainWindowCommands.Undo}">
+                    <MenuItem.Icon>
+                        <Image Height="16" Width="16" Source="{Binding Source={x:Static local:MainWindowCommands.Undo}, Path=ImageSource}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem 
+                    Command="{x:Static local:MainWindowCommands.Redo}">
+                    <MenuItem.Icon>
+                        <Image Height="16" Width="16" Source="{Binding Source={x:Static local:MainWindowCommands.Redo}, Path=ImageSource}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
             <MenuItem Header="_Nástroje">
                 <MenuItem 
                     Command="{x:Static local:MainWindowCommands.Settings}">
                     <MenuItem.Icon>
                         <Image Height="16" Width="16" Source="{Binding Source={x:Static local:MainWindowCommands.Settings}, Path=ImageSource}"/>
                     </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem 
+                    Command="{x:Static local:MainWindowCommands.SuggestMove}">
+                    <MenuItem.Icon>
+                        <Image Height="16" Width="16" Source="{Binding Source={x:Static local:MainWindowCommands.SuggestMove}, Path=ImageSource}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem 
+                    Command="{x:Static local:MainWindowCommands.CancelSuggestMove}">
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="Nápo_věda">
@@ -147,6 +173,19 @@
                     <AccessText Text="{Binding Source={x:Static local:MainWindowCommands.Resume}, Path=Text}"/>
                 </Button.ToolTip>
                 <Image Height="16" Width="16" Source="{Binding Source={x:Static local:MainWindowCommands.Resume}, Path=ImageSource}"/>
+            </Button>
+            <Separator/>
+            <Button Command="{x:Static local:MainWindowCommands.Undo}" CommandTarget="{Binding ElementName=win}">
+                <Button.ToolTip>
+                    <AccessText Text="{Binding Source={x:Static local:MainWindowCommands.Undo}, Path=Text}"/>
+                </Button.ToolTip>
+                <Image Height="16" Width="16" Source="{Binding Source={x:Static local:MainWindowCommands.Undo}, Path=ImageSource}"/>
+            </Button>
+            <Button Command="{x:Static local:MainWindowCommands.Redo}" CommandTarget="{Binding ElementName=win}">
+                <Button.ToolTip>
+                    <AccessText Text="{Binding Source={x:Static local:MainWindowCommands.Redo}, Path=Text}"/>
+                </Button.ToolTip>
+                <Image Height="16" Width="16" Source="{Binding Source={x:Static local:MainWindowCommands.Redo}, Path=ImageSource}"/>
             </Button>
             <Separator/>
             <Button Command="{x:Static local:MainWindowCommands.Settings}" CommandTarget="{Binding ElementName=win}">
