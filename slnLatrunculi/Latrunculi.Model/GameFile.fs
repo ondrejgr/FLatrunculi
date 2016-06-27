@@ -54,7 +54,7 @@ module GameFile =
         [<DataMember>]
         GameSettings: GameSettings.T
         [<DataMember>]
-        GameMoves: GameMovesList.T }
+        GameMoves: GameMovesArray.T }
 
     let tryCheck (x: T) =
         maybe {
@@ -70,6 +70,6 @@ module GameFile =
     let create (playerSettings: PlayerSettings.T) (history: History.T) =
         let result = 
             {   GameSettings = GameSettings.createFromPlayerSettings playerSettings;
-                GameMoves = GameMovesList.createFromHistory history }
+                GameMoves = GameMovesArray.createFromHistory history }
         result
 

@@ -1,7 +1,7 @@
 ﻿namespace Latrunculi.Model
 open System.Runtime.Serialization
 
-module GameMovesList =
+module GameMovesArray =
     [<CLIMutable>]
     [<DataContract>]
     type T = Move.T array
