@@ -35,6 +35,7 @@ namespace Latrunculi.ViewModel
             Model.MoveSuggestionComputed -= Model_MoveSuggestionComputed;
             Model.HistoryCleared -= Model_HistoryCleared;
             Model.HistoryItemAdded -= Model_HistoryItemAdded;
+            Model.HistoryItemRemoved -= Model_HistoryItemRemoved;
             Model.ComputerPlayerThinking -= Model_ComputerPlayerThinking;
         }
 
@@ -48,6 +49,7 @@ namespace Latrunculi.ViewModel
             Model.MoveSuggestionComputed += Model_MoveSuggestionComputed;
             Model.HistoryCleared += Model_HistoryCleared;
             Model.HistoryItemAdded += Model_HistoryItemAdded;
+            Model.HistoryItemRemoved += Model_HistoryItemRemoved;
             Model.ComputerPlayerThinking += Model_ComputerPlayerThinking;
             Board.Init(Model.Board);
             HistoryBoard.Init(Model.HistoryBoard);
@@ -67,6 +69,11 @@ namespace Latrunculi.ViewModel
         }
 
         private void Model_HistoryItemAdded(object sender, HistoryItemAddedEventArgs e)
+        {
+            OnPropertyChanged("NumberOfMovesRemaining");
+        }
+
+        private void Model_HistoryItemRemoved(object sender, EventArgs e)
         {
             OnPropertyChanged("NumberOfMovesRemaining");
         }

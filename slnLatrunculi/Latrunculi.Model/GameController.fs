@@ -108,7 +108,10 @@ module GameController =
                             Board.invmove this.Model.Board boardMove |> ignore
                             this.Model.RaiseHistoryItemRemoved()
                             return ()
-                        | MoveRequest.RedoRequest boardMove ->
+                        | MoveRequest.RedoRequest bm ->
+                            // redo move gets validated
+                            let! color = this.Model.tryGetActiveColor()
+                            let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color bm.Move
                             Board.move this.Model.Board boardMove |> ignore
                             this.Model.RaiseHistoryItemAdded <| List.head this.Model.Board.History
                             return () }
