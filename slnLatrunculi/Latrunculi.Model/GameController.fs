@@ -136,6 +136,7 @@ module GameController =
                     Board.move this.Model.Board boardMove |> ignore
 
                     // update stack
+                    this.Model.clearRedoStack()
                     this.Model.pushToUndoStack boardMove
 
                     this.Model.RaiseHistoryItemAdded <| List.head this.Model.Board.History

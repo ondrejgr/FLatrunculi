@@ -191,6 +191,9 @@ module GameModel =
             this.UndoStack <- MoveStack.create()
             this.RedoStack <- MoveStack.create()
 
+        member this.clearRedoStack() =
+            this.RedoStack <- MoveStack.create()
+
         member this.pushToUndoStack (move: BoardMove.T) =
             this.UndoStack <- MoveStack.push this.UndoStack move
 
