@@ -113,7 +113,7 @@ namespace Latrunculi.ViewModel
         {
             get
             {
-                return !MoveStack.isEmpty(Model.Board.UndoStack);
+                return !MoveStack.isEmpty(Model.UndoStack);
             }
         }
 
@@ -121,7 +121,7 @@ namespace Latrunculi.ViewModel
         {
             get
             {
-                return !MoveStack.isEmpty(Model.Board.RedoStack);
+                return !MoveStack.isEmpty(Model.RedoStack);
             }
         }
 
