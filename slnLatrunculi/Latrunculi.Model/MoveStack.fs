@@ -29,6 +29,14 @@ module MoveStack =
             | _ ->
                 Success (MoveStack <| List.tail moves, move)
 
+    let tryPeek (stack: T) =
+        match stack with
+        | EmptyStack ->
+            Error StackIsEmpty
+        | MoveStack moves ->
+            let move = List.head moves
+            Success move
+
     let isEmpty (stack: T) =
         match stack with
         | EmptyStack -> true
