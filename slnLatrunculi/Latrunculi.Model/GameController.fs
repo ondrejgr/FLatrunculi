@@ -107,16 +107,14 @@ module GameController =
                         | MoveRequest.UndoRequest boardMove ->
                             Board.invmove this.Model.Board boardMove |> ignore
                             this.Model.RaiseHistoryItemRemoved()
-                            return! Success ()
+                            return ()
                         | MoveRequest.RedoRequest boardMove ->
                             Board.move this.Model.Board boardMove |> ignore
                             this.Model.RaiseHistoryItemAdded <| List.head this.Model.Board.History
-                            return! Success () }
+                            return () }
                 maybe {
                     // process undo/redo
                     do! tryProcessRequest this.Model.MoveRequest
-                    // clear request
-                    this.Model.MoveRequest <- MoveRequest.create() 
                     // update board
                     this.Model.RaiseBoardChanged()
 
@@ -163,7 +161,14 @@ module GameController =
             async {
                 match this.Model.MoveRequest with
                 | MoveRequest.UndoRequest _ | MoveRequest.RedoRequest _->
-                    return tryProcessMoveRequestAndChangePlayer
+                    match tryProcessMoveRequestAndChangePlayer with
+                    | Success e ->
+                        // clear request
+                        this.Model.MoveRequest <- MoveRequest.create() 
+                        return Success e
+                    | Error e ->
+                        this.Model.MoveRequest <- MoveRequest.create() 
+                        return Error e
                 | MoveRequest.NoRequest ->
                     match getPlayerMoveWorkflow with
                     | Success getPlayerMove ->
