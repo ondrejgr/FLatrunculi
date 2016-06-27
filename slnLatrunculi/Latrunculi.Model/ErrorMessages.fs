@@ -55,3 +55,4 @@ module ErrorMessages =
         | UnableToDeserializeObject s -> sprintf "Objekt %O se nepodařilo ze souboru načíst." s
         | ErrorLoadingFile e -> sprintf "Chyba při načítání souboru: %O" (toString e)
         | StackIsEmpty -> sprintf "Zásobník tahů je prázdný."
+        | NoMoveRequestExists -> sprintf "Neexistuje požadavek na speciální tah."

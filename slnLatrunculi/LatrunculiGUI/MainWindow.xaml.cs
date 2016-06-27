@@ -39,9 +39,28 @@ namespace Latrunculi.GUI
             ViewModel.PropertyChanged += ViewModel_PropertyChanged;
             ViewModel.Model.MoveSuggestionComputed += Model_MoveSuggestionComputed;
             ViewModel.Model.HistoryItemAdded += Model_HistoryItemAdded;
+            ViewModel.Model.HistoryItemRemoved += Model_HistoryItemRemoved;
             ViewModel.Model.HistoryCleared += Model_HistoryCleared;
             ViewModel.Model.GameError += Model_GameError;
             Controller = controller;
+        }
+
+        private void Model_HistoryItemRemoved(object sender, EventArgs e)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                try
+                {
+                    if (ViewModel.Board.History.Count > 0)
+                        ViewModel.Board.History.RemoveFirstItem();
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show(this,
+                        string.Format("Nepodařilo se odstranit tah z historie: {0}", ViewModelCommon.ConvertExceptionToShortString(exc)),
+                        "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }), System.Windows.Threading.DispatcherPriority.Background);
         }
 
         private void Model_HistoryCleared(object sender, EventArgs e)

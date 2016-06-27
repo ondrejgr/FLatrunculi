@@ -51,3 +51,4 @@ type Error =
     | UnableToDeserializeObject of string
     | ErrorLoadingFile of Error
     | StackIsEmpty
+    | NoMoveRequestExists

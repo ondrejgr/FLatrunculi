@@ -9,6 +9,20 @@ type GameStatus =
     | WaitingForHumanPlayerMove
     | Finished
 
+module MoveRequest =
+    [<StructuralEquality;NoComparison>]
+    type T =
+        | NoRequest
+        | UndoRequest of BoardMove.T
+        | RedoRequest of BoardMove.T
+
+    let create() =
+        NoRequest
+    let createUndoRequest (move: BoardMove.T) =
+        UndoRequest move
+    let createRedoRequest (move: BoardMove.T) =
+        RedoRequest move
+
 type MoveEventArgs(move: Result<Move.T, Error>) =
     inherit EventArgs()
     member val Move = move
@@ -38,6 +52,7 @@ module GameModel =
         let moveSuggestionComputedEvent = new Event<MoveSuggestionComputedEventHandler, MoveEventArgs>()
         let boardChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let historyItemAddedEvent = new Event<HistoryItemAddedEventHandler, HistoryItemAddedEventArgs>()
+        let historyItemRemovedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let historyClearedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let gameErrorEvent = new Event<GameErrorEventHandler, GameErrorEventArgs>()
         let computerPlayerThinkingEvent = new Event<ModelChangeEventHandler, EventArgs>()
@@ -49,6 +64,10 @@ module GameModel =
         member val ActiveColor = None with get, set
         member val IsMoveSuggestionComputing = false with get, set
         member val Result = Rules.NoResult with get, set
+
+        member val MoveRequest = MoveRequest.create() with get, set
+        member val UndoStack = MoveStack.create() with get, set
+        member val RedoStack = MoveStack.create() with get, set
         
         [<CLIEvent>]
         member this.StatusChanged = statusChangedEvent.Publish
@@ -64,6 +83,8 @@ module GameModel =
         member this.BoardChanged = boardChangedEvent.Publish
         [<CLIEvent>]
         member this.HistoryItemAdded = historyItemAddedEvent.Publish
+        [<CLIEvent>]
+        member this.HistoryItemRemoved = historyItemRemovedEvent.Publish
         [<CLIEvent>]
         member this.HistoryCleared = historyClearedEvent.Publish
         [<CLIEvent>]
@@ -91,6 +112,9 @@ module GameModel =
 
         member this.RaiseHistoryItemAdded(x) =
             historyItemAddedEvent.Trigger(this, HistoryItemAddedEventArgs(x))
+
+        member this.RaiseHistoryItemRemoved() =
+            historyItemRemovedEvent.Trigger(this, EventArgs.Empty)
 
         member this.RaiseHistoryCleared() =
             historyClearedEvent.Trigger(this, EventArgs.Empty)
@@ -162,6 +186,30 @@ module GameModel =
 
         member this.getNumberOfMovesWithoutRemoval() =
             History.getNumberOfMovesWithoutRemoval this.Board.History
+
+        member this.clearMoveStacks() =
+            this.UndoStack <- MoveStack.create()
+            this.RedoStack <- MoveStack.create()
+
+        member this.pushToUndoStack (move: BoardMove.T) =
+            this.UndoStack <- MoveStack.push this.UndoStack move
+
+        member this.tryPopFromUndoStack() =
+            maybe {
+                let! popResult = MoveStack.tryPop this.UndoStack
+                this.UndoStack <- fst popResult
+                let move = snd popResult
+                return move }
+
+        member this.pushToRedoStack (move: BoardMove.T) =
+            this.RedoStack <- MoveStack.push this.RedoStack move
+
+        member this.tryPopFromRedoStack() =
+            maybe {
+                let! popResult = MoveStack.tryPop this.RedoStack
+                this.RedoStack <- fst popResult
+                let move = snd popResult
+                return move }
 
     let tryCreate() =
         maybe {

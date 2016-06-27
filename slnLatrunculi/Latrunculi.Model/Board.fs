@@ -8,8 +8,6 @@ module Board =
 
         member val private Squares = sq
         member val History = History.create() with get, set
-        member val UndoStack = MoveStack.create() with get, set
-        member val RedoStack = MoveStack.create() with get, set
 
         member this.GetSquare (c: Coord.T) =
             let col = Coord.ColIndex.[c.Column]
@@ -72,7 +70,6 @@ module Board =
             let id = 1 + List.length board.History
             let item = HistoryItem.create id move
             board.History <- History.getHistoryWithNewItem board.History item
-            board.UndoStack <- MoveStack.push board.UndoStack move
 
         let m = move.Move 
         board.ChangeSquare m.Source m.NewSourceSquare
@@ -87,13 +84,6 @@ module Board =
                              | l when l > 0 -> List.tail board.History
                              | _ -> board.History
             
-            let undoStackPopResult = MoveStack.tryPop board.UndoStack
-            match undoStackPopResult with
-            | Success undoStackPop ->
-                board.UndoStack <- fst undoStackPop
-                board.RedoStack <- MoveStack.push board.RedoStack <| snd undoStackPop
-            | Error _ -> ()
-
         let m = move.Move
         board.ChangeSquare m.Source m.NewTargetSquare
         board.ChangeSquare m.Target m.NewSourceSquare
@@ -104,8 +94,6 @@ module Board =
     let tryInit (board: T) (getInitalSquare: Coord.T -> Square.T) =
         try
             board.History <- History.create()
-            board.UndoStack <- MoveStack.create()
-            board.RedoStack <- MoveStack.create()
             Coord.iter (fun c ->
                     board.ChangeSquare c <| getInitalSquare c)
             Success board

@@ -30,5 +30,10 @@ namespace Latrunculi.ViewModel
                      Coord.toString(BoardMove.getTargetCoord(item.BoardMove)),
                      BoardMove.getRemovedPiecesCount(item.BoardMove)));
         }
+
+        public void RemoveFirstItem()
+        {
+            RemoveAt(0);
+        }
     }
 }

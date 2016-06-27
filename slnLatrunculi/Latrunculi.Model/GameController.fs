@@ -5,6 +5,7 @@ open System.Threading
 [<StructuralEquality;NoComparison>]
 type GameLoopCycleResult =
     | Continue
+    | Pause
     | Finished
 
 [<StructuralEquality;NoComparison>]
@@ -73,6 +74,7 @@ module GameController =
                 // reset game result and set active player
                 this.Model.setActiveColor(Some Rules.getInitialActiveColor) |> ignore
                 this.Model.setResult Rules.NoResult |> ignore
+                this.Model.clearMoveStacks()
 
                 // init board with default positions
                 let! board = Board.tryInit this.Model.Board Rules.getInitialBoardSquares
@@ -82,6 +84,7 @@ module GameController =
                 return this }
             
         member private this.ReportGameError e =
+            this.Model.MoveRequest <- MoveRequest.create()
             this.Model.setStatus(GameStatus.Paused) |> ignore
             this.Model.RaiseGameErrorEvent(e)
 
@@ -95,15 +98,48 @@ module GameController =
                         return player.TryGetMove
                     | _ ->
                         return player.TryGetMove }    
-            let applyMoveAndChangePlayer move =
-                maybe {
-                    // create move with removed pieces list
-                    let! color = this.Model.tryGetActiveColor()
-                    let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color move
 
-                    // apply move and check number of removed pieces
+            let tryProcessMoveRequestAndChangePlayer =
+                let tryProcessRequest request =
+                    maybe {
+                        match request with
+                        | MoveRequest.NoRequest -> return! Error NoMoveRequestExists
+                        | MoveRequest.UndoRequest boardMove ->
+                            Board.invmove this.Model.Board boardMove |> ignore
+                            this.Model.RaiseHistoryItemRemoved()
+                            return! Success ()
+                        | MoveRequest.RedoRequest boardMove ->
+                            Board.move this.Model.Board boardMove |> ignore
+                            this.Model.RaiseHistoryItemAdded <| List.head this.Model.Board.History
+                            return! Success () }
+                maybe {
+                    // process undo/redo
+                    do! tryProcessRequest this.Model.MoveRequest
+                    // clear request
+                    this.Model.MoveRequest <- MoveRequest.create() 
+                    // update board
+                    this.Model.RaiseBoardChanged()
+
+                    // check game over
+                    this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
+                    match this.Model.Result with
+                    | Rules.GameOverResult _ ->
+                        return Finished
+                    | Rules.NoResult ->
+                        // continue
+                        do! this.Model.trySwapActiveColor()
+                        return Pause }
+
+            let tryApplyBoardMoveAndChangePlayer (boardMove: BoardMove.T) =
+                maybe {
+                    // apply move
                     Board.move this.Model.Board boardMove |> ignore
+
+                    // update stack
+                    this.Model.addToUndoStack boardMove
+
                     this.Model.RaiseHistoryItemAdded <| List.head this.Model.Board.History
+                    // update board
                     this.Model.RaiseBoardChanged()
 
                     // check game over
@@ -115,19 +151,31 @@ module GameController =
                         // continue
                         do! this.Model.trySwapActiveColor()
                         return Continue }
+
+            let tryApplyMoveAndChangePlayer move =
+                maybe {
+                    // create move with removed pieces list
+                    let! color = this.Model.tryGetActiveColor()
+                    let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color move
+                    return! tryApplyBoardMoveAndChangePlayer boardMove }
+
             async {
-                match getPlayerMoveWorkflow with
-                | Success getPlayerMove ->
-                    // get player move
-                    let! moveResult = getPlayerMove()
-                    match moveResult with
-                    | Success move ->
-                        // apply move
-                        return applyMoveAndChangePlayer move
+                match this.Model.MoveRequest with
+                | MoveRequest.UndoRequest _ | MoveRequest.RedoRequest _->
+                    return tryProcessMoveRequestAndChangePlayer
+                | MoveRequest.NoRequest ->
+                    match getPlayerMoveWorkflow with
+                    | Success getPlayerMove ->
+                        // get player move
+                        let! moveResult = getPlayerMove()
+                        match moveResult with
+                        | Success move ->
+                            // apply move
+                            return tryApplyMoveAndChangePlayer move
+                        | Error e ->
+                            return Error e
                     | Error e ->
-                        return Error e
-                | Error e ->
-                    return Error e }
+                        return Error e }
 
         member private this.GameLoop(): Async<unit> =
             async {
@@ -138,6 +186,9 @@ module GameController =
                 | Success result ->
                     match result with
                     | Continue -> return! this.GameLoop()
+                    | Pause -> 
+                        this.Model.setStatus(GameStatus.Paused) |> ignore
+                        return ()
                     | Finished -> 
                         this.Model.setStatus(GameStatus.Finished) |> ignore
                         return ()
@@ -318,6 +369,12 @@ module GameController =
             maybe {
                 do! checkGameStatus
                 let! controller = this.TryPause()
+
+                let! move = this.Model.tryPopFromUndoStack()
+                this.Model.MoveRequest <- MoveRequest.createUndoRequest move
+                this.Model.pushToRedoStack move
+
+                let! controller = this.TryResume()
                 return controller }
 
         member this.TryRedo() =
@@ -328,6 +385,11 @@ module GameController =
                 do! checkGameStatus
                 let! controller = this.TryPause()
 
+                let! move = this.Model.tryPopFromRedoStack()
+                this.Model.MoveRequest <- MoveRequest.createRedoRequest move
+                this.Model.pushToUndoStack move
+
+                let! controller = this.TryResume()
                 return controller }
             
     let create (model: GameModel.T) =
