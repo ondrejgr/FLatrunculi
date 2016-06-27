@@ -257,9 +257,13 @@ module GameController =
                 do! (match this.Model.IsMoveSuggestionComputing with
                     | true -> Success (ignore <| this.TryCancelSuggestMove())
                     | false -> Success ())
-                let! cts = this.TryGetCts()
-                cts.Cancel()
-                return this }
+                match this.Model.Status with
+                | GameStatus.Running | GameStatus.WaitingForHumanPlayerMove ->
+                    let! cts = this.TryGetCts()
+                    cts.Cancel()
+                    return this
+                | _ ->
+                    return this }
 
         member this.TryResume() =
             let checkGameStatus =
@@ -315,11 +319,11 @@ module GameController =
                 if this.Model.Status = GameStatus.Running then Error GameIsRunning else Success ()
             maybe {
                 do! checkGameStatus
-                let file = GameFile.create model.PlayerSettings model.Board.History
+                let file = GameFile.create model
                 do! GameFileSerializer.TrySaveFile fileName file
                 return this }
 
-        member this.TryApplyLoadedFile (file: GameFile.T) =
+        member this.TryApplyMovesLoadedFromFile (file: GameFile.T) =
             maybe {
                 let! controller = this.TryNewGame()
                 return! Array.fold
@@ -332,6 +336,7 @@ module GameController =
                                 let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color move
                                 // apply move
                                 Board.move this.Model.Board boardMove |> ignore
+                                this.Model.pushToUndoStack boardMove
                                 this.Model.RaiseHistoryItemAdded <| List.head this.Model.Board.History
 
                                 this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
@@ -356,7 +361,7 @@ module GameController =
                         this.changePlayerSettings (white.Type, black.Type) (white.Name, black.Name) (white.Level, black.Level) |> ignore
                         model.setStatus GameStatus.Paused |> ignore
 
-                        let! gameResult = this.TryApplyLoadedFile file
+                        let! gameResult = this.TryApplyMovesLoadedFromFile file
                         this.Model.RaiseBoardChanged()
 
                         match this.Model.Result with
@@ -374,14 +379,14 @@ module GameController =
                     then Error GameIsNotRunning else Success ()
             maybe {
                 do! checkGameStatus
-                let! controller = this.TryPause()
+                let! pausedController = this.TryPause()
 
                 let! move = this.Model.tryPopFromUndoStack()
                 this.Model.MoveRequest <- MoveRequest.createUndoRequest move
                 this.Model.pushToRedoStack move
 
-                let! controller = this.TryResume()
-                return controller }
+                let! resumedController = this.TryResume()
+                return this }
 
         member this.TryRedo() =
             let checkGameStatus =
@@ -389,14 +394,14 @@ module GameController =
                     then Error GameIsNotRunning else Success ()
             maybe {
                 do! checkGameStatus
-                let! controller = this.TryPause()
+                let! pausedController = this.TryPause()
 
                 let! move = this.Model.tryPopFromRedoStack()
                 this.Model.MoveRequest <- MoveRequest.createRedoRequest move
                 this.Model.pushToUndoStack move
 
-                let! controller = this.TryResume()
-                return controller }
+                let! resumedController = this.TryResume()
+                return this }
             
     let create (model: GameModel.T) =
         T(model)

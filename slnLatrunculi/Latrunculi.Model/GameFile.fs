@@ -48,6 +48,17 @@ module GameFile =
             {   WhitePlayer = white;
                 BlackPlayer = black }
 
+    module GameMovesArray =
+        [<CLIMutable>]
+        [<DataContract>]
+        type T = Move.T array
+
+        let createFromHistory (history: History.T) =
+            let result: T = List.toArray <| (List.map (fun (item: HistoryItem.T) -> item.BoardMove.Move) 
+                                                    <| List.rev history)
+            result
+
+
     [<CLIMutable>]
     [<DataContract>]
     type T = {
@@ -67,9 +78,9 @@ module GameFile =
             do! tryCheckObject x.GameMoves "GameMoves"
             return () }
 
-    let create (playerSettings: PlayerSettings.T) (history: History.T) =
+    let create (model: GameModel.T) =
         let result = 
-            {   GameSettings = GameSettings.createFromPlayerSettings playerSettings;
-                GameMoves = GameMovesArray.createFromHistory history }
+            {   GameSettings = GameSettings.createFromPlayerSettings model.PlayerSettings;
+                GameMoves = GameMovesArray.createFromHistory model.Board.History }
         result
 

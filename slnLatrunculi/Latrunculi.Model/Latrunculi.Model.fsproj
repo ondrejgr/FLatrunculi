@@ -68,10 +68,9 @@
     <Compile Include="HumanSelectedMove.fs" />
     <Compile Include="Player.fs" />
     <Compile Include="PlayerSettings.fs" />
-    <Compile Include="GameMovesArray.fs" />
+    <Compile Include="GameModel.fs" />
     <Compile Include="GameFile.fs" />
     <Compile Include="GameFileSerializer.fs" />
-    <Compile Include="GameModel.fs" />
     <Compile Include="GameController.fs" />
     <Compile Include="ErrorMessages.fs" />
     <None Include="Script.fsx" />
