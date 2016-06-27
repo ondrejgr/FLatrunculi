@@ -326,45 +326,45 @@ module GameController =
                 do! GameFileSerializer.TrySaveFile fileName file
                 return this }
 
-        member this.TryApplyMovesLoadedFromFile (file: GameFile.T) =
-            maybe {
-                let! controller = this.TryNewGame()
-                return! Array.fold
-                    (fun result (move: Move.T) ->
-                        match result with 
-                        | Success Rules.GameResult.NoResult ->
-                            maybe {
-                                // validate and create board move
-                                let! color = this.Model.tryGetActiveColor()
-                                let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color move
-                                // apply move
-                                Board.move this.Model.Board boardMove |> ignore
-                                this.Model.pushToUndoStack boardMove
-                                this.Model.RaiseHistoryItemAdded <| List.head this.Model.Board.History
-
-                                this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
-                                match this.Model.Result with
-                                | Rules.NoResult ->
-                                    do! this.Model.trySwapActiveColor()
-                                    return! Success this.Model.Result
-                                | _ -> return! Success this.Model.Result }              
-                        | Success s -> Success s      
-                        | Error e -> Error e) 
-                    (Success Rules.GameResult.NoResult) file.GameMoves }
+//        member this.TryApplyMovesLoadedFromFile (file: GameFile.T) =
+//            maybe {
+//                let! controller = this.TryNewGame()
+//                return! Array.fold
+//                    (fun result (move: Move.T) ->
+//                        match result with 
+//                        | Success Rules.GameResult.NoResult ->
+//                            maybe {
+//                                // validate and create board move
+//                                let! color = this.Model.tryGetActiveColor()
+//                                let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color move
+//                                // apply move
+//                                Board.move this.Model.Board boardMove |> ignore
+//                                this.Model.pushToUndoStack boardMove
+//                                this.Model.RaiseHistoryItemAdded <| List.head this.Model.Board.History
+//
+//                                this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
+//                                match this.Model.Result with
+//                                | Rules.NoResult ->
+//                                    do! this.Model.trySwapActiveColor()
+//                                    return! Success this.Model.Result
+//                                | _ -> return! Success this.Model.Result }              
+//                        | Success s -> Success s      
+//                        | Error e -> Error e) 
+//                    (Success Rules.GameResult.NoResult) file.GameMoves }
 
         member this.TryLoadGame (fileName: string) =
             let checkGameStatus =
                 if this.Model.Status = GameStatus.Running then Error GameIsRunning else Success ()
             match maybe {
                         do! checkGameStatus
-                        let! file = GameFileSerializer.TryLoadFile fileName
-
-                        let white = file.GameSettings.WhitePlayer
-                        let black = file.GameSettings.BlackPlayer
-                        this.changePlayerSettings (white.Type, black.Type) (white.Name, black.Name) (white.Level, black.Level) |> ignore
                         model.setStatus GameStatus.Paused |> ignore
+                        // load file
+                        let! file = GameFileSerializer.TryLoadFile fileName
+                        // change player settings
+                        let! newPlayerSettings = GameFile.PlayerSettingsDto.tryToPlayerSettings file.PlayerSettings
+                        this.Model.changePlayerSettings newPlayerSettings |> ignore
 
-                        let! gameResult = this.TryApplyMovesLoadedFromFile file
+//                        let! gameResult = this.TryApplyMovesLoadedFromFile file
                         this.Model.RaiseBoardChanged()
 
                         match this.Model.Result with

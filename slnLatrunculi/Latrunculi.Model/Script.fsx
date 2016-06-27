@@ -1,5 +1,4 @@
 ﻿#r "System.Runtime.Serialization.dll"
-
 #load "Errors.fs"
 #load "Common.fs"
 #load "Piece.fs"

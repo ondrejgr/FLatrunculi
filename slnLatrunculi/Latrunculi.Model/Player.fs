@@ -1,27 +1,17 @@
 ﻿namespace Latrunculi.Model
-open System
-open System.Runtime.Serialization
-open System.Reflection
-open Microsoft.FSharp.Reflection
 
 module Player =
 
-    [<KnownType("GetKnownTypes")>]
     [<StructuralEquality;NoComparison>]
     type Types =
         | Human
         | Computer
-        static member GetKnownTypes() = 
-            typedefof<Types>.GetNestedTypes(BindingFlags.Public ||| BindingFlags.NonPublic) |> Array.filter FSharpType.IsUnion
 
-    [<KnownType("GetKnownTypes")>]
     [<StructuralEquality;NoComparison>]
     type Levels =
         | Easy
         | Medium
         | Hard
-        static member GetKnownTypes() = 
-            typedefof<Levels>.GetNestedTypes(BindingFlags.Public ||| BindingFlags.NonPublic) |> Array.filter FSharpType.IsUnion
 
     type Name = string
 
@@ -85,7 +75,7 @@ module Player =
         | _ -> failwith "Invalid Player Type"
    
     let createHumanPlayer name level color =
-        HumanPlayer(name, level, color)
+        HumanPlayer(name, level, color) 
 
     let createComputerPlayer name level color =
         ComputerPlayer(name, level, color)

@@ -43,7 +43,7 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <Label Target="{Binding ElementName=name}" Content="Jméno:"/>
-                        <TextBox x:Name="name" Text="{Binding Name}" Grid.Column="1"/>
+                        <TextBox x:Name="name" Text="{Binding Name}" MaxLength="12" AcceptsTab="False" AcceptsReturn="False" Grid.Column="1"/>
                     </Grid>
                     <GroupBox Header="Typ hráče">
                         <StackPanel Orientation="Horizontal">

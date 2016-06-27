@@ -19,8 +19,6 @@ module GameFileSerializer =
 
     let TryLoadFile (fileName: string) =
         try
-            let tryCheckNotNull x msg =
-                 Unchecked.defaultof<_>
             let sett = XmlReaderSettings()
             sett.CloseInput <- true
             let ser = DataContractSerializer(typeof<GameFile.T>)

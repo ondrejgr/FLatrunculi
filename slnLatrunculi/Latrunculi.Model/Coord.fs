@@ -1,5 +1,4 @@
 ﻿namespace Latrunculi.Model
-open System.Runtime.Serialization
 
 module Coord =
     [<StructuralEquality;NoComparison>]
@@ -73,12 +72,8 @@ module Coord =
                 lst ((Error ColumnOutOfRange), false)
 
     [<StructuralEquality;NoComparison>]
-    [<CLIMutable>]
-    [<DataContract>]
     type T = {
-        [<DataMember>]
         Column: ColumnNumber;
-        [<DataMember>]
         Row: RowNumber }
 
     type BoardCorner = T * (T * T)
