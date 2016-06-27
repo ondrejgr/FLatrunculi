@@ -70,6 +70,7 @@
     <Compile Include="PlayerSettings.fs" />
     <Compile Include="GameModel.fs" />
     <Compile Include="PlayerSettingsDto.fs" />
+    <Compile Include="HistoryDto.fs" />
     <Compile Include="GameFile.fs" />
     <Compile Include="GameFileSerializer.fs" />
     <Compile Include="GameController.fs" />

@@ -21,6 +21,7 @@
 #load "PlayerSettings.fs"
 #load "GameModel.fs"
 #load "PlayerSettingsDto.fs"
+#load "HistoryDto.fs"
 #load "GameFile.fs"
 #load "GameFileSerializer.fs"
 #load "GameController.fs"

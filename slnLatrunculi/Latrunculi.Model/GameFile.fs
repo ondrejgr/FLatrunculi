@@ -12,21 +12,21 @@ module GameFile =
     [<DataContract>]
     type T = {
         [<DataMember>]
-        PlayerSettings: PlayerSettingsDto.T }
+        PlayerSettings: PlayerSettingsDto.T
+        [<DataMember>]
+        History: HistoryDto.T }
 
     let tryCheck (x: T) =
         maybe {
             do! tryCheckObject x "GameFile"
-//            do! tryCheckObject x.PlayerSettings "PlayerSettings"
-//            do! tryCheckObject x.GameSettings.WhitePlayer "GameSettings.WhitePlayer"
-//            do! tryCheckObject x.GameSettings.BlackPlayer "GameSettings.BlackPlayer"
-//            do! GameSettings.Player.tryCheck x.GameSettings.WhitePlayer
-//            do! GameSettings.Player.tryCheck x.GameSettings.BlackPlayer
-//            do! tryCheckObject x.GameMoves "GameMoves"
+            do! tryCheckObject x.PlayerSettings "GameFile.PlayerSettings"
+            do! tryCheckObject x.History "GameFile.History"
+            do! tryCheckObject x.History.Moves "GameFile.History.Moves"
             return () }
 
     let create (model: GameModel.T) =
         let result = 
-            {   PlayerSettings = PlayerSettingsDto.fromPlayerSettings model.PlayerSettings }
+            {   PlayerSettings = PlayerSettingsDto.fromPlayerSettings model.PlayerSettings
+                History = HistoryDto.fromHistory model.Board.History }
         result
 

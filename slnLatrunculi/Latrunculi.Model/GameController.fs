@@ -326,31 +326,31 @@ module GameController =
                 do! GameFileSerializer.TrySaveFile fileName file
                 return this }
 
-//        member this.TryApplyMovesLoadedFromFile (file: GameFile.T) =
-//            maybe {
-//                let! controller = this.TryNewGame()
-//                return! Array.fold
-//                    (fun result (move: Move.T) ->
-//                        match result with 
-//                        | Success Rules.GameResult.NoResult ->
-//                            maybe {
-//                                // validate and create board move
-//                                let! color = this.Model.tryGetActiveColor()
-//                                let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color move
-//                                // apply move
-//                                Board.move this.Model.Board boardMove |> ignore
-//                                this.Model.pushToUndoStack boardMove
-//                                this.Model.RaiseHistoryItemAdded <| List.head this.Model.Board.History
-//
-//                                this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
-//                                match this.Model.Result with
-//                                | Rules.NoResult ->
-//                                    do! this.Model.trySwapActiveColor()
-//                                    return! Success this.Model.Result
-//                                | _ -> return! Success this.Model.Result }              
-//                        | Success s -> Success s      
-//                        | Error e -> Error e) 
-//                    (Success Rules.GameResult.NoResult) file.GameMoves }
+        member this.TryApplyMovesLoadedFromFile (moves: Move.T list) =
+            maybe {
+                let! controller = this.TryNewGame()
+                return! Seq.fold
+                    (fun result (move: Move.T) ->
+                        match result with 
+                        | Success Rules.GameResult.NoResult ->
+                            maybe {
+                                // validate and create board move
+                                let! color = this.Model.tryGetActiveColor()
+                                let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color move
+                                // apply move
+                                Board.move this.Model.Board boardMove |> ignore
+                                this.Model.pushToUndoStack boardMove
+                                this.Model.RaiseHistoryItemAdded <| List.head this.Model.Board.History
+
+                                this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
+                                match this.Model.Result with
+                                | Rules.NoResult ->
+                                    do! this.Model.trySwapActiveColor()
+                                    return! Success this.Model.Result
+                                | _ -> return! Success this.Model.Result }              
+                        | Success s -> Success s      
+                        | Error e -> Error e) 
+                    (Success Rules.GameResult.NoResult) moves }
 
         member this.TryLoadGame (fileName: string) =
             let checkGameStatus =
@@ -364,7 +364,8 @@ module GameController =
                         let! newPlayerSettings = PlayerSettingsDto.tryToPlayerSettings file.PlayerSettings
                         this.Model.changePlayerSettings newPlayerSettings |> ignore
 
-//                        let! gameResult = this.TryApplyMovesLoadedFromFile file
+                        let! movesList = MovesDto.tryToMoveList file.History.Moves
+                        let! gameResult = this.TryApplyMovesLoadedFromFile movesList
                         this.Model.RaiseBoardChanged()
 
                         match this.Model.Result with
