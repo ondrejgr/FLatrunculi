@@ -95,6 +95,11 @@
         <Paragraph>Pokud je zatrhnuto políčko Zobrazit na desce, je na desce zobrazen stav po provedení vybraného tahu.</Paragraph>
     </FlowDocument>
 
+    <FlowDocument x:Key="docUndoRedo">
+        <Paragraph Style="{StaticResource title}">Vrátit/opakovat tah</Paragraph>
+        <Paragraph>Během rozehrané hry je možné pomocí příkazu Zpět vrátit provedený tah. Vrácený tah lze také opětovně provést (pokud mezitím nebyl proveden žádný tah).</Paragraph>
+    </FlowDocument>
+
     <FlowDocument x:Key="docPlayerSettings">
         <Paragraph Style="{StaticResource title}">Nastavení hry</Paragraph>
         <Paragraph>Okno Nastavení hry umožňuje zvolit, který hráč bude počítač a který hráč bude lidský.</Paragraph>
