@@ -361,7 +361,7 @@ module GameController =
                         // load file
                         let! file = GameFileSerializer.TryLoadFile fileName
                         // change player settings
-                        let! newPlayerSettings = GameFile.PlayerSettingsDto.tryToPlayerSettings file.PlayerSettings
+                        let! newPlayerSettings = PlayerSettingsDto.tryToPlayerSettings file.PlayerSettings
                         this.Model.changePlayerSettings newPlayerSettings |> ignore
 
 //                        let! gameResult = this.TryApplyMovesLoadedFromFile file
