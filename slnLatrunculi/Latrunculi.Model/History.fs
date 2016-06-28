@@ -13,6 +13,6 @@ module History =
         let result: T = item::history
         result
 
-    let create() =
+    let create =
         let result: T = []
         result

@@ -22,11 +22,12 @@ module GameFile =
             do! tryCheckObject x.PlayerSettings "GameFile.PlayerSettings"
             do! tryCheckObject x.History "GameFile.History"
             do! tryCheckObject x.History.Moves "GameFile.History.Moves"
+            do! tryCheckObject x.History.RedoStack "GameFile.History.RedoStack"
             return () }
 
     let create (model: GameModel.T) =
         let result = 
             {   PlayerSettings = PlayerSettingsDto.fromPlayerSettings model.PlayerSettings
-                History = HistoryDto.fromHistory model.Board.History }
+                History = HistoryDto.fromHistory model.Board.History model.RedoStack }
         result
 

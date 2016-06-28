@@ -7,8 +7,14 @@ module MoveStack =
         | EmptyStack
         | MoveStack of BoardMove.T list
 
-    let create() =
+    let create =
         EmptyStack
+
+    let map (f: BoardMove.T -> 'U) (stack: T) =
+        let empty: 'U list = list.Empty
+        match stack with
+        | EmptyStack -> empty
+        | MoveStack m -> List.map f m
 
     let push (stack: T) (move: BoardMove.T) =
         match stack with
@@ -25,7 +31,7 @@ module MoveStack =
             let move = List.head moves
             match List.length moves with
             | len when len = 1 -> 
-                Success (create(), move)
+                Success (create, move)
             | _ ->
                 Success (MoveStack <| List.tail moves, move)
 

@@ -7,7 +7,7 @@ module Board =
             Array.create (Seq.length Coord.ColumnNumbers) Square.createEmpty)
 
         member val private Squares = sq
-        member val History = History.create() with get, set
+        member val History = History.create with get, set
 
         member this.GetSquare (c: Coord.T) =
             let col = Coord.ColIndex.[c.Column]
@@ -93,7 +93,7 @@ module Board =
 
     let tryInit (board: T) (getInitalSquare: Coord.T -> Square.T) =
         try
-            board.History <- History.create()
+            board.History <- History.create
             Coord.iter (fun c ->
                     board.ChangeSquare c <| getInitalSquare c)
             Success board

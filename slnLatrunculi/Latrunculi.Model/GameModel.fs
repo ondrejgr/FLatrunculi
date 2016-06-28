@@ -16,7 +16,7 @@ module MoveRequest =
         | UndoRequest of BoardMove.T
         | RedoRequest of BoardMove.T
 
-    let create() =
+    let create =
         NoRequest
     let createUndoRequest (move: BoardMove.T) =
         UndoRequest move
@@ -65,9 +65,9 @@ module GameModel =
         member val IsMoveSuggestionComputing = false with get, set
         member val Result = Rules.NoResult with get, set
 
-        member val MoveRequest = MoveRequest.create() with get, set
-        member val UndoStack = MoveStack.create() with get, set
-        member val RedoStack = MoveStack.create() with get, set
+        member val MoveRequest = MoveRequest.create with get, set
+        member val UndoStack = MoveStack.create with get, set
+        member val RedoStack = MoveStack.create with get, set
         
         [<CLIEvent>]
         member this.StatusChanged = statusChangedEvent.Publish
@@ -188,11 +188,11 @@ module GameModel =
             History.getNumberOfMovesWithoutRemoval this.Board.History
 
         member this.clearMoveStacks() =
-            this.UndoStack <- MoveStack.create()
-            this.RedoStack <- MoveStack.create()
+            this.UndoStack <- MoveStack.create
+            this.RedoStack <- MoveStack.create
 
         member this.clearRedoStack() =
-            this.RedoStack <- MoveStack.create()
+            this.RedoStack <- MoveStack.create
 
         member this.pushToUndoStack (move: BoardMove.T) =
             this.UndoStack <- MoveStack.push this.UndoStack move

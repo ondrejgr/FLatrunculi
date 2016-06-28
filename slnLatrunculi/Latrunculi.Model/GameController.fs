@@ -84,7 +84,7 @@ module GameController =
                 return this }
             
         member private this.ReportGameError e =
-            this.Model.MoveRequest <- MoveRequest.create()
+            this.Model.MoveRequest <- MoveRequest.create
             this.Model.setStatus(GameStatus.Paused) |> ignore
             this.Model.RaiseGameErrorEvent(e)
 
@@ -167,10 +167,10 @@ module GameController =
                     match tryProcessMoveRequestAndChangePlayer with
                     | Success e ->
                         // clear request
-                        this.Model.MoveRequest <- MoveRequest.create() 
+                        this.Model.MoveRequest <- MoveRequest.create 
                         return Success e
                     | Error e ->
-                        this.Model.MoveRequest <- MoveRequest.create() 
+                        this.Model.MoveRequest <- MoveRequest.create 
                         return Error e
                 | MoveRequest.NoRequest ->
                     match getPlayerMoveWorkflow with
@@ -366,6 +366,9 @@ module GameController =
 
                         let! movesList = MovesDto.tryToMoveList file.History.Moves
                         let! gameResult = this.TryApplyMovesLoadedFromFile movesList
+                        let! redoStack = RedoStackDto.tryToRedoStack file.History.RedoStack
+                        this.Model.RedoStack <- redoStack
+
                         this.Model.RaiseBoardChanged()
 
                         match this.Model.Result with
