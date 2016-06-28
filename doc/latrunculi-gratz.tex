@@ -375,8 +375,13 @@ Pokud je instance třídy reprezentujícího hráče na tahu typu \texttt{Comput
 
 Použit byl algoritmus \texttt{MiniMax} (viz \cite{kuhr2011}).
 
-\subsection{Modul \texttt{GameFileSerializer}}
-Modul obsahuje funkce pro uložení hry do souboru a její načtení. Data jsou ukládána ve~formátu~XML. Při načítání je prováděna kontrola, zda provedené tahy odpovídají pravidlům.
+\subsection{Modul \texttt{MoveStack}}
+Modul implementuje zásobník, který je použit pro uložení tahů, které mohou být odvolány (Undo) nebo~opakovány (Redo).
+
+\subsection{Modul \texttt{GameFile} a \texttt{GameFileSerializer}}
+Moduly umožňují uživateli uložit hru do souboru na disku. Pro kompletní uložení stavu je~nutno serializovat datové struktury reprezentující nastavení hry, historii tahů a zásobník Redo. Avšak tyto struktury jsou nejprve převedeny z~typů poskytovaných jazykem \emph{F\#} do~jednodušších typů .NET Frameworku (řetězec, číslo, pole).
+
+Data jsou poté ukládána ve~formátu~XML (pomocí DataContractSerializeru). Při načítání je prováděna kontrola, zda provedené tahy odpovídají pravidlům (během načítání jsou tahy prováděny).
 
 \section{Systémové požadavky}
 Pro vývoj i~běh aplikace jsou na počítač kladeny tyto nároky:
