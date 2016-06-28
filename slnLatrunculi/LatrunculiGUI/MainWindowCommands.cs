@@ -154,6 +154,15 @@ namespace Latrunculi.GUI
             }
         }
 
+        static private MainWindowCommand _replay = new MainWindowCommand("_Replay", "Replay", null);
+        static public MainWindowCommand Replay
+        {
+            get
+            {
+                return _replay;
+            }
+        }
+
         static private MainWindowCommand _cancelSuggestMove = new MainWindowCommand("_Zrušit nápovědu tahu", "CancelSuggestMove", null, true);
         static public MainWindowCommand CancelSuggestMove
         {

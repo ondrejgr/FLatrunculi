@@ -69,6 +69,8 @@
     <Compile Include="Player.fs" />
     <Compile Include="PlayerSettings.fs" />
     <Compile Include="GameModel.fs" />
+    <Compile Include="ReplayModel.fs" />
+    <Compile Include="ReplayController.fs" />
     <Compile Include="PlayerSettingsDto.fs" />
     <Compile Include="HistoryDto.fs" />
     <Compile Include="GameFile.fs" />

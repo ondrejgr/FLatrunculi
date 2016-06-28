@@ -696,5 +696,33 @@ namespace Latrunculi.GUI
                 MessageBox.Show(this, "Tah nelze opakovat." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private void Replay_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = ViewModel.IsGameFinished;
+        }
+
+        private void Replay_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            try
+            {
+                if (ViewModel.IsGameFinished)
+                {
+                    ReplayModel.T replayModel = ModelException.TryThrow<ReplayModel.T>(ReplayModel.tryCreate(ViewModel.Model.Board, ViewModel.Model.PlayerSettings));
+                    ReplayController.T controller = ModelException.TryThrow<ReplayController.T>(ReplayController.tryCreate(replayModel));
+                    ReplayWindowViewModel vm = new ReplayWindowViewModel(replayModel);
+
+                    ReplayWindow win = new ReplayWindow(controller, vm);
+                    win.Owner = this;
+                    win.ShowDialog();
+                }
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(this, "Okno přehrávače nelze otevřít." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
 }

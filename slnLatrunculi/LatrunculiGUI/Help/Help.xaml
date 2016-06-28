@@ -100,6 +100,11 @@
         <Paragraph>Během rozehrané hry je možné pomocí příkazu Zpět vrátit provedený tah. Vrácený tah lze také opětovně provést (pokud mezitím nebyl proveden žádný tah).</Paragraph>
     </FlowDocument>
 
+    <FlowDocument x:Key="docReplay">
+        <Paragraph Style="{StaticResource title}">Replay</Paragraph>
+        <Paragraph>Pokud je hra dohrána (skončila remízou nebo vítězstvím), je možné příkazem v nabídce Hra vyvolat okno pro přehrání celé partie.</Paragraph>
+    </FlowDocument>
+
     <FlowDocument x:Key="docPlayerSettings">
         <Paragraph Style="{StaticResource title}">Nastavení hry</Paragraph>
         <Paragraph>Okno Nastavení hry umožňuje zvolit, který hráč bude počítač a který hráč bude lidský.</Paragraph>

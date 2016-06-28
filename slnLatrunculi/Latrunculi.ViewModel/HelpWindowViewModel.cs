@@ -87,6 +87,7 @@ namespace Latrunculi.ViewModel
             Items.Add(new HelpItem("Nápověda tahu", "docSuggestMove"));
             Items.Add(new HelpItem("Historie tahů", "docHistory"));
             Items.Add(new HelpItem("Vrátit/opakovat tah", "docUndoRedo"));
+            Items.Add(new HelpItem("Replay", "docReplay"));
             Items.Add(new HelpItem("Nastavení hry", "docPlayerSettings"));
 
             CurrentItem = Items[0];

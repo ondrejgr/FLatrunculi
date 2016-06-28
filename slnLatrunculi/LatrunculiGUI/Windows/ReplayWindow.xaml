@@ -1,0 +1,109 @@
+﻿<Window x:Class="Latrunculi.GUI.ReplayWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Latrunculi.GUI"
+        xmlns:ctrls="clr-namespace:Latrunculi.GUI.Controls"
+        xmlns:vm="clr-namespace:Latrunculi.ViewModel;assembly=Latrunculi.ViewModel"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResize"
+        Title="Replay" 
+        Height="700" Width="1000"
+        x:Name="win"
+        SizeChanged="win_SizeChanged">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="bvis"/>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Vertical" Grid.RowSpan="2">
+                <ctrls:PlayerControl Content="{Binding WhitePlayer}"/>
+                <ctrls:PiecesCount DataContext="{Binding Board.PiecesCount}"
+                                   Count="{Binding WhitePiecesCount}"
+                                   IsWinning="{Binding IsWhiteWinning}"
+                                   IsLosing="{Binding IsWhiteLosing}"/>
+            </StackPanel>
+            <ctrls:Board x:Name="board"
+                         BoardViewModel="{Binding Board}"
+                         IsActive="False"
+                         Grid.Column="1" Grid.Row="0"/>
+            <Grid Grid.Column="2" Grid.RowSpan="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <ctrls:PlayerControl Content="{Binding BlackPlayer}" Grid.Row="0"/>
+                <ctrls:PiecesCount DataContext="{Binding Board.PiecesCount}" Grid.Row="1"
+                                   Count="{Binding BlackPiecesCount}"
+                                   IsWinning="{Binding IsBlackWinning}"
+                                   IsLosing="{Binding IsBlackLosing}"/>
+                <ctrls:History SelectionChanged="History_SelectionChanged" ItemsSource="{Binding Board.History}" Grid.Row="2"/>
+            </Grid>
+        </Grid>
+
+        <TextBlock Text="{Binding Error}" Visibility="{Binding ErrorExists, Converter={StaticResource bvis}}" FontWeight="Bold" FontSize="36" Background="LightGray" Foreground="Red" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2"/>
+        <TextBlock Text="{Binding Info}" Visibility="{Binding InfoExists, Converter={StaticResource bvis}}" FontWeight="Bold" FontSize="36" Background="LightGray" Foreground="Blue" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2"/>
+
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <ToolBar ToolTipService.ShowOnDisabled="True" ToolTipService.ShowDuration="5">
+                <ToolBar.Resources>
+                    <Style TargetType="Image">
+                        <Style.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.4" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ToolBar.Resources>
+                <Button Command="{x:Static local:MainWindowCommands.Pause}" CommandTarget="{Binding ElementName=win}">
+                    <Button.ToolTip>
+                        <AccessText Text="{Binding Source={x:Static local:MainWindowCommands.Pause}, Path=Text}"/>
+                    </Button.ToolTip>
+                    <Image Height="16" Width="16" Source="{Binding Source={x:Static local:MainWindowCommands.Pause}, Path=ImageSource}"/>
+                </Button>
+                <Button Command="{x:Static local:MainWindowCommands.Resume}" CommandTarget="{Binding ElementName=win}">
+                    <Button.ToolTip>
+                        <AccessText Text="{Binding Source={x:Static local:MainWindowCommands.Resume}, Path=Text}"/>
+                    </Button.ToolTip>
+                    <Image Height="16" Width="16" Source="{Binding Source={x:Static local:MainWindowCommands.Resume}, Path=ImageSource}"/>
+                </Button>
+                <Separator/>
+            </ToolBar>
+            <Slider Grid.Column="1" Margin="10,10,10,10" SmallChange="1" LargeChange="5" TickPlacement="BottomRight" />
+            <StackPanel Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Center">
+                <TextBlock Text="Rychlost" Margin="0,0,5,0"/>
+                <TextBox Text="{Binding Speed, Mode=TwoWay}" MaxLength="5" Width="40"/>
+                <TextBlock Text="ms" Margin="5,0,5,0"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

@@ -62,6 +62,7 @@
     <Compile Include="MoveHistory\MoveHistoryCollection.cs" />
     <Compile Include="MoveHistory\MoveHistoryItem.cs" />
     <Compile Include="PiecesCountViewModel.cs" />
+    <Compile Include="ReplayWindowViewModel.cs" />
     <Compile Include="ViewModelCommon.cs" />
     <Compile Include="HelpWindowViewModel.cs" />
     <Compile Include="MainWindowViewModel.cs" />

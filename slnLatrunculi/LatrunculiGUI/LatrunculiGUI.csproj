@@ -82,6 +82,9 @@
       <DependentUpon>SuggestMoveButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="EnumToBooleanConverter.cs" />
+    <Compile Include="Windows\ReplayWindow.xaml.cs">
+      <DependentUpon>ReplayWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
@@ -98,6 +101,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\SuggestMoveButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\ReplayWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -242,6 +249,9 @@
   <ItemGroup>
     <Resource Include="CommandIcons\Redo.png" />
     <Resource Include="CommandIcons\Undo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="CommandIcons\Replay.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
