@@ -10,6 +10,7 @@ module ReplayModel =
 
         member val Board = board
         member val ActiveColor = None with get, set
+
         member val PlayerSettings = playerSettings
 
         [<CLIEvent>]
@@ -65,6 +66,6 @@ module ReplayModel =
 
     let tryCreate(board: Board.T, playerSettings: PlayerSettings.T): Result<T, Error> =
         maybe {
-            let replayBoard = Board.clone board
+            let! replayBoard = Board.tryClone board
             return T(replayBoard, playerSettings) }
 

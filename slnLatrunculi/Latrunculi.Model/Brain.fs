@@ -65,7 +65,7 @@ module Brain =
             let childColor = Piece.swapColor color
             for move in boardMoves do
                 // apply move to the copy of a board
-                let childBoard = Board.clone board
+                let childBoard = unwrapResultExn <| Board.tryClone board
                 Board.move childBoard move
                 let victory = Rules.checkVictory childBoard 
                 let childPosition = MoveTree.Position.create childBoard color victory
@@ -101,7 +101,7 @@ module Brain =
     let tryGetBestMove (b: Board.T) (color: Piece.Colors) (depth: Depth.T): Async<Result<Move.T, Error>> =
         async {
             try
-                let board = Board.clone b
+                let board = unwrapResultExn <| Board.tryClone b
                 let rootPosition = MoveTree.Position.create board color <| Rules.checkVictory board
                 // create root node
                 let! root = getNodeWithChildren <| MoveTree.createRoot rootPosition

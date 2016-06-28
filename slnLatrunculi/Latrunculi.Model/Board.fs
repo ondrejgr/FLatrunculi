@@ -100,10 +100,12 @@ module Board =
         with
         | _ -> Error UnableToInitializeBoard
 
-    let clone (source: T) =
-        let result = T()
-        result.History <- source.History
-        unwrapResultExn <| tryInit result source.GetSquare
+    let tryClone (source: T) =
+        maybe {
+            let! result = T() |> tryInit <| source.GetSquare
+            result.History <- source.History
+            return result
+        }
 
     let create() =
         T()

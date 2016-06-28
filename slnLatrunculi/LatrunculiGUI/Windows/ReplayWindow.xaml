@@ -46,7 +46,7 @@
                                    IsWinning="{Binding IsWhiteWinning}"
                                    IsLosing="{Binding IsWhiteLosing}"/>
             </StackPanel>
-            <ctrls:Board x:Name="board"
+            <ctrls:Board Margin="0,20,0,0" x:Name="board"
                          BoardViewModel="{Binding Board}"
                          IsActive="False"
                          Grid.Column="1" Grid.Row="0"/>
