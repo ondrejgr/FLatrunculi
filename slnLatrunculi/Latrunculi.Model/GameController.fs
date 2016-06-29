@@ -107,6 +107,7 @@ module GameController =
                             Board.invmove this.Model.Board boardMove |> ignore
                             Board.removeMoveFromHistory this.Model.Board
                             this.Model.RaiseHistoryItemRemoved()
+                            this.Model.MoveRequest <- MoveRequest.create 
                             return ()
                         | MoveRequest.RedoRequest bm ->
                             // redo move gets validated
@@ -115,6 +116,7 @@ module GameController =
                             Board.move this.Model.Board boardMove |> ignore
                             Board.addMoveToHistory this.Model.Board boardMove
                             this.Model.RaiseHistoryItemAdded <| List.head this.Model.Board.History
+                            this.Model.MoveRequest <- MoveRequest.create 
                             return () }
                 maybe {
                     // process undo/redo
@@ -166,7 +168,6 @@ module GameController =
                 match this.Model.MoveRequest with
                 | MoveRequest.UndoRequest _ | MoveRequest.RedoRequest _->
                     let moveProcessResult = tryProcessMoveRequestAndChangePlayer
-                    this.Model.MoveRequest <- MoveRequest.create 
                     return moveProcessResult
                 | MoveRequest.NoRequest ->
                     match getPlayerMoveWorkflow with
