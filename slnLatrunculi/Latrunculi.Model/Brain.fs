@@ -35,13 +35,49 @@ module Brain =
                 | Rules.Draw -> result <- MoveValue.add result -20
             | Rules.NoResult ->
                 // first 2 moves random
-                if List.length board.History < 2 then
-                    result <- MoveValue.add result <| rnd.Next(0, 8)
+//                if List.length board.History < 2 then
+//                    result <- MoveValue.add result <| rnd.Next(0, 8)
                 // eval by number of pieces
                 let ownPieces = Board.whitePiecesCount board
                 let enemyPieces = Board.blackPiecesCount board
 
                 result <- MoveValue.add result ((ownPieces - enemyPieces) * 10)
+
+                let a = seq {
+                            for col in Coord.ColumnNumbers do
+                                let sq = Board.getSquare board <| Coord.createExn col 3 
+                                match Square.containsColor Piece.Colors.White sq with
+                                | true -> yield 1
+                                | false -> yield 0 }
+                let sum = Seq.sum a
+                result <- MoveValue.add result sum
+
+                let a = seq {
+                            for col in Coord.ColumnNumbers do
+                                let sq = Board.getSquare board <| Coord.createExn col 4 
+                                match Square.containsColor Piece.Colors.White sq with
+                                | true -> yield 2
+                                | false -> yield 0 }
+                let sum = Seq.sum a
+                result <- MoveValue.add result sum
+
+                let a = seq {
+                            for col in Coord.ColumnNumbers do
+                                let sq = Board.getSquare board <| Coord.createExn col 3 
+                                match Square.containsColor Piece.Colors.Black sq with
+                                | true -> yield -1
+                                | false -> yield 0 }
+                let sum = Seq.sum a
+                result <- MoveValue.add result sum
+
+                let a = seq {
+                            for col in Coord.ColumnNumbers do
+                                let sq = Board.getSquare board <| Coord.createExn col 4 
+                                match Square.containsColor Piece.Colors.Black sq with
+                                | true -> yield -2
+                                | false -> yield 0 }
+                let sum = Seq.sum a
+                result <- MoveValue.add result sum
             result
         match position.ActivePlayerColor with
         | Piece.Colors.White -> calcValue

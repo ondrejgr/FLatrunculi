@@ -25,9 +25,9 @@ module Player =
 
     let levelToDepth (x: Levels) =
         match x with
-        | Levels.Easy -> Depth.create 1
-        | Levels.Medium -> Depth.create 2
-        | Levels.Hard -> Depth.create 3
+        | Levels.Easy -> Depth.create 2
+        | Levels.Medium -> Depth.create 3
+        | Levels.Hard -> Depth.create 4
 
     [<AbstractClass>]
     type T(name: Name, level: Levels, color: Piece.Colors) =
