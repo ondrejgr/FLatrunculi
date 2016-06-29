@@ -23,6 +23,7 @@ namespace Latrunculi.ViewModel
             Model.BoardChanged -= Model_BoardChanged;
             Model.ActivePlayerChanged -= Model_ActivePlayerChanged;
             Model.StatusChanged -= Model_StatusChanged;
+            Model.ResultChanged -= Model_ResultChanged;
             Model.GameError -= Model_GameError;
             Model.PositionChanged -= Model_PositionChanged;
         }
@@ -32,12 +33,40 @@ namespace Latrunculi.ViewModel
             Model.BoardChanged += Model_BoardChanged;
             Model.ActivePlayerChanged += Model_ActivePlayerChanged;
             Model.StatusChanged += Model_StatusChanged;
+            Model.ResultChanged += Model_ResultChanged;
             Model.GameError += Model_GameError;
             Model.PositionChanged += Model_PositionChanged;
 
             Settings.RefreshFromModel(Model.PlayerSettings);
             Board.Init(Model.Board);
             OnStatusChanged();
+        }
+
+        private void Model_ResultChanged(object sender, EventArgs e)
+        {
+            if (Position == NumberOfMoves)
+            {
+                if (Model.Result.IsGameOverResult)
+                {
+                    Rules.GameOverResult result = ((Rules.GameResult.GameOverResult)Model.Result).Item;
+                    if (result.IsDraw)
+                        Info = "Konec hry - remíza";
+                    else if (result.IsVictory)
+                    {
+                        Rules.Victory vict = ((Rules.GameOverResult.Victory)result).Item;
+                        if (vict.IsBlackWinner)
+                            Info = string.Format("Konec hry - zvítězil {0} (černý)", this.BlackPlayer.Name);
+                        else if (vict.IsWhiteWinner)
+                            Info = string.Format("Konec hry - zvítězil {0} (bílý)", this.WhitePlayer.Name);
+                        else
+                            Info = "Hra skončila bez vítěze - chyba aplikace ??";
+                    }
+                    else
+                        Info = "Hra skončila s neznámým vítězem - chyba aplikace ??";
+                }
+                else
+                    Info = string.Empty;
+            }
         }
 
         private void Model_PositionChanged(object sender, PositionChangedEventArgs e)
@@ -88,29 +117,6 @@ namespace Latrunculi.ViewModel
                 Info = "Pozastaveno";
             else if (IsRunning)
                 Info = string.Empty;
-            else if (IsFinished)
-            {
-                if (Model.Result.IsGameOverResult)
-                {
-                    Rules.GameOverResult result = ((Rules.GameResult.GameOverResult)Model.Result).Item;
-                    if (result.IsDraw)
-                        Info = "Konec hry - remíza";
-                    else if (result.IsVictory)
-                    {
-                        Rules.Victory vict = ((Rules.GameOverResult.Victory)result).Item;
-                        if (vict.IsBlackWinner)
-                            Info = string.Format("Konec hry - zvítězil {0} (černý)", this.BlackPlayer.Name);
-                        else if (vict.IsWhiteWinner)
-                            Info = string.Format("Konec hry - zvítězil {0} (bílý)", this.WhitePlayer.Name);
-                        else
-                            Info = "Hra skončila bez vítěze - chyba aplikace ??";
-                    }
-                    else
-                        Info = "Hra skončila s neznámým vítězem - chyba aplikace ??";
-                }
-                else
-                    Info = "Hra skončila bez výsledku - chyba aplikace ??";
-            }
         }
 
         private int _position;
@@ -135,14 +141,6 @@ namespace Latrunculi.ViewModel
             get
             {
                 return Model.getNumberOfMovesInHistory();
-            }
-        }
-
-        public bool IsFinished
-        {
-            get
-            {
-                return Status.IsFinished;
             }
         }
 

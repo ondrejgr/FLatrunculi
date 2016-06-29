@@ -92,18 +92,18 @@ namespace Latrunculi.GUI
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             e.Handled = true;
-            Dispatcher.Invoke(new Action<int>((id) =>
+            try
             {
-                try
+                if (!ignoreChange)
                 {
-                    if (!ignoreChange)
-                        ModelException.TryThrow<ReplayController.T>(Controller.tryGoToPosition(id));
+                    ViewModel.Position = (int)e.NewValue;
+                    ModelException.TryThrow<ReplayController.T>(Controller.tryGoToPosition((int)e.NewValue));
                 }
-                catch (Exception exc)
-                {
-                    ViewModel.Info = string.Format("Chyba: {0}", ViewModelCommon.ConvertExceptionToShortString(exc));
-                }
-            }), System.Windows.Threading.DispatcherPriority.Background, (int)e.NewValue);
+            }
+            catch (Exception exc)
+            {
+                ViewModel.Info = string.Format("Chyba: {0}", ViewModelCommon.ConvertExceptionToShortString(exc));
+            }
         }
 
         private void Undo_CanExecute(object sender, CanExecuteRoutedEventArgs e)

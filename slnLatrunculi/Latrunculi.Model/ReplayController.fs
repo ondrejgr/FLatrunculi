@@ -16,16 +16,14 @@ module ReplayController =
                 | Some i when i.ID = newId -> Success ()
                 | _ -> Error RequestedHistoryMoveNotFound
             maybe {
-                let! board = Board.trySet this.Model.Board Rules.getInitialBoardSquares
                 let newId = x + 1
 
                 match newId with
                 | newId when newId > this.Model.getNumberOfMovesInHistory() ->
-                    this.Model.RaiseBoardChanged()
-                    this.Model.RaisePositionChangedEvent(x)
-                    return x
+                    return -1
 
                 | newId ->
+                    let! board = Board.trySet this.Model.Board Rules.getInitialBoardSquares
                     let historyItems = List.filter (fun (a: HistoryItem.T) -> a.ID <= newId) this.Model.Board.History
                     do! tryMoveFound newId historyItems
                     do! List.foldBack (fun (item: HistoryItem.T) result ->
@@ -34,12 +32,7 @@ module ReplayController =
                     this.Model.RaiseBoardChanged()
                     this.Model.RaisePositionChangedEvent(newId)
                     this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
-                    match newId with
-                    | newId when newId = this.Model.getNumberOfMovesInHistory() ->
-                        this.Model.setStatus(ReplayStatus.Finished) |> ignore
-                        return newId
-                    | _ ->
-                        return newId }
+                    return newId }
 
         member this.tryDecPosition(x: int) =
             let tryMoveFound (newId: int) (historyItems: HistoryItem.T list) =
@@ -63,6 +56,7 @@ module ReplayController =
                                     Success ()) historyItems (Error RequestedHistoryMoveNotFound) 
                     this.Model.RaiseBoardChanged()
                     this.Model.RaisePositionChangedEvent(newId)
+                    this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
                     return newId }
 
         member private this.TryGetCts() =
@@ -87,7 +81,8 @@ module ReplayController =
                 | Success newId ->
                     match newId with
                     | newId when newId = -1 -> 
-                        this.Model.setStatus ReplayStatus.Finished |> ignore
+                        this.Model.setStatus ReplayStatus.Paused |> ignore
+                        this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
                         return ()
                     | newId -> return! this.RunTimer(newId)
                 | Error e ->
@@ -135,7 +130,6 @@ module ReplayController =
                 | 0 ->
                     this.Model.RaiseBoardChanged()
                     this.Model.setStatus ReplayStatus.Paused |> ignore
-                    this.Model.RaisePositionChangedEvent(id)
                     return this
                 | _ ->
                     let historyItems = List.filter (fun (a: HistoryItem.T) -> a.ID <= id) this.Model.Board.History
@@ -146,7 +140,6 @@ module ReplayController =
 
                     this.Model.RaiseBoardChanged()
                     this.Model.setStatus ReplayStatus.Paused |> ignore
-                    this.Model.RaisePositionChangedEvent(id)
                     this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
                     return this }
 

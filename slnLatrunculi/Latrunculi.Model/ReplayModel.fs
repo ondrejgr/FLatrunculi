@@ -6,7 +6,6 @@ type ReplayStatus =
     | Created
     | Paused
     | Running
-    | Finished
 
 type PositionChangedEventArgs(id: int) =
     inherit EventArgs()
@@ -20,6 +19,7 @@ module ReplayModel =
     type T(board: Board.T, playerSettings: PlayerSettings.T) = 
 
         let statusChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
+        let resultChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let activePlayerChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let boardChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let gameErrorEvent = new Event<GameErrorEventHandler, GameErrorEventArgs>()
@@ -38,6 +38,8 @@ module ReplayModel =
         [<CLIEvent>]
         member this.StatusChanged = statusChangedEvent.Publish
         [<CLIEvent>]
+        member this.ResultChanged = resultChangedEvent.Publish
+        [<CLIEvent>]
         member this.BoardChanged = boardChangedEvent.Publish
         [<CLIEvent>]
         member this.ActivePlayerChanged = activePlayerChangedEvent.Publish
@@ -48,6 +50,9 @@ module ReplayModel =
 
         member private this.OnStatusChanged() =
             statusChangedEvent.Trigger(this, EventArgs.Empty)
+
+        member private this.OnResultChanged() =
+            resultChangedEvent.Trigger(this, EventArgs.Empty)
     
         member private this.OnActivePlayerChanged() =
             activePlayerChangedEvent.Trigger(this, EventArgs.Empty)
@@ -103,6 +108,7 @@ module ReplayModel =
             
         member this.setResult x =
             this.Result <- x
+            this.OnResultChanged()
             this.Result
 
         member this.setInverval x =
