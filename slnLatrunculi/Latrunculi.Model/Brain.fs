@@ -24,25 +24,25 @@ module Brain =
     let evaluatePosition (position: MoveTree.Position.T): MoveValue.T =
         let calcValue =
             let board = position.Board
-            let ownPieces = Board.whitePiecesCount board
-            let enemyPieces = Board.blackPiecesCount board
             let mutable result = MoveValue.getZero
             // eval from white point of view
             match position.Result with
             | Rules.GameOverResult r ->
                 match r with
                 // eval victory
-                | Rules.Victory Rules.WhiteWinner -> result <- MoveValue.getMax
-                | Rules.Victory Rules.BlackWinner -> result <- MoveValue.getMin
+                | Rules.Victory Rules.WhiteWinner -> result <- MoveValue.getValue 1000
+                | Rules.Victory Rules.BlackWinner -> result <- MoveValue.getValue -1000
                 | Rules.Draw -> result <- MoveValue.add result -20
             | Rules.NoResult ->
                 // first 2 moves random
                 if List.length board.History < 2 then
                     result <- MoveValue.add result <| rnd.Next(0, 8)
                 // eval by number of pieces
+                let ownPieces = Board.whitePiecesCount board
+                let enemyPieces = Board.blackPiecesCount board
+
                 result <- MoveValue.add result ((ownPieces - enemyPieces) * 10)
             result
-
         match position.ActivePlayerColor with
         | Piece.Colors.White -> calcValue
         | Piece.Colors.Black -> MoveValue.getInvValue <| calcValue
