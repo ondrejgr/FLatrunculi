@@ -69,7 +69,7 @@ module Brain =
                 let childBoard = unwrapResultExn <| Board.tryClone board
                 Board.move childBoard move
                 let victory = Rules.checkVictory childBoard 
-                let childPosition = MoveTree.Position.create childBoard color victory
+                let childPosition = MoveTree.Position.create childBoard childColor victory
                 let child = MoveTree.createLeaf childPosition
                 // add child to node      
                 result <- match result with
@@ -79,25 +79,33 @@ module Brain =
                                 MoveTree.getNodeWithChildAdded result child
             return result }
 
-    let rec minimax (depth: Depth.T) (n: MoveTree.T) (searchType: SearchType.T): Async<MoveValue.T> =
+    let rec minimax (depth: Depth.T) (a: MoveValue.T) (b: MoveValue.T) (n: MoveTree.T) (searchType: SearchType.T): Async<MoveValue.T> =
         async {
             if (Depth.isZero depth) || (MoveTree.isGameOverNode n)
                 then return evaluatePosition <| MoveTree.getPosition n
             else
+                let mutable alpha = a
+                let mutable beta = b
                 let! node = getNodeWithChildren n 
                 match searchType with
                     | SearchType.Maximizing color ->
-                        let mutable bestValue = MoveValue.getMin
+                        let mutable v = MoveValue.getMin
                         for child in MoveTree.getChildren node do
-                            let! v = minimax (Depth.dec depth) child (SearchType.swap searchType)
-                            bestValue <- max bestValue v
-                        return bestValue
+                            let! result = minimax (Depth.dec depth) alpha beta child (SearchType.swap searchType)
+                            v <- max v result
+                            alpha <- max alpha v
+                            if beta <= alpha then
+                                return v
+                        return v
                     | SearchType.Minimizing color ->
-                        let mutable bestValue = MoveValue.getMax
+                        let mutable v = MoveValue.getMax
                         for child in MoveTree.getChildren node do
-                            let! v = minimax (Depth.dec depth) child (SearchType.swap searchType)
-                            bestValue <- min bestValue v
-                        return bestValue }
+                            let! result = minimax (Depth.dec depth) alpha beta child (SearchType.swap searchType)
+                            v <- min v result
+                            beta <- min beta v
+                            if beta <= alpha then
+                                return v
+                        return v }
 
     let tryGetBestMove (b: Board.T) (color: Piece.Colors) (depth: Depth.T): Async<Result<Move.T, Error>> =
         async {
@@ -113,7 +121,7 @@ module Brain =
                 for data in MoveTree.getRootNodeChildren root do
                     let move = fst data
                     let child = snd data
-                    let! value = minimax (Depth.dec depth) child <| SearchType.createMaximizing color
+                    let! value = minimax (Depth.dec depth) MoveValue.getMin MoveValue.getMax child <| SearchType.createMaximizing color
                     if value > bestValue then
                         bestValue <- value
                         bestMove <- Some move
