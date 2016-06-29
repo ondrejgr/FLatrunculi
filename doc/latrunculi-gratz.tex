@@ -375,6 +375,9 @@ Pokud je instance třídy reprezentujícího hráče na tahu typu \texttt{Comput
 
 Použit byl algoritmus \texttt{MiniMax} (viz \cite{kuhr2011}).
 
+Ohodnocovací funkce bere v~úvahu množství figurek (čím větší rozdíl v~množství soupeřových a~vlastních figurek, tím lepší).
+Dále se~jako pozitivní bere opuštění startovních políček.
+
 \subsection{Modul \texttt{MoveStack}}
 Modul implementuje zásobník, který je použit pro uložení tahů, které mohou být odvolány (Undo) nebo~opakovány (Redo).
 
