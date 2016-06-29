@@ -65,31 +65,29 @@ module Board =
     let tryGetSquare (board: T) coord =
         Success (getSquare board coord)
 
-    let move (board: T) (move: BoardMove.T) =
-        let addMoveToHistory =
-            let id = 1 + List.length board.History
-            let item = HistoryItem.create id move
-            board.History <- History.getHistoryWithNewItem board.History item
+    let addMoveToHistory (board: T) (move: BoardMove.T) =
+        let id = 1 + List.length board.History
+        let item = HistoryItem.create id move
+        board.History <- History.getHistoryWithNewItem board.History item
 
+    let removeMoveFromHistory (board: T) =
+        board.History <- match List.length board.History with
+                            | l when l > 0 -> List.tail board.History
+                            | _ -> board.History
+
+    let move (board: T) (move: BoardMove.T) =
         let m = move.Move 
         board.ChangeSquare m.Source m.NewSourceSquare
         board.ChangeSquare m.Target m.NewTargetSquare
         List.iter (fun (x: RemovedPiece.T) ->
                     board.ChangeSquare x.Coord Square.createEmpty) move.RemovedPieces
-        addMoveToHistory
 
     let invmove (board: T) (move: BoardMove.T) =
-        let removeMoveFromHistory =
-            board.History <- match List.length board.History with
-                             | l when l > 0 -> List.tail board.History
-                             | _ -> board.History
-            
         let m = move.Move
         board.ChangeSquare m.Source m.NewTargetSquare
         board.ChangeSquare m.Target m.NewSourceSquare
         List.iter (fun (x: RemovedPiece.T) ->
                     board.ChangeSquare x.Coord (Square.createWithPiece x.Piece)) move.RemovedPieces
-        removeMoveFromHistory
 
     let trySet (board: T) (getInitalSquare: Coord.T -> Square.T) =
         try

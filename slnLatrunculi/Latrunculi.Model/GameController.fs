@@ -5,7 +5,6 @@ open System.Threading
 [<StructuralEquality;NoComparison>]
 type GameLoopCycleResult =
     | Continue
-    | Pause
     | Finished
 
 [<StructuralEquality;NoComparison>]
@@ -106,6 +105,7 @@ module GameController =
                         | MoveRequest.NoRequest -> return! Error NoMoveRequestExists
                         | MoveRequest.UndoRequest boardMove ->
                             Board.invmove this.Model.Board boardMove |> ignore
+                            Board.removeMoveFromHistory this.Model.Board
                             this.Model.RaiseHistoryItemRemoved()
                             return ()
                         | MoveRequest.RedoRequest bm ->
@@ -113,6 +113,7 @@ module GameController =
                             let! color = this.Model.tryGetActiveColor()
                             let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color bm.Move
                             Board.move this.Model.Board boardMove |> ignore
+                            Board.addMoveToHistory this.Model.Board boardMove
                             this.Model.RaiseHistoryItemAdded <| List.head this.Model.Board.History
                             return () }
                 maybe {
@@ -123,18 +124,19 @@ module GameController =
 
                     // check game over
                     this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
+                    do! this.Model.trySwapActiveColor()
                     match this.Model.Result with
                     | Rules.GameOverResult _ ->
                         return Finished
                     | Rules.NoResult ->
-                        // continue
-                        do! this.Model.trySwapActiveColor()
-                        return Pause }
+                        let! controller = this.TryPause()
+                        return Continue }
 
             let tryApplyBoardMoveAndChangePlayer (boardMove: BoardMove.T) =
                 maybe {
                     // apply move
                     Board.move this.Model.Board boardMove |> ignore
+                    Board.addMoveToHistory this.Model.Board boardMove
 
                     // update stack
                     this.Model.clearRedoStack()
@@ -146,12 +148,11 @@ module GameController =
 
                     // check game over
                     this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
+                    do! this.Model.trySwapActiveColor()
                     match this.Model.Result with
                     | Rules.GameOverResult _ ->
                         return Finished
                     | Rules.NoResult ->
-                        // continue
-                        do! this.Model.trySwapActiveColor()
                         return Continue }
 
             let tryApplyMoveAndChangePlayer move =
@@ -164,14 +165,9 @@ module GameController =
             async {
                 match this.Model.MoveRequest with
                 | MoveRequest.UndoRequest _ | MoveRequest.RedoRequest _->
-                    match tryProcessMoveRequestAndChangePlayer with
-                    | Success e ->
-                        // clear request
-                        this.Model.MoveRequest <- MoveRequest.create 
-                        return Success e
-                    | Error e ->
-                        this.Model.MoveRequest <- MoveRequest.create 
-                        return Error e
+                    let moveProcessResult = tryProcessMoveRequestAndChangePlayer
+                    this.Model.MoveRequest <- MoveRequest.create 
+                    return moveProcessResult
                 | MoveRequest.NoRequest ->
                     match getPlayerMoveWorkflow with
                     | Success getPlayerMove ->
@@ -194,10 +190,8 @@ module GameController =
                 match a with
                 | Success result ->
                     match result with
-                    | Continue -> return! this.GameLoop()
-                    | Pause -> 
-                        this.Model.setStatus(GameStatus.Paused) |> ignore
-                        return ()
+                    | Continue -> 
+                        return! this.GameLoop()
                     | Finished -> 
                         this.Model.setStatus(GameStatus.Finished) |> ignore
                         return ()
@@ -339,15 +333,13 @@ module GameController =
                                 let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color move
                                 // apply move
                                 Board.move this.Model.Board boardMove |> ignore
+                                Board.addMoveToHistory this.Model.Board boardMove
                                 this.Model.pushToUndoStack boardMove
                                 this.Model.RaiseHistoryItemAdded <| List.head this.Model.Board.History
 
                                 this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
-                                match this.Model.Result with
-                                | Rules.NoResult ->
-                                    do! this.Model.trySwapActiveColor()
-                                    return! Success this.Model.Result
-                                | _ -> return! Success this.Model.Result }              
+                                do! this.Model.trySwapActiveColor()
+                                return! Success this.Model.Result }              
                         | Success s -> Success s      
                         | Error e -> Error e) 
                     (Success Rules.GameResult.NoResult) moves }
@@ -371,7 +363,7 @@ module GameController =
 
                         this.Model.RaiseBoardChanged()
 
-                        match this.Model.Result with
+                        match gameResult with
                         | Rules.GameOverResult _ ->
                             this.Model.setStatus(GameStatus.Finished) |> ignore
                             return this
