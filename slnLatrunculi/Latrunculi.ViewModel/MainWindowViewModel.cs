@@ -61,6 +61,7 @@ namespace Latrunculi.ViewModel
         private void Model_ComputerPlayerThinking(object sender, EventArgs e)
         {
             StatusBarText = string.Format("Počítačový hráč \"{0}\" přemýšlí…", ActivePlayerName);
+            OnPropertyChanged("IsGameWaitingForHumanPlayerMove");
         }
 
         private void Model_HistoryCleared(object sender, EventArgs e)
@@ -200,6 +201,7 @@ namespace Latrunculi.ViewModel
         private void OnActivePlayerChanged()
         {
             OnPropertyChanged("ActivePlayerName");
+            OnPropertyChanged("IsGameWaitingForHumanPlayerMove");
             ClearBoardIndicationsAndSelection();
             WhitePlayer.IsActive = Model.isWhitePlayerActive;
             BlackPlayer.IsActive = Model.isBlackPlayerActive;

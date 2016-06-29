@@ -31,11 +31,14 @@ module GameController =
 
         member private this.GetHumanMoveFromUI() =
             async {
+                use! cnl = Async.OnCancel(fun () -> this.Model.setStatus(GameStatus.Paused) |> ignore)
+
                 let request = HumanSelectedMove.create()
                 this.humanSelectedMove <- Some request
 
                 this.Model.setStatus(GameStatus.WaitingForHumanPlayerMove) |> ignore
                 let! move = Async.AwaitEvent(request.HumanMoveSelected)
+                this.Model.setStatus(GameStatus.Running) |> ignore
                 return move.Move }
 
         member this.TrySetSelectedMove move =

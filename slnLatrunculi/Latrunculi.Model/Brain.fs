@@ -90,21 +90,29 @@ module Brain =
                 match searchType with
                     | SearchType.Maximizing color ->
                         let mutable v = MoveValue.getMin
+                        let mutable skip = false
                         for child in MoveTree.getChildren node do
-                            let! result = minimax (Depth.dec depth) alpha beta child (SearchType.swap searchType)
-                            v <- max v result
-                            alpha <- max alpha v
-                            if beta <= alpha then
-                                return v
+                            match skip with
+                            | false ->
+                                let! result = minimax (Depth.dec depth) alpha beta child (SearchType.swap searchType)
+                                v <- max v result
+                                alpha <- max alpha v
+                                if beta <= alpha then
+                                    skip <- true
+                            | true -> ()
                         return v
                     | SearchType.Minimizing color ->
                         let mutable v = MoveValue.getMax
+                        let mutable skip = false
                         for child in MoveTree.getChildren node do
-                            let! result = minimax (Depth.dec depth) alpha beta child (SearchType.swap searchType)
-                            v <- min v result
-                            beta <- min beta v
-                            if beta <= alpha then
-                                return v
+                            match skip with
+                            | false ->
+                                let! result = minimax (Depth.dec depth) alpha beta child (SearchType.swap searchType)
+                                v <- min v result
+                                beta <- min beta v
+                                if beta <= alpha then
+                                    skip <- true
+                            | true -> ()
                         return v }
 
     let tryGetBestMove (b: Board.T) (color: Piece.Colors) (depth: Depth.T): Async<Result<Move.T, Error>> =
