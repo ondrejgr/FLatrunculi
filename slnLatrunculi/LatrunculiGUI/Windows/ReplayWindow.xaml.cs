@@ -32,10 +32,24 @@ namespace Latrunculi.GUI
             Controller = controller;
 
             InitializeComponent();
+
+            ViewModel.Model.PositionChanged += Model_PositionChanged;
+
             Dispatcher.BeginInvoke(new Action(() =>
                 {
                     ModelException.TryThrow<ReplayController.T>(Controller.tryGoToPosition(0));
                 }), System.Windows.Threading.DispatcherPriority.Background);
+        }
+
+        private bool ignoreChange = false;
+        private void Model_PositionChanged(object sender, Model.PositionChangedEventArgs e)
+        {
+            Dispatcher.Invoke(new Action<int>((id) =>
+            {
+                ignoreChange = true;
+                slider.Value = id;
+                ignoreChange = false;
+            }), System.Windows.Threading.DispatcherPriority.Input, e.ID);
         }
 
         private Latrunculi.Controller.ReplayController.T _controller;
@@ -78,15 +92,18 @@ namespace Latrunculi.GUI
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             e.Handled = true;
-            int id = (int)e.NewValue;
-            try
+            Dispatcher.Invoke(new Action<int>((id) =>
             {
-                ModelException.TryThrow<ReplayController.T>(Controller.tryGoToPosition(id));
-            }
-            catch (Exception exc)
-            {
-                ViewModel.Info = string.Format("Chyba: {0}", ViewModelCommon.ConvertExceptionToShortString(exc));
-            }
+                try
+                {
+                    if (!ignoreChange)
+                        ModelException.TryThrow<ReplayController.T>(Controller.tryGoToPosition(id));
+                }
+                catch (Exception exc)
+                {
+                    ViewModel.Info = string.Format("Chyba: {0}", ViewModelCommon.ConvertExceptionToShortString(exc));
+                }
+            }), System.Windows.Threading.DispatcherPriority.Background, (int)e.NewValue);
         }
 
         private void Undo_CanExecute(object sender, CanExecuteRoutedEventArgs e)
