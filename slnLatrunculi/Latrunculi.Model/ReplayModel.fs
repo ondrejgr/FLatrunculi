@@ -1,27 +1,65 @@
 ﻿namespace Latrunculi.Model
 open System
 
+[<StructuralEquality;NoComparison>]
+type ReplayStatus =
+    | Created
+    | Paused
+    | Running
+    | Finished
+
+type PositionChangedEventArgs(id: int) =
+    inherit EventArgs()
+    member val ID = id
+
+type PositionChangedEventHandler = delegate of obj * PositionChangedEventArgs -> unit
+
+
 module ReplayModel =
 
     type T(board: Board.T, playerSettings: PlayerSettings.T) = 
 
+        let statusChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let activePlayerChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let boardChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
+        let gameErrorEvent = new Event<GameErrorEventHandler, GameErrorEventArgs>()
+        let positionChangedEvent = new Event<PositionChangedEventHandler, PositionChangedEventArgs>()
 
         member val Board = board
         member val ActiveColor = None with get, set
 
         member val PlayerSettings = playerSettings
 
+        member val Status = Created with get, set
+        member val Result = Rules.NoResult with get, set
+
+        member val Interval = 1000.0 with get, set
+
+        [<CLIEvent>]
+        member this.StatusChanged = statusChangedEvent.Publish
         [<CLIEvent>]
         member this.BoardChanged = boardChangedEvent.Publish
         [<CLIEvent>]
         member this.ActivePlayerChanged = activePlayerChangedEvent.Publish
+        [<CLIEvent>]
+        member this.GameError = gameErrorEvent.Publish
+        [<CLIEvent>]
+        member this.PositionChanged = positionChangedEvent.Publish
 
+        member private this.OnStatusChanged() =
+            statusChangedEvent.Trigger(this, EventArgs.Empty)
+    
         member private this.OnActivePlayerChanged() =
             activePlayerChangedEvent.Trigger(this, EventArgs.Empty)
+
         member this.RaiseBoardChanged() =
             boardChangedEvent.Trigger(this, EventArgs.Empty)
+
+        member this.RaiseGameErrorEvent(error) =
+            gameErrorEvent.Trigger(this, GameErrorEventArgs(error))
+
+        member this.RaisePositionChangedEvent(id) =
+            positionChangedEvent.Trigger(this, PositionChangedEventArgs(id))
 
         member this.isWhitePlayerActive =
             match this.tryGetActivePlayer() with
@@ -62,7 +100,23 @@ module ReplayModel =
                                                 | Piece.Colors.White -> Some Piece.Colors.Black)
                 Success ()
             | None -> Error NoPlayerOnMove
+            
+        member this.setResult x =
+            this.Result <- x
+            this.Result
 
+        member this.setInverval x =
+            this.Interval <- x
+            this.Interval
+
+        member this.setStatus x =
+            this.Status <- x
+            this.OnStatusChanged()
+            this.Status
+
+
+        member this.getNumberOfMovesInHistory() =
+            History.getNumberOfMoves this.Board.History
 
     let tryCreate(board: Board.T, playerSettings: PlayerSettings.T): Result<T, Error> =
         maybe {

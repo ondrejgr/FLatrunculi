@@ -1,4 +1,5 @@
-﻿using Latrunculi.ViewModel;
+﻿using Latrunculi.Controller;
+using Latrunculi.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,9 +28,14 @@ namespace Latrunculi.GUI
 
         public ReplayWindow(Latrunculi.Controller.ReplayController.T controller, ReplayWindowViewModel viewModel)
         {
-            InitializeComponent();
             DataContext = viewModel;
             Controller = controller;
+
+            InitializeComponent();
+            Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    ModelException.TryThrow<ReplayController.T>(Controller.tryGoToPosition(0));
+                }), System.Windows.Threading.DispatcherPriority.Background);
         }
 
         private Latrunculi.Controller.ReplayController.T _controller;
@@ -53,11 +59,6 @@ namespace Latrunculi.GUI
             }
         }
                 
-        private void History_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
         private void win_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             e.Handled = true;
@@ -72,6 +73,118 @@ namespace Latrunculi.GUI
                 if (board.SquareSize != width)
                     board.SquareSize = width;
             }
+        }
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            e.Handled = true;
+            int id = (int)e.NewValue;
+            try
+            {
+                ModelException.TryThrow<ReplayController.T>(Controller.tryGoToPosition(id));
+            }
+            catch (Exception exc)
+            {
+                ViewModel.Info = string.Format("Chyba: {0}", ViewModelCommon.ConvertExceptionToShortString(exc));
+            }
+        }
+
+        private void Undo_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = !ViewModel.IsCreated && (ViewModel.Position > 0);
+        }
+
+        private void Undo_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (!ViewModel.IsCreated && (ViewModel.Position > 0))
+            {
+                try
+                {
+                    ModelException.TryThrow<int>(Controller.tryDecPosition(ViewModel.Position));
+                }
+                catch (Exception exc)
+                {
+                    ViewModel.Info = string.Format("Chyba: {0}", ViewModelCommon.ConvertExceptionToShortString(exc));
+                }
+            }
+        }
+
+        private void Redo_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = !ViewModel.IsCreated && (ViewModel.Position < ViewModel.NumberOfMoves);
+        }
+
+        private void Redo_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (!ViewModel.IsCreated && (ViewModel.Position < ViewModel.NumberOfMoves))
+            {
+                try
+                {
+                    ModelException.TryThrow<int>(Controller.tryIncPosition(ViewModel.Position));
+                }
+                catch (Exception exc)
+                {
+                    ViewModel.Info = string.Format("Chyba: {0}", ViewModelCommon.ConvertExceptionToShortString(exc));
+                }
+            }
+        }
+
+        private void Pause_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = !ViewModel.IsCreated && ViewModel.IsRunning;
+        }
+
+        private void Pause_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                if (!ViewModel.IsCreated && ViewModel.IsRunning)
+                {
+                    ModelException.TryThrow<ReplayController.T>(Controller.tryPause());
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(this, "Nelze pozastavit replay kvůli chybě." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void Resume_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = ViewModel.IsPaused || ViewModel.IsCreated;
+        }
+
+        private void Resume_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                if (ViewModel.IsPaused || ViewModel.IsCreated)
+                {
+                    ModelException.TryThrow<ReplayController.T>(Controller.tryResume(ViewModel.Position));
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(this, "Nelze spustit replay kvůli chybě." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (MainWindowCommands.Pause.CanExecute(null, this))
+                MainWindowCommands.Pause.Execute(null, this);
+        }
+
+        private void win_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (MainWindowCommands.Pause.CanExecute(null, this))
+                MainWindowCommands.Pause.Execute(null, this);
         }
     }
 }

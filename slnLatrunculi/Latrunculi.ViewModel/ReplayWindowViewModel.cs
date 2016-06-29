@@ -22,14 +22,32 @@ namespace Latrunculi.ViewModel
         {
             Model.BoardChanged -= Model_BoardChanged;
             Model.ActivePlayerChanged -= Model_ActivePlayerChanged;
+            Model.StatusChanged -= Model_StatusChanged;
+            Model.GameError -= Model_GameError;
+            Model.PositionChanged -= Model_PositionChanged;
         }
 
         private void InitModel()
         {
             Model.BoardChanged += Model_BoardChanged;
             Model.ActivePlayerChanged += Model_ActivePlayerChanged;
+            Model.StatusChanged += Model_StatusChanged;
+            Model.GameError += Model_GameError;
+            Model.PositionChanged += Model_PositionChanged;
+
             Settings.RefreshFromModel(Model.PlayerSettings);
             Board.Init(Model.Board);
+            OnStatusChanged();
+        }
+
+        private void Model_PositionChanged(object sender, PositionChangedEventArgs e)
+        {
+            Position = e.ID;
+        }
+
+        private void Model_GameError(object sender, GameErrorEventArgs e)
+        {
+            Info = string.Format("Chyba: {0}", ErrorMessages.toString(e.Error));
         }
 
         private void Model_BoardChanged(object sender, EventArgs e)
@@ -43,12 +61,121 @@ namespace Latrunculi.ViewModel
             OnActivePlayerChanged();
         }
 
+        private void Model_StatusChanged(object sender, EventArgs e)
+        {
+            OnStatusChanged();
+        }
+
         private void OnActivePlayerChanged()
         {
             OnPropertyChanged("ActivePlayerName");
             WhitePlayer.IsActive = Model.isWhitePlayerActive;
             BlackPlayer.IsActive = Model.isBlackPlayerActive;
             Application.Current.Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
+        }
+
+        private void OnStatusChanged()
+        {
+            OnPropertyChanged("Status");
+            OnPropertyChanged("IsCreated");
+            OnPropertyChanged("IsPaused");
+            OnPropertyChanged("IsRunning");
+            OnPropertyChanged("IsFinished");
+
+            if (IsCreated)
+                Info = string.Empty;
+            else if (IsPaused)
+                Info = "Pozastaveno";
+            else if (IsRunning)
+                Info = string.Empty;
+            else if (IsFinished)
+            {
+                if (Model.Result.IsGameOverResult)
+                {
+                    Rules.GameOverResult result = ((Rules.GameResult.GameOverResult)Model.Result).Item;
+                    if (result.IsDraw)
+                        Info = "Konec hry - remíza";
+                    else if (result.IsVictory)
+                    {
+                        Rules.Victory vict = ((Rules.GameOverResult.Victory)result).Item;
+                        if (vict.IsBlackWinner)
+                            Info = string.Format("Konec hry - zvítězil {0} (černý)", this.BlackPlayer.Name);
+                        else if (vict.IsWhiteWinner)
+                            Info = string.Format("Konec hry - zvítězil {0} (bílý)", this.WhitePlayer.Name);
+                        else
+                            Info = "Hra skončila bez vítěze - chyba aplikace ??";
+                    }
+                    else
+                        Info = "Hra skončila s neznámým vítězem - chyba aplikace ??";
+                }
+                else
+                    Info = "Hra skončila bez výsledku - chyba aplikace ??";
+            }
+        }
+
+        private int _position;
+        public int Position
+        {
+            get
+            {
+                return _position;
+            }
+            set
+            {
+                if (value <= NumberOfMoves)
+                {
+                    _position = value;
+                    OnPropertyChanged("Position");
+                }
+            }
+        }
+
+        public int NumberOfMoves
+        {
+            get
+            {
+                return Model.getNumberOfMovesInHistory();
+            }
+        }
+
+        public bool IsFinished
+        {
+            get
+            {
+                return Status.IsFinished;
+            }
+        }
+
+        public bool IsCreated
+        {
+            get
+            {
+                return Status.IsCreated;
+            }
+        }
+
+        public bool IsPaused
+        {
+            get
+            {
+                return Status.IsPaused;
+            }
+        }
+
+        public bool IsRunning
+        {
+            get
+            {
+                return Status.IsRunning;
+            }
+        }
+
+        public Model.ReplayStatus Status
+        {
+            get
+            {
+                return Model.Status;
+            }
         }
 
         public int _speed = 1000;
@@ -64,6 +191,8 @@ namespace Latrunculi.ViewModel
                 {
                     _speed = value;
                     OnPropertyChanged("Speed");
+                    if (Model != null)
+                        Model.setInverval(value);
                 }
             }
         }

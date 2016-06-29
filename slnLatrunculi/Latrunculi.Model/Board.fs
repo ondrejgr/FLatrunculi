@@ -91,6 +91,14 @@ module Board =
                     board.ChangeSquare x.Coord (Square.createWithPiece x.Piece)) move.RemovedPieces
         removeMoveFromHistory
 
+    let trySet (board: T) (getInitalSquare: Coord.T -> Square.T) =
+        try
+            Coord.iter (fun c ->
+                    board.ChangeSquare c <| getInitalSquare c)
+            Success board
+        with
+        | _ -> Error UnableToInitializeBoard
+
     let tryInit (board: T) (getInitalSquare: Coord.T -> Square.T) =
         try
             board.History <- History.create

@@ -12,8 +12,16 @@
         Title="Replay" 
         Height="700" Width="1000"
         x:Name="win"
+        Closing="win_Closing"
         SizeChanged="win_SizeChanged">
 
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static local:MainWindowCommands.Undo}" CanExecute="Undo_CanExecute" Executed="Undo_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindowCommands.Redo}" CanExecute="Redo_CanExecute" Executed="Redo_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindowCommands.Pause}" CanExecute="Pause_CanExecute" Executed="Pause_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindowCommands.Resume}" CanExecute="Resume_CanExecute" Executed="Resume_Executed"/>
+    </Window.CommandBindings>
+    
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="bvis"/>
     </Window.Resources>
@@ -23,6 +31,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -61,17 +70,16 @@
                                    Count="{Binding BlackPiecesCount}"
                                    IsWinning="{Binding IsBlackWinning}"
                                    IsLosing="{Binding IsBlackLosing}"/>
-                <ctrls:History SelectionChanged="History_SelectionChanged" ItemsSource="{Binding Board.History}" Grid.Row="2"/>
             </Grid>
         </Grid>
 
-        <TextBlock Text="{Binding Error}" Visibility="{Binding ErrorExists, Converter={StaticResource bvis}}" FontWeight="Bold" FontSize="36" Background="LightGray" Foreground="Red" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2"/>
-        <TextBlock Text="{Binding Info}" Visibility="{Binding InfoExists, Converter={StaticResource bvis}}" FontWeight="Bold" FontSize="36" Background="LightGray" Foreground="Blue" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2"/>
+        <TextBlock Grid.Row="3" Text="{Binding Info}" Visibility="{Binding InfoExists, Converter={StaticResource bvis}}" FontWeight="Bold" FontSize="36" Background="LightGray" Foreground="Blue" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
-        <Grid Grid.Row="3">
+        <Grid Grid.Row="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <ToolBar ToolTipService.ShowOnDisabled="True" ToolTipService.ShowDuration="5">
@@ -97,11 +105,28 @@
                     <Image Height="16" Width="16" Source="{Binding Source={x:Static local:MainWindowCommands.Resume}, Path=ImageSource}"/>
                 </Button>
                 <Separator/>
+                <Button Command="{x:Static local:MainWindowCommands.Undo}" CommandTarget="{Binding ElementName=win}">
+                    <Button.ToolTip>
+                        <AccessText Text="{Binding Source={x:Static local:MainWindowCommands.Undo}, Path=Text}"/>
+                    </Button.ToolTip>
+                    <Image Height="16" Width="16" Source="{Binding Source={x:Static local:MainWindowCommands.Undo}, Path=ImageSource}"/>
+                </Button>
+                <Button Command="{x:Static local:MainWindowCommands.Redo}" CommandTarget="{Binding ElementName=win}">
+                    <Button.ToolTip>
+                        <AccessText Text="{Binding Source={x:Static local:MainWindowCommands.Redo}, Path=Text}"/>
+                    </Button.ToolTip>
+                    <Image Height="16" Width="16" Source="{Binding Source={x:Static local:MainWindowCommands.Redo}, Path=ImageSource}"/>
+                </Button>
             </ToolBar>
-            <Slider Grid.Column="1" Margin="10,10,10,10" SmallChange="1" LargeChange="5" TickPlacement="BottomRight" />
-            <StackPanel Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Center">
+            <Slider x:Name="slider" Grid.Column="1" Margin="10,10,10,10" SmallChange="1" LargeChange="5" Minimum="0" Value="{Binding Position,Mode=TwoWay}" ValueChanged="Slider_ValueChanged" Maximum="{Binding NumberOfMoves}" TickPlacement="BottomRight" />
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="{Binding Position}" Margin="2,0,5,0"/>
+                <TextBlock Text="/"/>
+                <TextBlock Text="{Binding NumberOfMoves}" Margin="0,0,2,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Grid.Column="3" VerticalAlignment="Center">
                 <TextBlock Text="Rychlost" Margin="0,0,5,0"/>
-                <TextBox Text="{Binding Speed, Mode=TwoWay}" MaxLength="5" Width="40"/>
+                <TextBox Text="{Binding Speed, Mode=TwoWay}" MaxLength="5" Width="40" TextChanged="TextBox_TextChanged"/>
                 <TextBlock Text="ms" Margin="5,0,5,0"/>
             </StackPanel>
         </Grid>
