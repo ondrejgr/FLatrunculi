@@ -41,16 +41,6 @@ module Brain =
 
                 result <- MoveValue.add result ((ownPieces - enemyPieces) * 10)
 
-                match Board.getSquare board <| Coord.createFromStringExn "D3" with
-                | s when Square.containsColor Piece.Colors.White s -> 
-                    result <- MoveValue.add result 150
-                | _ -> ()
-
-                match Board.getSquare board <| Coord.createFromStringExn "D5" with
-                | s when Square.containsColor Piece.Colors.Black s -> 
-                    result <- MoveValue.add result -150
-                | _ -> ()
-
         match position.ActivePlayerColor with
         | Piece.Colors.Black as color -> 
             result <- MoveValue.getInvValue <| result
@@ -72,24 +62,24 @@ module Brain =
 
         // set color after move
         let childColor = Piece.swapColor color
-        for move in boardMoves do
-            // apply move
-            Board.move board move
-            Board.addMoveToHistory board move
-            let victory = Rules.checkVictory board 
-            // create child position
-            let childPosition = MoveTree.Position.create (unwrapResultExn <| Board.tryClone board) childColor victory
-            let child = MoveTree.createLeaf childPosition
-            // revert move
-            Board.invmove board move
-            Board.removeMoveFromHistory board
-            // add child to node      
-            result <- match result with
-                        | MoveTree.RootNode _ ->
-                            MoveTree.getRootNodeWithChildAdded result child move.Move                         
-                        | MoveTree.LeafNode _ | MoveTree.InnerNode _ -> 
-                            MoveTree.getNodeWithChildAdded result child
-        result
+        List.fold (fun result (move: BoardMove.T) ->
+                        // apply move
+                        Board.move board move
+                        Board.addMoveToHistory board move
+                        let victory = Rules.checkVictory board 
+                        // create child position
+                        let childPosition = MoveTree.Position.create (unwrapResultExn <| Board.tryClone board) childColor victory
+                        let child = MoveTree.createLeaf childPosition
+                        // revert move
+                        Board.invmove board move
+                        Board.removeMoveFromHistory board
+                        // add child to node    
+                        match result with
+                            | MoveTree.RootNode _ ->
+                                MoveTree.getRootNodeWithChildAdded result child move.Move                         
+                            | MoveTree.LeafNode _ | MoveTree.InnerNode _ -> 
+                                MoveTree.getNodeWithChildAdded result child) 
+                    node boardMoves
 
     let rec minimax (depth: Depth.T) (a: MoveValue.T) (b: MoveValue.T) (n: MoveTree.T) (searchType: SearchType.T): Async<MoveValue.T> =
         async {
@@ -135,17 +125,18 @@ module Brain =
                 // create root node
                 let root = getNodeWithChildren <| MoveTree.createRoot rootPosition
 
-                let mutable bestValue = MoveValue.getMin
-                let mutable bestMove: Move.T option = None
-
-                for data in MoveTree.getRootNodeChildren root do
-                    let move = fst data
-                    let child = snd data
-                    let! value = minimax (Depth.dec depth) MoveValue.getMin MoveValue.getMax child <| SearchType.createMaximizing color
-                    if value > bestValue then
-                        bestValue <- value
-                        bestMove <- Some move
-                        
+                let bestMove = snd 
+                                <| (List.fold (fun result data ->
+                                    let bestValue = fst result
+                                    let move = fst data
+                                    let child = snd data
+                                    let value = Async.RunSynchronously(minimax (Depth.dec depth) MoveValue.getMin MoveValue.getMax child <| SearchType.createMaximizing color)
+                                    if value > bestValue then
+                                        (value, Some move)
+                                    else
+                                        result
+                                    ) (MoveValue.getMin, None) <| MoveTree.getRootNodeChildren root)
+                       
                 match bestMove with
                 | Some m -> 
                     return Success m
@@ -156,17 +147,3 @@ module Brain =
         }
 
 
-
-//function nej tah(pozice, hloubka)
-//2: tahy ← generuj tahy(pozice)
-//3: nejlepsi ohodnoceni ← −MAX
-//4: for all tah v kolekci tahy do
-//5:    potomek ← zahraj(pozice, tah)
-//6:    ohodnoceni ← −minimax(potomek, hloubka − 1)
-//7:    if ohodnoceni > nejlepsi ohodnoceni then
-//8:        nejlepsi ohodnoceni ← ohodnoceni
-//9:        nejlepsi tah ← tah
-//10:   end if
-//11: end for
-//12: return nejlepsi tah
-//13: end function
