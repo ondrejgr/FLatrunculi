@@ -22,9 +22,10 @@ module Brain =
             | Minimizing c -> createMaximizing <| Piece.swapColor c
 
     let evaluatePosition (position: MoveTree.Position.T): MoveValue.T =
+        let board = position.Board
+        let mutable result = MoveValue.getZero
+
         let calcValue =
-            let board = position.Board
-            let mutable result = MoveValue.getZero
             // eval from white point of view
             match position.Result with
             | Rules.GameOverResult r ->
@@ -32,52 +33,64 @@ module Brain =
                 // eval victory
                 | Rules.Victory Rules.WhiteWinner -> result <- MoveValue.getValue 1000
                 | Rules.Victory Rules.BlackWinner -> result <- MoveValue.getValue -1000
-                | Rules.Draw -> result <- MoveValue.add result -20
+                | Rules.Draw -> result <- MoveValue.add result -30
             | Rules.NoResult ->
-                // first 2 moves random
-//                if List.length board.History < 2 then
-//                    result <- MoveValue.add result <| rnd.Next(0, 8)
                 // eval by number of pieces
                 let ownPieces = Board.whitePiecesCount board
                 let enemyPieces = Board.blackPiecesCount board
 
                 result <- MoveValue.add result ((ownPieces - enemyPieces) * 10)
 
-            result
+                match Board.getSquare board <| Coord.createFromStringExn "D3" with
+                | s when Square.containsColor Piece.Colors.White s -> 
+                    result <- MoveValue.add result 150
+                | _ -> ()
+
+                match Board.getSquare board <| Coord.createFromStringExn "D5" with
+                | s when Square.containsColor Piece.Colors.Black s -> 
+                    result <- MoveValue.add result -150
+                | _ -> ()
+
         match position.ActivePlayerColor with
-        | Piece.Colors.White -> calcValue
-        | Piece.Colors.Black -> MoveValue.getInvValue <| calcValue
+        | Piece.Colors.Black as color -> 
+            result <- MoveValue.getInvValue <| result
+        | _ -> ()
+
+        if List.length board.History <= 3 then
+            result <- MoveValue.add result <| rnd.Next(0, 8)
+        result
+
 
     let getNodeWithChildren (node: MoveTree.T) =
-        async {
-            let mutable result = node
-            let nodePosition = MoveTree.getPosition result
-            let board = nodePosition.Board
-            let color = nodePosition.ActivePlayerColor
+        let mutable result = node
+        let nodePosition = MoveTree.getPosition result
+        let board = nodePosition.Board
+        let color = nodePosition.ActivePlayerColor
 
-            // get valid moves for current position
-            let getValidBoardMoveExn = Rules.getValidBoardMoveExnFn board color
-            let boardMoves = 
-                seq {
-                    for move in Rules.getValidMoves board color do
-                        yield getValidBoardMoveExn move }
+        // get valid moves for current position
+        let getValidBoardMoveExn = Rules.getValidBoardMoveExnFn board color
+        let boardMoves = 
+            seq {
+                for move in Rules.getValidMoves board color do
+                    yield getValidBoardMoveExn move }
 
-            // set color after move
-            let childColor = Piece.swapColor color
-            for move in boardMoves do
-                // apply move to the copy of a board
-                let childBoard = unwrapResultExn <| Board.tryClone board
-                Board.move childBoard move
-                let victory = Rules.checkVictory childBoard 
-                let childPosition = MoveTree.Position.create childBoard childColor victory
-                let child = MoveTree.createLeaf childPosition
-                // add child to node      
-                result <- match result with
-                            | MoveTree.RootNode _ ->
-                                MoveTree.getRootNodeWithChildAdded result child move.Move                         
-                            | MoveTree.LeafNode _ | MoveTree.InnerNode _ -> 
-                                MoveTree.getNodeWithChildAdded result child
-            return result }
+        // set color after move
+        let childColor = Piece.swapColor color
+        for move in boardMoves do
+            // apply move to the copy of a board
+            let childBoard = unwrapResultExn <| Board.tryClone board
+            Board.move childBoard move
+            Board.addMoveToHistory childBoard move
+            let victory = Rules.checkVictory childBoard 
+            let childPosition = MoveTree.Position.create childBoard childColor victory
+            let child = MoveTree.createLeaf childPosition
+            // add child to node      
+            result <- match result with
+                        | MoveTree.RootNode _ ->
+                            MoveTree.getRootNodeWithChildAdded result child move.Move                         
+                        | MoveTree.LeafNode _ | MoveTree.InnerNode _ -> 
+                            MoveTree.getNodeWithChildAdded result child
+        result
 
     let rec minimax (depth: Depth.T) (a: MoveValue.T) (b: MoveValue.T) (n: MoveTree.T) (searchType: SearchType.T): Async<MoveValue.T> =
         async {
@@ -86,7 +99,7 @@ module Brain =
             else
                 let mutable alpha = a
                 let mutable beta = b
-                let! node = getNodeWithChildren n 
+                let node = getNodeWithChildren n 
                 match searchType with
                     | SearchType.Maximizing color ->
                         let mutable v = MoveValue.getMin
@@ -121,7 +134,7 @@ module Brain =
                 let board = unwrapResultExn <| Board.tryClone b
                 let rootPosition = MoveTree.Position.create board color <| Rules.checkVictory board
                 // create root node
-                let! root = getNodeWithChildren <| MoveTree.createRoot rootPosition
+                let root = getNodeWithChildren <| MoveTree.createRoot rootPosition
 
                 let mutable bestValue = MoveValue.getMin
                 let mutable bestMove: Move.T option = None
