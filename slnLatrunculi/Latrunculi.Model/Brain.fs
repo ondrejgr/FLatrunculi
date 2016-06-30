@@ -43,8 +43,7 @@ module Brain =
             | Maximizing -> createMinimizing
             | Minimizing -> createMaximizing
 
-    let evaluatePosition (position: MoveTree.Position.T): MoveValue.T =
-        printfn "  Evaluating for %O " position.ActivePlayerColor
+    let getPositionEvaluation (position: MoveTree.Position.T): MoveValue.T =
         let board = position.Board
         let mutable result = MoveValue.getZero
 
@@ -106,10 +105,12 @@ module Brain =
 
     let rec minimax (depth: Depth.T) (alpha: MoveValue.T) (beta: MoveValue.T) (n: MoveTree.T) (searchType: SearchType.T): MoveValue.T =
         if (Depth.isZero depth) || (MoveTree.isGameOverNode n) then 
-            printfn "Minimax depth %A is getting evaluation for %A" depth n
-            evaluatePosition <| MoveTree.getPosition n
+            let position = MoveTree.getPosition n
+            let result = getPositionEvaluation position
+            printfn "  Minimax depth %A got evaluation for %A: %A" depth n result
+            result
         else
-            printfn "Minimax depth %A is computing children of %A" depth n
+            printfn "       Minimax depth %A is computing %A children of %A" depth searchType n
             let node = getNodeWithChildren n 
 
             let initialV = match searchType with
@@ -117,7 +118,7 @@ module Brain =
                             | SearchType.Minimizing -> MoveValue.getMax
 
             let initialState = MiniMaxState.createRecurse initialV alpha beta
-            MiniMaxState.getResult 
+            let result = MiniMaxState.getResult 
                             <| (List.fold (fun state (child: MoveTree.T) ->
                                         match state with
                                         | MiniMaxState.Recurse data ->
@@ -140,6 +141,8 @@ module Brain =
                                                     MiniMaxState.createRecurse v alpha beta
                                         | _ -> state)
                                   initialState <| MoveTree.getChildren node)
+            printfn "              Result %A" result
+            result
 
     let tryGetBestMove (b: Board.T) (color: Piece.Colors) (depth: Depth.T): Async<Result<Move.T, Error>> =
         async {

@@ -42,7 +42,7 @@ unwrapResultExn <| controller.TryRun()
 let board = model.Board
 let color = unwrapResultExn <| model.tryGetActiveColor()
 let fn = Brain.tryGetBestMove board color (Depth.create 1)
-let fn2 = Brain.tryGetBestMove board color (Depth.create 3)
+let fn2 = Brain.tryGetBestMove board color (Depth.create 2)
 
-Async.RunSynchronously fn
 Async.RunSynchronously fn2
+//Async.RunSynchronously fn2
