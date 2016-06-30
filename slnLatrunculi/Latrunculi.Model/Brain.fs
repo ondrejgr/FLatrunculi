@@ -77,13 +77,16 @@ module Brain =
         // set color after move
         let childColor = Piece.swapColor color
         for move in boardMoves do
-            // apply move to the copy of a board
-            let childBoard = unwrapResultExn <| Board.tryClone board
-            Board.move childBoard move
-            Board.addMoveToHistory childBoard move
-            let victory = Rules.checkVictory childBoard 
-            let childPosition = MoveTree.Position.create childBoard childColor victory
+            // apply move
+            Board.move board move
+            Board.addMoveToHistory board move
+            let victory = Rules.checkVictory board 
+            // create child position
+            let childPosition = MoveTree.Position.create (unwrapResultExn <| Board.tryClone board) childColor victory
             let child = MoveTree.createLeaf childPosition
+            // revert move
+            Board.invmove board move
+            Board.removeMoveFromHistory board
             // add child to node      
             result <- match result with
                         | MoveTree.RootNode _ ->
