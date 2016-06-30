@@ -7,19 +7,18 @@ module Brain =
     module SearchType =
         [<StructuralEquality;NoComparison>]
         type T =
-            | Maximizing of Piece.Colors
-            | Minimizing of Piece.Colors
-        let getColor (x: T) =
-            match x with
-            | Maximizing c | Minimizing c -> c
-        let createMaximizing (x: Piece.Colors) =
-            Maximizing x
-        let createMinimizing (x: Piece.Colors) =
-            Minimizing x
+            | Maximizing
+            | Minimizing
+
+        let createMaximizing =
+            Maximizing
+        let createMinimizing =
+            Minimizing
+
         let swap (x: T) =
             match x with
-            | Maximizing c -> createMinimizing <| Piece.swapColor c
-            | Minimizing c -> createMaximizing <| Piece.swapColor c
+            | Maximizing -> createMinimizing
+            | Minimizing -> createMaximizing
 
     let evaluatePosition (position: MoveTree.Position.T): MoveValue.T =
         let board = position.Board
@@ -89,7 +88,7 @@ module Brain =
             let mutable beta = b
             let node = getNodeWithChildren n 
             match searchType with
-                | SearchType.Maximizing color ->
+                | SearchType.Maximizing ->
                     let mutable v = MoveValue.getMin
                     let mutable skip = false
                     for child in MoveTree.getChildren node do
@@ -102,7 +101,7 @@ module Brain =
                                 skip <- true
                         | true -> ()
                     v
-                | SearchType.Minimizing color ->
+                | SearchType.Minimizing ->
                     let mutable v = MoveValue.getMax
                     let mutable skip = false
                     for child in MoveTree.getChildren node do
@@ -129,7 +128,7 @@ module Brain =
                                     let bestValue = fst result
                                     let move = fst data
                                     let child = snd data
-                                    let value = minimax (Depth.dec depth) MoveValue.getMin MoveValue.getMax child <| SearchType.createMaximizing color
+                                    let value = minimax (Depth.dec depth) MoveValue.getMin MoveValue.getMax child <| SearchType.createMaximizing
                                     if value > bestValue then
                                         (value, Some move)
                                     else
