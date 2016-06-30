@@ -90,25 +90,23 @@ module Brain =
             printfn "       Minimax depth %A is computing %A children of %A" depth searchType n
             let node = getNodeWithChildren n 
 
-            let initialV = match searchType with
-                            | SearchType.Maximizing -> MoveValue.getMin
-                            | SearchType.Minimizing -> MoveValue.getMax
+            let result = match searchType with
+                            | SearchType.Maximizing ->
+                                List.fold (fun currentV (child: MoveTree.T) ->
+                                            max currentV <| minimax (Depth.dec depth) child (SearchType.swap searchType))
+                                        MoveValue.getMin <| MoveTree.getChildren node
+                            | SearchType.Minimizing ->
+                                List.fold (fun currentV (child: MoveTree.T) ->
+                                            min currentV <| minimax (Depth.dec depth) child (SearchType.swap searchType))
+                                        MoveValue.getMax <| MoveTree.getChildren node
 
-            let result = List.fold (fun currentV (child: MoveTree.T) ->
-                                    match searchType with
-                                    | SearchType.Maximizing ->
-                                        max currentV <| minimax (Depth.dec depth) child (SearchType.swap searchType)
-                                    | SearchType.Minimizing ->
-                                        min currentV <| minimax (Depth.dec depth) child (SearchType.swap searchType))
-                                initialV <| MoveTree.getChildren node
-            printfn "              Result %A" result
+            printfn "           Result: %A" result
             result
 
-    let tryGetBestMove (b: Board.T) (color: Piece.Colors) (depth: Depth.T): Async<Result<Move.T, Error>> =
+    let tryGetBestMove (board: Board.T) (color: Piece.Colors) (depth: Depth.T): Async<Result<Move.T, Error>> =
         async {
             try
                 printfn "Best move computation started..."
-                let board = unwrapResultExn <| Board.tryClone b
                 let rootPosition = MoveTree.Position.create board color <| Rules.checkVictory board
                 // create root node
                 let root = getNodeWithChildren <| MoveTree.createRoot rootPosition
@@ -118,12 +116,13 @@ module Brain =
                                     let bestValue = fst result
                                     let move = fst data
                                     let child = snd data
-                                    let value = minimax (Depth.dec depth) child <| SearchType.createMaximizing
+                                    printfn "Calculating minimax for move %A" move
+                                    let value = minimax (Depth.dec depth) child <| SearchType.createMinimizing
                                     if value > bestValue then
-                                        printfn "Move %A got value %A and is best move " move value
+                                        printfn "  Move %A got value %A and is best move " move value
                                         (value, Some move)
                                     else
-                                        printfn "Move %A got value %A and is rejected " move value
+                                        printfn "  Move %A got value %A and is rejected " move value
                                         result
                                     ) (MoveValue.getMin, None) <| MoveTree.getRootNodeChildren root)
                        
