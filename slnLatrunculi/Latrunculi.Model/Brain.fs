@@ -44,6 +44,7 @@ module Brain =
             | Minimizing -> createMaximizing
 
     let evaluatePosition (position: MoveTree.Position.T): MoveValue.T =
+        printfn "  Evaluating for %O " position.ActivePlayerColor
         let board = position.Board
         let mutable result = MoveValue.getZero
 
@@ -65,7 +66,7 @@ module Brain =
 
         match position.ActivePlayerColor with
         | Piece.Colors.Black as color -> 
-            result <- MoveValue.getInvValue <| result
+            result <- MoveValue.getInvValue result
         | _ -> ()
 
 //        if List.length board.History <= 3 then
@@ -104,9 +105,11 @@ module Brain =
                     node boardMoves
 
     let rec minimax (depth: Depth.T) (alpha: MoveValue.T) (beta: MoveValue.T) (n: MoveTree.T) (searchType: SearchType.T): MoveValue.T =
-        if (Depth.isZero depth) || (MoveTree.isGameOverNode n)
-            then evaluatePosition <| MoveTree.getPosition n
+        if (Depth.isZero depth) || (MoveTree.isGameOverNode n) then 
+            printfn "Minimax depth %A is getting evaluation for %A" depth n
+            evaluatePosition <| MoveTree.getPosition n
         else
+            printfn "Minimax depth %A is computing children of %A" depth n
             let node = getNodeWithChildren n 
 
             let initialV = match searchType with
@@ -141,6 +144,7 @@ module Brain =
     let tryGetBestMove (b: Board.T) (color: Piece.Colors) (depth: Depth.T): Async<Result<Move.T, Error>> =
         async {
             try
+                printfn "Best move computation started..."
                 let board = unwrapResultExn <| Board.tryClone b
                 let rootPosition = MoveTree.Position.create board color <| Rules.checkVictory board
                 // create root node
@@ -153,15 +157,19 @@ module Brain =
                                     let child = snd data
                                     let value = minimax (Depth.dec depth) MoveValue.getMin MoveValue.getMax child <| SearchType.createMaximizing
                                     if value > bestValue then
+                                        printfn "Move %A got value %A and is best move " move value
                                         (value, Some move)
                                     else
+                                        printfn "Move %A got value %A and is rejected " move value
                                         result
                                     ) (MoveValue.getMin, None) <| MoveTree.getRootNodeChildren root)
                        
                 match bestMove with
                 | Some m -> 
+                    printfn "Best move computation finished, best move %A..." m
                     return Success m
                 | None -> 
+                    printfn "Best move computation failed."
                     return Error NoValidMoveExists
             with
             | e -> return Error (BrainException e.Message)

@@ -7,6 +7,7 @@ module Piece =
         | Black
 
     [<StructuralEquality;NoComparison>]
+    [<StructuredFormatDisplay("{Color}")>]
     type T = {
         Color: Colors }
     

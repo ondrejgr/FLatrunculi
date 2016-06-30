@@ -3,6 +3,7 @@
 module Move =
 
     [<StructuralEquality;NoComparison>]
+    [<StructuredFormatDisplay("{Source}{Target}/{NewSourceSquare} {NewTargetSquare}")>]
     type T = {
         Source: Coord.T;
         Target: Coord.T;
