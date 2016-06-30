@@ -62,17 +62,13 @@ module Brain =
 
 
     let getNodeWithChildren (node: MoveTree.T) =
-        let mutable result = node
-        let nodePosition = MoveTree.getPosition result
+        let nodePosition = MoveTree.getPosition node
         let board = nodePosition.Board
         let color = nodePosition.ActivePlayerColor
 
         // get valid moves for current position
         let getValidBoardMoveExn = Rules.getValidBoardMoveExnFn board color
-        let boardMoves = 
-            seq {
-                for move in Rules.getValidMoves board color do
-                    yield getValidBoardMoveExn move }
+        let boardMoves = List.map getValidBoardMoveExn <| Rules.getValidMoves board color
 
         // set color after move
         let childColor = Piece.swapColor color
