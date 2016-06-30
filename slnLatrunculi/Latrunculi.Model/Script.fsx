@@ -42,4 +42,4 @@ unwrapResultExn <| controller.TryRun()
 let board = model.Board
 let color = unwrapResultExn <| model.tryGetActiveColor()
 let fn = Brain.tryGetBestMove board color (Depth.create 1)
-let fn2 = Brain.tryGetBestMove board color (Depth.create 5)
+let fn2 = Brain.tryGetBestMove board color (Depth.create 3)
