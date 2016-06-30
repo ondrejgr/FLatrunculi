@@ -9,7 +9,7 @@ module GameFile =
         | false -> Success ()
 
     [<CLIMutable>]
-    [<DataContract>]
+    [<DataContract(Namespace="")>]
     type T = {
         [<DataMember>]
         PlayerSettings: PlayerSettingsDto.T

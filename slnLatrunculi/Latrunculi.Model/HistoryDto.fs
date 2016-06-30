@@ -2,7 +2,7 @@
 open System.Runtime.Serialization
 
 module CoordDto =
-    [<DataContract>]
+    [<DataContract(Namespace="")>]
     type T = string
     
     let coordToDto (coord: Coord.T) =
@@ -12,7 +12,7 @@ module CoordDto =
         Coord.tryCreateFromString source
 
 module PieceColorDto =
-    [<DataContract>]
+    [<DataContract(Namespace="")>]
     type T = char
 
     let pieceColorToDto (color: Piece.Colors) =
@@ -27,7 +27,7 @@ module PieceColorDto =
         | _ -> Error (UnableToDeserializeObject "PieceColor")
 
 module PieceDto =
-    [<DataContract>]
+    [<DataContract(Namespace="")>]
     type T = char
 
     let pieceToDto (piece: Piece.T) =
@@ -39,7 +39,7 @@ module PieceDto =
             return Piece.create color }
 
 module SquareDto =
-    [<DataContract>]
+    [<DataContract(Namespace="")>]
     type T = char
 
     let squareToDto (square: Square.T) =
@@ -55,7 +55,7 @@ module SquareDto =
         | _ -> Error (UnableToDeserializeObject "SquareType")
 
 module RemovedPieceDto =
-    [<DataContract>]
+    [<DataContract(Namespace="")>]
     type T = string
 
     let fromRemovedPiece (source: RemovedPiece.T) =
@@ -74,7 +74,7 @@ module RemovedPieceDto =
         | _ -> Error (UnableToDeserializeObject source)
 
 module RemovedPiecesDto =
-    [<DataContract>]
+    [<DataContract(Namespace="")>]
     type T = RemovedPieceDto.T array
 
     let fromRemovedPieces (source: RemovedPiece.T list) =
@@ -93,7 +93,7 @@ module RemovedPiecesDto =
 
 
 module MoveDto =
-    [<DataContract>]
+    [<DataContract(Namespace="")>]
     type T = string
 
     let fromMove (source: Move.T) =
@@ -114,7 +114,7 @@ module MoveDto =
         | _ -> Error (UnableToDeserializeObject source)
 
 module MovesDto =
-    [<DataContract>]
+    [<DataContract(Namespace="")>]
     type T = MoveDto.T array
 
     let fromHistory (source: History.T) =
@@ -136,7 +136,7 @@ module MovesDto =
 
 module BoardMoveDto =
     [<CLIMutable>]
-    [<DataContract>]
+    [<DataContract(Namespace="")>]
     type T = {
         [<DataMember>]
         Color: PieceDto.T
@@ -158,7 +158,7 @@ module BoardMoveDto =
             return BoardMove.createWithRmPieces color move rm }       
 
 module RedoStackDto =
-    [<DataContract>]
+    [<DataContract(Namespace="")>]
     type T = BoardMoveDto.T array
 
     let fromRedoStack (source: MoveStack.T) =
@@ -177,7 +177,7 @@ module RedoStackDto =
 
 module HistoryDto =
     [<CLIMutable>]
-    [<DataContract>]
+    [<DataContract(Namespace="")>]
     type T = {
         [<DataMember>]
         Moves: MovesDto.T 

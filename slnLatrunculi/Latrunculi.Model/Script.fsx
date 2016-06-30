@@ -35,7 +35,8 @@ open System.Runtime.Serialization
 let model = unwrapResultExn <| GameModel.tryCreate()
 let controller = GameController.create model
 
-unwrapResultExn <| controller.TryNewGame()
+//unwrapResultExn <| controller.TryNewGame()
+unwrapResultExn <| controller.TryLoadGame("C:\\Test\\test.lat")
 
 unwrapResultExn <| controller.TryRun()
 let board = model.Board

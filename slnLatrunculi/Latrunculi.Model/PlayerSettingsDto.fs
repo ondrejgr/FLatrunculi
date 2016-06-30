@@ -3,7 +3,7 @@ open System.Runtime.Serialization
 
 module PlayerSettingsDto =
     [<CLIMutable>]
-    [<DataContract>]
+    [<DataContract(Namespace="")>]
     type T = {
         [<DataMember>]
         Settings: string

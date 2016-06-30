@@ -68,8 +68,8 @@ module Brain =
             result <- MoveValue.getInvValue <| result
         | _ -> ()
 
-        if List.length board.History <= 3 then
-            result <- MoveValue.add result <| rnd.Next(0, 8)
+//        if List.length board.History <= 3 then
+//            result <- MoveValue.add result <| rnd.Next(0, 8)
         result
 
 
