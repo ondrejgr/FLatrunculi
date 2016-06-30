@@ -4,6 +4,29 @@ module Brain =
 
     let rnd = System.Random()
 
+    module MiniMaxState =
+        [<StructuralEquality;NoComparison>]
+        type MiniMaxData = {
+            V: MoveValue.T
+            Alpha: MoveValue.T
+            Beta: MoveValue.T }
+
+        [<StructuralEquality;NoComparison>]
+        type T = 
+            | Exit of MoveValue.T
+            | Recurse of MiniMaxData
+
+        let getResult x =
+            match x with
+            | Exit v -> v
+            | Recurse data -> data.V
+
+        let createRecurse initialV initialAlpha initialBeta =
+            Recurse { V = initialV; Alpha = initialAlpha; Beta = initialBeta }
+
+        let createExit currentV =
+            Exit currentV
+
     module SearchType =
         [<StructuralEquality;NoComparison>]
         type T =
@@ -80,7 +103,7 @@ module Brain =
                                 MoveTree.getNodeWithChildAdded result child) 
                     node boardMoves
 
-    let rec minimax (depth: Depth.T) (n: MoveTree.T) (searchType: SearchType.T): MoveValue.T =
+    let rec minimax (depth: Depth.T) (alpha: MoveValue.T) (beta: MoveValue.T) (n: MoveTree.T) (searchType: SearchType.T): MoveValue.T =
         if (Depth.isZero depth) || (MoveTree.isGameOverNode n) then 
             let position = MoveTree.getPosition n
             let result = getPositionEvaluation position
@@ -90,23 +113,42 @@ module Brain =
             printfn "       Minimax depth %A is computing %A children of %A" depth searchType n
             let node = getNodeWithChildren n 
 
-            let result = match searchType with
-                            | SearchType.Maximizing ->
-                                List.fold (fun currentV (child: MoveTree.T) ->
-                                            max currentV <| minimax (Depth.dec depth) child (SearchType.swap searchType))
-                                        MoveValue.getMin <| MoveTree.getChildren node
-                            | SearchType.Minimizing ->
-                                List.fold (fun currentV (child: MoveTree.T) ->
-                                            min currentV <| minimax (Depth.dec depth) child (SearchType.swap searchType))
-                                        MoveValue.getMax <| MoveTree.getChildren node
+            let initialV = match searchType with
+                            | SearchType.Maximizing -> MoveValue.getMin
+                            | SearchType.Minimizing -> MoveValue.getMax
 
-            printfn "           Result: %A" result
+            let initialState = MiniMaxState.createRecurse initialV alpha beta
+            let result = MiniMaxState.getResult 
+                            <| (List.fold (fun state (child: MoveTree.T) ->
+                                        match state with
+                                        | MiniMaxState.Recurse data ->
+                                            match searchType with
+                                            | SearchType.Maximizing ->
+                                                let v = max data.V <| minimax (Depth.dec depth) data.Alpha data.Beta child (SearchType.swap searchType)
+                                                let alpha = max data.Alpha v    
+                                                let beta = data.Beta
+                                                if beta <= alpha then
+                                                    MiniMaxState.createExit v
+                                                else
+                                                    MiniMaxState.createRecurse v alpha beta
+                                            | SearchType.Minimizing ->
+                                                let v = min data.V <| minimax (Depth.dec depth) data.Alpha data.Beta child (SearchType.swap searchType)
+                                                let alpha = data.Alpha
+                                                let beta = min data.Beta v    
+                                                if beta <= alpha then
+                                                    MiniMaxState.createExit v
+                                                else
+                                                    MiniMaxState.createRecurse v alpha beta
+                                        | _ -> state)
+                                  initialState <| MoveTree.getChildren node)
+            printfn "              Result %A" result
             result
 
-    let tryGetBestMove (board: Board.T) (color: Piece.Colors) (depth: Depth.T): Async<Result<Move.T, Error>> =
+    let tryGetBestMove (b: Board.T) (color: Piece.Colors) (depth: Depth.T): Async<Result<Move.T, Error>> =
         async {
             try
                 printfn "Best move computation started..."
+                let board = unwrapResultExn <| Board.tryClone b
                 let rootPosition = MoveTree.Position.create board color <| Rules.checkVictory board
                 // create root node
                 let root = getNodeWithChildren <| MoveTree.createRoot rootPosition
@@ -116,13 +158,12 @@ module Brain =
                                     let bestValue = fst result
                                     let move = fst data
                                     let child = snd data
-                                    printfn "Calculating minimax for move %A" move
-                                    let value = minimax (Depth.dec depth) child <| SearchType.createMinimizing
+                                    let value = minimax (Depth.dec depth) MoveValue.getMin MoveValue.getMax child <| SearchType.createMaximizing
                                     if value > bestValue then
-                                        printfn "  Move %A got value %A and is best move " move value
+                                        printfn "Move %A got value %A and is best move " move value
                                         (value, Some move)
                                     else
-                                        printfn "  Move %A got value %A and is rejected " move value
+                                        printfn "Move %A got value %A and is rejected " move value
                                         result
                                     ) (MoveValue.getMin, None) <| MoveTree.getRootNodeChildren root)
                        
