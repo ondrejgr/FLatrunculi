@@ -119,28 +119,33 @@ module Brain =
 
             let initialState = MiniMaxState.createRecurse initialV alpha beta
             let result = MiniMaxState.getResult 
-                            <| (List.fold (fun state (child: MoveTree.T) ->
-                                        match state with
-                                        | MiniMaxState.Recurse data ->
-                                            match searchType with
-                                            | SearchType.Maximizing ->
-                                                let v = max data.V <| minimax (Depth.dec depth) data.Alpha data.Beta child (SearchType.swap searchType)
-                                                let alpha = max data.Alpha v    
-                                                let beta = data.Beta
-                                                if beta <= alpha then
-                                                    MiniMaxState.createExit v
-                                                else
-                                                    MiniMaxState.createRecurse v alpha beta
-                                            | SearchType.Minimizing ->
-                                                let v = min data.V <| minimax (Depth.dec depth) data.Alpha data.Beta child (SearchType.swap searchType)
-                                                let alpha = data.Alpha
-                                                let beta = min data.Beta v    
-                                                if beta <= alpha then
-                                                    MiniMaxState.createExit v
-                                                else
-                                                    MiniMaxState.createRecurse v alpha beta
-                                        | _ -> state)
-                                  initialState <| MoveTree.getChildren node)
+                            <| match searchType with
+                                | SearchType.Maximizing ->
+                                    List.fold (fun state (child: MoveTree.T) ->
+                                                match state with
+                                                | MiniMaxState.Recurse data ->
+                                                    let v = max data.V <| minimax (Depth.dec depth) data.Alpha data.Beta child (SearchType.swap searchType)
+                                                    let alpha = max data.Alpha v    
+                                                    let beta = data.Beta
+                                                    if beta <= alpha then
+                                                        MiniMaxState.createExit v
+                                                    else
+                                                        MiniMaxState.createRecurse v alpha beta
+                                                | _ -> state)
+                                          initialState <| MoveTree.getChildren node
+                                | SearchType.Minimizing ->
+                                    List.fold (fun state (child: MoveTree.T) ->
+                                                match state with
+                                                | MiniMaxState.Recurse data ->
+                                                    let v = min data.V <| minimax (Depth.dec depth) data.Alpha data.Beta child (SearchType.swap searchType)
+                                                    let alpha = data.Alpha
+                                                    let beta = min data.Beta v    
+                                                    if beta <= alpha then
+                                                        MiniMaxState.createExit v
+                                                    else
+                                                        MiniMaxState.createRecurse v alpha beta
+                                                | _ -> state)
+                                          initialState <| MoveTree.getChildren node
             printfn "              Result %A" result
             result
 
