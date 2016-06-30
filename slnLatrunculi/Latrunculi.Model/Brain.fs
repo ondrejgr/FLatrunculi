@@ -81,41 +81,40 @@ module Brain =
                                 MoveTree.getNodeWithChildAdded result child) 
                     node boardMoves
 
-    let rec minimax (depth: Depth.T) (a: MoveValue.T) (b: MoveValue.T) (n: MoveTree.T) (searchType: SearchType.T): Async<MoveValue.T> =
-        async {
-            if (Depth.isZero depth) || (MoveTree.isGameOverNode n)
-                then return evaluatePosition <| MoveTree.getPosition n
-            else
-                let mutable alpha = a
-                let mutable beta = b
-                let node = getNodeWithChildren n 
-                match searchType with
-                    | SearchType.Maximizing color ->
-                        let mutable v = MoveValue.getMin
-                        let mutable skip = false
-                        for child in MoveTree.getChildren node do
-                            match skip with
-                            | false ->
-                                let! result = minimax (Depth.dec depth) alpha beta child (SearchType.swap searchType)
-                                v <- max v result
-                                alpha <- max alpha v
-                                if beta <= alpha then
-                                    skip <- true
-                            | true -> ()
-                        return v
-                    | SearchType.Minimizing color ->
-                        let mutable v = MoveValue.getMax
-                        let mutable skip = false
-                        for child in MoveTree.getChildren node do
-                            match skip with
-                            | false ->
-                                let! result = minimax (Depth.dec depth) alpha beta child (SearchType.swap searchType)
-                                v <- min v result
-                                beta <- min beta v
-                                if beta <= alpha then
-                                    skip <- true
-                            | true -> ()
-                        return v }
+    let rec minimax (depth: Depth.T) (a: MoveValue.T) (b: MoveValue.T) (n: MoveTree.T) (searchType: SearchType.T): MoveValue.T =
+        if (Depth.isZero depth) || (MoveTree.isGameOverNode n)
+            then evaluatePosition <| MoveTree.getPosition n
+        else
+            let mutable alpha = a
+            let mutable beta = b
+            let node = getNodeWithChildren n 
+            match searchType with
+                | SearchType.Maximizing color ->
+                    let mutable v = MoveValue.getMin
+                    let mutable skip = false
+                    for child in MoveTree.getChildren node do
+                        match skip with
+                        | false ->
+                            let result = minimax (Depth.dec depth) alpha beta child (SearchType.swap searchType)
+                            v <- max v result
+                            alpha <- max alpha v
+                            if beta <= alpha then
+                                skip <- true
+                        | true -> ()
+                    v
+                | SearchType.Minimizing color ->
+                    let mutable v = MoveValue.getMax
+                    let mutable skip = false
+                    for child in MoveTree.getChildren node do
+                        match skip with
+                        | false ->
+                            let result = minimax (Depth.dec depth) alpha beta child (SearchType.swap searchType)
+                            v <- min v result
+                            beta <- min beta v
+                            if beta <= alpha then
+                                skip <- true
+                        | true -> ()
+                    v
 
     let tryGetBestMove (b: Board.T) (color: Piece.Colors) (depth: Depth.T): Async<Result<Move.T, Error>> =
         async {
@@ -130,7 +129,7 @@ module Brain =
                                     let bestValue = fst result
                                     let move = fst data
                                     let child = snd data
-                                    let value = Async.RunSynchronously(minimax (Depth.dec depth) MoveValue.getMin MoveValue.getMax child <| SearchType.createMaximizing color)
+                                    let value = minimax (Depth.dec depth) MoveValue.getMin MoveValue.getMax child <| SearchType.createMaximizing color
                                     if value > bestValue then
                                         (value, Some move)
                                     else
