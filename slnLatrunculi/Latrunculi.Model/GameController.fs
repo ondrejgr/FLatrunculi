@@ -48,22 +48,17 @@ module GameController =
                 Success move
             | _ -> Error HumanSelectedMoveRequestDoesNotExists
 
-        member this.TryClearHistoryBoard() =
-            maybe {
-                let! historyBoard = Board.tryInit this.Model.HistoryBoard Rules.getEmptyBoardSquares
-                return this }
-
         member this.TryGoToHistoryMove (id: int) =
             let tryMoveFound (historyItems: HistoryItem.T list) =
                 match List.tryHead historyItems with
                 | Some i when i.ID = id -> Success ()
                 | _ -> Error RequestedHistoryMoveNotFound
             maybe {
-                let! historyBoard = Board.tryInit this.Model.HistoryBoard Rules.getInitialBoardSquares
-                let historyItems = List.filter (fun (a: HistoryItem.T) -> a.ID <= id) this.Model.Board.History
+                let! board = Board.tryInit this.Model.Board Rules.getInitialBoardSquares
+                let historyItems = List.filter (fun (a: HistoryItem.T) -> a.ID <= id) board.History
                 do! tryMoveFound historyItems
                 do! List.foldBack (fun (item: HistoryItem.T) result ->
-                                Board.move this.Model.HistoryBoard item.BoardMove
+                                Board.move board item.BoardMove
                                 Success ()) historyItems (Error RequestedHistoryMoveNotFound) 
                 return this }
             
@@ -80,7 +75,6 @@ module GameController =
 
                 // init board with default positions
                 let! board = Board.tryInit this.Model.Board Rules.getInitialBoardSquares
-                let! historyBoard = Board.tryInit this.Model.HistoryBoard Rules.getEmptyBoardSquares
                 this.Model.RaiseHistoryCleared()
                 this.Model.RaiseBoardChanged()
                 return this }

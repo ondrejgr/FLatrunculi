@@ -251,19 +251,7 @@
                          BoardViewModel="{Binding Board}"
                          IsActive="{Binding IsGameWaitingForHumanPlayerMove}"
                          BoardSquareClicked="board_BoardSquareClicked"
-                         Visibility="{Binding HideHistory, Converter={StaticResource bvis}, Mode=OneWay}"
                          Grid.Column="1" Grid.Row="0"/>
-            <Border Background="Transparent"
-                                BorderBrush="Yellow"
-                                BorderThickness="2"
-                                CornerRadius="8,8,8,8"
-                                Grid.Column="1" Grid.Row="0"
-                                Visibility="{Binding ShowHistory, Converter={StaticResource bvis}, Mode=OneWay}">
-                <ctrls:Board x:Name="historyBoard"
-                         BoardViewModel="{Binding HistoryBoard}"
-                         IsActive="False"
-                         Focusable="False" />
-            </Border>
             <Grid Grid.Column="2" Grid.RowSpan="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>

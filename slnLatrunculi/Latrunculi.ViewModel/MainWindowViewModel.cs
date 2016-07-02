@@ -52,7 +52,6 @@ namespace Latrunculi.ViewModel
             Model.HistoryItemRemoved += Model_HistoryItemRemoved;
             Model.ComputerPlayerThinking += Model_ComputerPlayerThinking;
             Board.Init(Model.Board);
-            HistoryBoard.Init(Model.HistoryBoard);
 
             OnPlayerSettingsChanged();
             OnStatusChanged();
@@ -125,7 +124,6 @@ namespace Latrunculi.ViewModel
         {
             ClearBoardIndicationsAndSelection();
             Board.RefreshFromModel(Model.Board);
-            HistoryBoard.RefreshFromModel(Model.HistoryBoard);
             OnPropertyChanged("IsUndoStackNotEmpty");
             OnPropertyChanged("IsRedoStackNotEmpty");
             OnNumberOfMovesChanged();
@@ -390,29 +388,6 @@ namespace Latrunculi.ViewModel
             }
         }
 
-        private bool _showHistory = false;
-        public bool ShowHistory
-        {
-            get
-            {
-                return _showHistory;
-            }
-            set
-            {
-                _showHistory = value;
-                OnPropertyChanged("ShowHistory");
-                OnPropertyChanged("HideHistory");
-            }
-        }
-
-        public bool HideHistory
-        {
-            get
-            {
-                return !ShowHistory;
-            }
-        }
-
         public void SetFileName(string fileName, string fileTitle)
         {
             FileName = fileName;
@@ -438,15 +413,6 @@ namespace Latrunculi.ViewModel
             get
             {
                 return _board;
-            }
-        }
-
-        private BoardViewModel _historyBoard = new BoardViewModel();
-        public BoardViewModel HistoryBoard
-        {
-            get
-            {
-                return _historyBoard;
             }
         }
 

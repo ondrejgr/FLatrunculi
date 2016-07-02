@@ -96,13 +96,13 @@
 
     <FlowDocument x:Key="docHistory">
         <Paragraph Style="{StaticResource title}">Historie tahů</Paragraph>
-        <Paragraph>V pravém dolním rohu hlavního okna je zobrazena historie tahů ve formátu: pořadové číslo tahu, barva hráče, výchozí a cílová souřadnice a v závorce uvedený počet zajatých nepřátelských kamenů (pokud je nenulový).</Paragraph>
-        <Paragraph>Pokud je zatrhnuto políčko Zobrazit na desce, je na desce zobrazen stav po provedení vybraného tahu.</Paragraph>
+        <Paragraph>V pravém dolním rohu hlavního okna je zobrazen seznam historie tahů ve formátu: pořadové číslo tahu, barva hráče, výchozí a cílová souřadnice a v závorce uvedený počet zajatých nepřátelských kamenů (pokud je nenulový).</Paragraph>
+        <Paragraph>Kliknutím na položku ze seznamu dojde k přechodu na vybraný tah. Provedení tahu v tomtu okamžiku zbývající tahu v historii zneplatní.</Paragraph>
     </FlowDocument>
 
     <FlowDocument x:Key="docUndoRedo">
         <Paragraph Style="{StaticResource title}">Vrátit/opakovat tah</Paragraph>
-        <Paragraph>Během rozehrané hry je možné pomocí příkazu Zpět vrátit provedený tah. Vrácený tah lze také opětovně provést (pokud mezitím nebyl proveden žádný tah).</Paragraph>
+        <Paragraph>Během rozehrané hry je možné pomocí příkazu Zpět vrátit provedený tah. Vrácený tah lze také opětovně provést (pokud mezitím nebyl proveden žádný tah). Přejít na libovolný tah historie lze také kliknutím na položku v seznamu s historií tahů.</Paragraph>
     </FlowDocument>
 
     <FlowDocument x:Key="docReplay">

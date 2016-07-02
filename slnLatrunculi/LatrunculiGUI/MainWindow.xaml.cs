@@ -172,8 +172,6 @@ namespace Latrunculi.GUI
 
                 if (board.SquareSize != width)
                     board.SquareSize = width;
-                if (historyBoard.SquareSize != width)
-                    historyBoard.SquareSize = width;
             }
         }
 
@@ -497,7 +495,6 @@ namespace Latrunculi.GUI
                     new Tuple<string, string>(vm.WhitePlayer.Name, vm.BlackPlayer.Name),
                     new Tuple<Model.Player.Levels, Model.Player.Levels>(PlayerViewModel.PlayerLevelToModel(vm.WhitePlayer), PlayerViewModel.PlayerLevelToModel(vm.BlackPlayer)));
 
-                ViewModel.ShowHistory = false;
                 ModelException.TryThrow<GameController.T>(Controller.TryNewGame());
                 ModelException.TryThrow<GameController.T>(Controller.TryRun());
                 FocusBoard();
@@ -626,8 +623,8 @@ namespace Latrunculi.GUI
         {
             Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    if (!ViewModel.ShowHistory)
-                        board.Focus();
+                    board.Focus();
+                    Keyboard.Focus(board);
                 }), System.Windows.Threading.DispatcherPriority.Input);
         }
 
@@ -640,14 +637,10 @@ namespace Latrunculi.GUI
 
                 if (item != null)
                     ModelException.TryThrow<GameController.T>(Controller.TryGoToHistoryMove(item.ID));
-                else
-                    ModelException.TryThrow<GameController.T>(Controller.TryClearHistoryBoard());
-
-                ViewModel.HistoryBoard.RefreshFromModel(ViewModel.Model.HistoryBoard);
             }
             catch (Exception exc)
             {
-                MessageBox.Show(this, "Nelze zobrazit historii tahů na desce." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(this, "Nelze přejít na tah z historie." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
