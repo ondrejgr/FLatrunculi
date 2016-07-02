@@ -113,27 +113,6 @@ module MoveDto =
                     return! Move.tryCreateFromStrCoord s.[0..1] s.[2..3] newSourceSquare newTargetSquare }
         | _ -> Error (UnableToDeserializeObject source)
 
-module MovesDto =
-    [<DataContract(Namespace="")>]
-    type T = MoveDto.T array
-
-    let fromHistory (source: History.T) =
-        let moves: T = List.toArray <| (List.map (fun (item: HistoryItem.T) -> MoveDto.fromMove item.BoardMove.Move) 
-                                                <| List.rev source)
-        moves
-
-    let tryToMoveList (source: T): Result<Move.T list, Error> =
-        let empty: Move.T list = List.empty
-        Array.foldBack 
-            (fun (moveDto: MoveDto.T) result ->
-                match result with
-                | Success lst ->
-                    match MoveDto.tryDtoToMove moveDto with
-                    | Success move -> Success (move::lst)
-                    | Error e -> Error e
-                | Error e -> Error e)
-            source (Success empty)
-
 module BoardMoveDto =
     [<CLIMutable>]
     [<DataContract(Namespace="")>]
@@ -157,15 +136,15 @@ module BoardMoveDto =
             let! rm = RemovedPiecesDto.tryDtoToRemovedPieces source.RemovedPieces
             return BoardMove.createWithRmPieces color move rm }       
 
-module RedoStackDto =
+module MoveStackDto =
     [<DataContract(Namespace="")>]
     type T = BoardMoveDto.T array
 
-    let fromRedoStack (source: MoveStack.T) =
+    let fromMoveStack (source: MoveStack.T) =
         List.toArray <| MoveStack.map (fun bmove ->
                                          BoardMoveDto.fromBoardMove bmove) source
 
-    let tryToRedoStack (source: T) =
+    let tryToMoveStack (source: T) =
         Array.foldBack (fun (item: BoardMoveDto.T) result ->
                     match result with
                     | Success stack ->
@@ -180,10 +159,10 @@ module HistoryDto =
     [<DataContract(Namespace="")>]
     type T = {
         [<DataMember>]
-        Moves: MovesDto.T 
+        UndoStack: MoveStackDto.T
         [<DataMember>]
-        RedoStack: RedoStackDto.T }
+        RedoStack: MoveStackDto.T }
 
-    let fromHistory (source: History.T) (redoStack: MoveStack.T) =
-        {   Moves = MovesDto.fromHistory source 
-            RedoStack = RedoStackDto.fromRedoStack redoStack }
+    let fromHistory (source: History.T) =
+        {   UndoStack = MoveStackDto.fromMoveStack source.UndoStack
+            RedoStack = MoveStackDto.fromMoveStack source.RedoStack }

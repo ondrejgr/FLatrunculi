@@ -7,7 +7,7 @@ module Board =
             Array.create (Seq.length Coord.ColumnNumbers) Square.createEmpty)
 
         member val private Squares = sq
-        member val History = History.create with get, set
+        member val History = History.create() with get, set
 
         member this.GetSquare (c: Coord.T) =
             let col = Coord.ColIndex.[c.Column]
@@ -65,15 +65,8 @@ module Board =
     let tryGetSquare (board: T) coord =
         Success (getSquare board coord)
 
-    let addMoveToHistory (board: T) (move: BoardMove.T) =
-        let id = 1 + List.length board.History
-        let item = HistoryItem.create id move
-        board.History <- History.getHistoryWithNewItem board.History item
-
-    let removeMoveFromHistory (board: T) =
-        board.History <- match List.length board.History with
-                            | l when l > 0 -> List.tail board.History
-                            | _ -> board.History
+    let pushMoveToHistory (board: T) (move: BoardMove.T) =
+        board.History.PushMove move
 
     let move (board: T) (move: BoardMove.T) =
         let m = move.Move 
@@ -99,7 +92,7 @@ module Board =
 
     let tryInit (board: T) (getInitalSquare: Coord.T -> Square.T) =
         try
-            board.History <- History.create
+            board.History <- History.create()
             Coord.iter (fun c ->
                     board.ChangeSquare c <| getInitalSquare c)
             Success board
@@ -109,7 +102,7 @@ module Board =
     let tryClone (source: T) =
         maybe {
             let! result = T() |> tryInit <| source.GetSquare
-            result.History <- source.History
+            result.History <- History.clone source.History
             return result
         }
 

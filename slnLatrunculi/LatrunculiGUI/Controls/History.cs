@@ -65,14 +65,5 @@ namespace Latrunculi.GUI.Controls
             return (item is HistoryItem);
         }
 
-        public bool ShowHistory
-        {
-            get { return (bool)GetValue(ShowHistoryProperty); }
-            set { SetValue(ShowHistoryProperty, value); }
-        }
-        public static readonly DependencyProperty ShowHistoryProperty =
-            DependencyProperty.Register("ShowHistory", typeof(bool), typeof(History), new PropertyMetadata(false));
-
-
     }
 }

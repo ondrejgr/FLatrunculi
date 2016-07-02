@@ -184,11 +184,8 @@ module GameModel =
             | None -> Error NoPlayerOnMove
 
         member this.getNumberOfMovesWithoutRemoval() =
-            History.getNumberOfMovesWithoutRemoval this.Board.History
+            this.Board.History.getNumberOfMovesWithoutRemoval
 
-        member this.clearMoveStacks() =
-            this.UndoStack <- MoveStack.create
-            this.RedoStack <- MoveStack.create
 
         member this.clearRedoStack() =
             this.RedoStack <- MoveStack.create

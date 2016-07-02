@@ -87,14 +87,14 @@ module Brain =
         List.fold (fun result (move: BoardMove.T) ->
                         // apply move
                         Board.move board move
-                        Board.addMoveToHistory board move
+                        //TODO: Board.addMoveToHistory board move
                         let victory = Rules.checkVictory board 
                         // create child position
                         let childPosition = MoveTree.Position.create (unwrapResultExn <| Board.tryClone board) childColor victory
                         let child = MoveTree.createLeaf childPosition
                         // revert move
                         Board.invmove board move
-                        Board.removeMoveFromHistory board
+                        //TODO: Board.removeMoveFromHistory board
                         // add child to node    
                         match result with
                             | MoveTree.RootNode _ ->

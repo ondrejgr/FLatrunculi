@@ -55,7 +55,7 @@ module GameController =
                 | _ -> Error RequestedHistoryMoveNotFound
             maybe {
                 let! board = Board.tryInit this.Model.Board Rules.getInitialBoardSquares
-                let historyItems = List.filter (fun (a: HistoryItem.T) -> a.ID <= id) board.History
+                let historyItems = List.filter (fun (a: HistoryItem.T) -> a.ID <= id) board.History.Items
                 do! tryMoveFound historyItems
                 do! List.foldBack (fun (item: HistoryItem.T) result ->
                                 Board.move board item.BoardMove
@@ -71,7 +71,6 @@ module GameController =
                 // reset game result and set active player
                 this.Model.setActiveColor(Some Rules.getInitialActiveColor) |> ignore
                 this.Model.setResult Rules.NoResult |> ignore
-                this.Model.clearMoveStacks()
 
                 // init board with default positions
                 let! board = Board.tryInit this.Model.Board Rules.getInitialBoardSquares
@@ -135,7 +134,7 @@ module GameController =
                 maybe {
                     // apply move
                     Board.move this.Model.Board boardMove |> ignore
-                    Board.addMoveToHistory this.Model.Board boardMove
+                    Board.pushMoveToHistory this.Model.Board boardMove
 
                     // update stack
                     this.Model.clearRedoStack()

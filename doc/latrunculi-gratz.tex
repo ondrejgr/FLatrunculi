@@ -381,6 +381,9 @@ Dále se~jako pozitivní bere opuštění startovních políček.
 \subsection{Modul \texttt{MoveStack}}
 Modul implementuje zásobník, který je použit pro uložení tahů, které mohou být odvolány (Undo) nebo~opakovány (Redo).
 
+\subsection{Modul \texttt{History}}
+Vytváří celkový seznam historie tahů z undo a redo zásobníků.
+
 \subsection{Modul \texttt{GameFile} a \texttt{GameFileSerializer}}
 Moduly umožňují uživateli uložit hru do souboru na disku. Pro kompletní uložení stavu je~nutno serializovat datové struktury reprezentující nastavení hry, historii tahů a zásobník Redo. Avšak tyto struktury jsou nejprve převedeny z~typů poskytovaných jazykem \emph{F\#} do~jednodušších typů .NET Frameworku (řetězec, číslo, pole).
 

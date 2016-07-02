@@ -2,20 +2,39 @@
 
 module History =
 
-    type T = HistoryItem.T list
+    [<NoEquality;NoComparison>]
+    type T() =
+        member val UndoStack = MoveStack.create with get, set
+        member val RedoStack = MoveStack.create with get, set
 
-    let getNumberOfMoves (history: T) =
-        List.fold (fun result i -> result + 1) 0 history
+        member this.PushMove (move: BoardMove.T) =
+            this.UndoStack <- MoveStack.push this.UndoStack move
 
-    let getNumberOfMovesWithoutRemoval (history: T) =
-        List.foldBack (fun (item: HistoryItem.T) result ->
-                        if BoardMove.anyPiecesRemoved item.BoardMove then 0 else result + 1)
-                    history 0
+        member this.Items =
+            let undoList = MoveStack.toList this.UndoStack
+            let redoList = MoveStack.toList this.RedoStack
+            let items = Seq.concat [undoList; redoList]
+            snd <| Seq.foldBack (fun item state ->
+                                let id = 1 + fst state
+                                let lst = snd state
+                                let newItem = HistoryItem.create id item
+                                (id, newItem::lst)) 
+                            items
+                            (0, [])
 
-    let getHistoryWithNewItem (history: T) (item: HistoryItem.T) =
-        let result: T = item::history
+        member this.getNumberOfMoves() =
+            List.fold (fun result i -> result + 1) 0 <| MoveStack.toList this.UndoStack
+
+        member this.getNumberOfMovesWithoutRemoval() =
+            List.foldBack (fun item result ->
+                            if BoardMove.anyPiecesRemoved item then 0 else result + 1)
+                        (MoveStack.toList this.UndoStack) 0
+
+    let clone (source: T) =
+        let result = T()
+        result.UndoStack <- source.UndoStack
+        result.RedoStack <- source.RedoStack
         result
-
-    let create =
-        let result: T = []
-        result
+        
+    let create() =
+        T()
