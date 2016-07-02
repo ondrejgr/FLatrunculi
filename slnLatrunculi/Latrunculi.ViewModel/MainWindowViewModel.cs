@@ -64,19 +64,25 @@ namespace Latrunculi.ViewModel
             OnPropertyChanged("IsGameWaitingForHumanPlayerMove");
         }
 
-        private void Model_HistoryCleared(object sender, EventArgs e)
+        private void OnNumberOfMovesChanged()
         {
             OnPropertyChanged("NumberOfMovesRemaining");
+            OnPropertyChanged("NumberOfMovesRemainingWarn");
+        }
+
+        private void Model_HistoryCleared(object sender, EventArgs e)
+        {
+            OnNumberOfMovesChanged();
         }
 
         private void Model_HistoryItemAdded(object sender, HistoryItemAddedEventArgs e)
         {
-            OnPropertyChanged("NumberOfMovesRemaining");
+            OnNumberOfMovesChanged();
         }
 
         private void Model_HistoryItemRemoved(object sender, EventArgs e)
         {
-            OnPropertyChanged("NumberOfMovesRemaining");
+            OnNumberOfMovesChanged();
         }
 
         private void Model_MoveSuggestionComputed(object sender, MoveEventArgs e)
@@ -107,6 +113,14 @@ namespace Latrunculi.ViewModel
             }
         }
 
+        public bool NumberOfMovesRemainingWarn
+        {
+            get
+            {
+                return NumberOfMovesRemaining <= 5;
+            }
+        }
+
         private void Model_BoardChanged(object sender, EventArgs e)
         {
             ClearBoardIndicationsAndSelection();
@@ -114,6 +128,7 @@ namespace Latrunculi.ViewModel
             HistoryBoard.RefreshFromModel(Model.HistoryBoard);
             OnPropertyChanged("IsUndoStackNotEmpty");
             OnPropertyChanged("IsRedoStackNotEmpty");
+            OnNumberOfMovesChanged();
             Application.Current.Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
         }
 

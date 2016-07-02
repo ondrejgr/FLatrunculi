@@ -10,19 +10,23 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Latrunculi.GUI.Controls
+namespace Latrunculi.GUI
 {
     /// <summary>
-    /// Interaction logic for PlayerControl.xaml
+    /// Interaction logic for AboutWindow.xaml
     /// </summary>
-    public partial class PlayerControl : UserControl
+    public partial class AboutWindow : Window
     {
-        public PlayerControl()
+        public AboutWindow()
         {
             InitializeComponent();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
         }
     }
 }

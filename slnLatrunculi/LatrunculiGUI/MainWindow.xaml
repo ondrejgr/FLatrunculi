@@ -35,6 +35,7 @@
         <CommandBinding Command="{x:Static local:MainWindowCommands.Undo}" CanExecute="Undo_CanExecute" Executed="Undo_Executed"/>
         <CommandBinding Command="{x:Static local:MainWindowCommands.Redo}" CanExecute="Redo_CanExecute" Executed="Redo_Executed"/>
         <CommandBinding Command="{x:Static local:MainWindowCommands.Replay}" CanExecute="Replay_CanExecute" Executed="Replay_Executed"/>
+        <CommandBinding Command="{x:Static local:MainWindowCommands.About}" CanExecute="About_CanExecute" Executed="About_Executed"/>
     </Window.CommandBindings>
 
     <Window.Resources>
@@ -138,6 +139,10 @@
                         <Image Height="16" Width="16" Source="{Binding Source={x:Static local:MainWindowCommands.Help}, Path=ImageSource}"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                <Separator/>
+                <MenuItem 
+                    Command="{x:Static local:MainWindowCommands.About}">
+                </MenuItem>
             </MenuItem>
         </Menu>
 
@@ -222,15 +227,26 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Vertical" Grid.RowSpan="2">
-                <ctrls:PlayerControl Content="{Binding WhitePlayer}"/>
+                <ctrls:PlayerControl DataContext="{Binding WhitePlayer}"/>
                 <ctrls:PiecesCount DataContext="{Binding Board.PiecesCount}"
                                    Count="{Binding WhitePiecesCount}"
                                    IsWinning="{Binding IsWhiteWinning}"
                                    IsLosing="{Binding IsWhiteLosing}"/>
+                <GroupBox Header="Max. počet tahů do konce hry" FontWeight="DemiBold" HorizontalAlignment="Center" Margin="5,5,5,5">
+                    <GroupBox.Resources>
+                        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding NumberOfMovesRemainingWarn}" Value="True">
+                                    <DataTrigger.Setters>
+                                        <Setter Property="Control.Foreground" Value="Red"/>
+                                    </DataTrigger.Setters>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </GroupBox.Resources>
+                    <TextBlock x:Name="txtMoves" Text="{Binding NumberOfMovesRemaining}" TextAlignment="Center" FontSize="18" FontWeight="Bold"/>
+                </GroupBox>
             </StackPanel>
-            <GroupBox Header="Max. počet tahů do konce hry" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center">
-                <TextBlock Text="{Binding NumberOfMovesRemaining}" TextAlignment="Center" FontWeight="Bold"/>
-            </GroupBox>
             <ctrls:Board x:Name="board"
                          BoardViewModel="{Binding Board}"
                          IsActive="{Binding IsGameWaitingForHumanPlayerMove}"
@@ -254,7 +270,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <ctrls:PlayerControl Content="{Binding BlackPlayer}" Grid.Row="0"/>
+                <ctrls:PlayerControl DataContext="{Binding BlackPlayer}" Grid.Row="0"/>
                 <ctrls:PiecesCount DataContext="{Binding Board.PiecesCount}" Grid.Row="1"
                                    Count="{Binding BlackPiecesCount}"
                                    IsWinning="{Binding IsBlackWinning}"

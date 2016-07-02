@@ -83,6 +83,11 @@
         <Paragraph>Po kliknutí na vybrané políčko s vlastním kamenem dojde k jeho podbarvení červenou barvou, pokud není žádný tah možný. V opačném případě bude podbarven zeleně a současně budou zeleně podbarvena políčka, která lze zvolit jako cílová. Kliknutím na cílové políčko bude proveden tah.</Paragraph>
     </FlowDocument>
 
+    <FlowDocument x:Key="docSaveLoad">
+        <Paragraph Style="{StaticResource title}">Uložit/načíst hru</Paragraph>
+        <Paragraph>Pokud je hra pozastavena, je možné její aktuální stav uložit do souboru na disku a poté načíst.</Paragraph>
+    </FlowDocument>
+
     <FlowDocument x:Key="docSuggestMove">
         <Paragraph Style="{StaticResource title}">Nápověda tahu</Paragraph>
         <Paragraph>Lidský hráč si může vyžádat nápovědu nejlepšího tahu kliknutím na ikonu <Image Source="SuggestMove.png" Height="24" Width="24"/>. Ikona je umístěna v hlavním okně pod jménem hráče a zobrazuje se pouze u lidského hráče.</Paragraph>

@@ -49,7 +49,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Vertical" Grid.RowSpan="2">
-                <ctrls:PlayerControl Content="{Binding WhitePlayer}"/>
+                <ctrls:PlayerControl DataContext="{Binding WhitePlayer}"/>
                 <ctrls:PiecesCount DataContext="{Binding Board.PiecesCount}"
                                    Count="{Binding WhitePiecesCount}"
                                    IsWinning="{Binding IsWhiteWinning}"
@@ -65,7 +65,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <ctrls:PlayerControl Content="{Binding BlackPlayer}" Grid.Row="0"/>
+                <ctrls:PlayerControl DataContext="{Binding BlackPlayer}" Grid.Row="0"/>
                 <ctrls:PiecesCount DataContext="{Binding Board.PiecesCount}" Grid.Row="1"
                                    Count="{Binding BlackPiecesCount}"
                                    IsWinning="{Binding IsBlackWinning}"

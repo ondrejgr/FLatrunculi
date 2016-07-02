@@ -724,5 +724,19 @@ namespace Latrunculi.GUI
                 MessageBox.Show(this, "Okno přehrávače nelze otevřít." + Environment.NewLine + ViewModelCommon.ConvertExceptionToShortString(exc), "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private void About_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.Handled = true;
+            e.CanExecute = true;
+        }
+
+        private void About_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+            AboutWindow win = new AboutWindow();
+            win.Owner = this;
+            win.ShowDialog();
+        }
     }
 }

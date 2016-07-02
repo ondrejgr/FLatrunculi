@@ -64,6 +64,15 @@ namespace Latrunculi.GUI
             }
         }
 
+        static private MainWindowCommand _about = new MainWindowCommand("O _aplikaci", "About", null, true);
+        static public MainWindowCommand About
+        {
+            get
+            {
+                return _about;
+            }
+        }
+
         static private MainWindowCommand _settings = new MainWindowCommand("_Nastavení hry", "Settings", new KeyGesture(Key.F4));
         static public MainWindowCommand Settings
         {
