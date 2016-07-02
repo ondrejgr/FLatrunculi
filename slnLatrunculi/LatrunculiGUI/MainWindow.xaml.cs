@@ -201,24 +201,25 @@ namespace Latrunculi.GUI
             HelpWindow.Current.Show();
         }
 
-        private void CancelWorkflows()
+        private void PauseGame()
         {
             if (ViewModel.IsMoveSuggestionComputing)
             {
                 if (MainWindowCommands.CancelSuggestMove.CanExecute(null, this))
-                    MainWindowCommands.CancelSuggestMove.Execute(null, this); 
+                    MainWindowCommands.CancelSuggestMove.Execute(null, this);
             }
             if (ViewModel.IsGameRunning)
             {
                 if (MainWindowCommands.Pause.CanExecute(null, this))
                     MainWindowCommands.Pause.Execute(null, this);
             }
+
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             e.Cancel = false;
-            CancelWorkflows();
+            PauseGame();
             if (!e.Cancel && !ViewModel.IsGameCreated)
             {
                 StringBuilder sb = new StringBuilder();
@@ -313,12 +314,13 @@ namespace Latrunculi.GUI
         private void Settings_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = !ViewModel.IsGameRunning;
+            e.CanExecute = true;
         }
 
         private void Settings_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
+            PauseGame();
             if (!ViewModel.IsGameRunning)
             {
                 PlayerSettingsViewModel vm = TryShowSettings();
@@ -335,12 +337,13 @@ namespace Latrunculi.GUI
         private void New_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = !ViewModel.IsGameRunning;
+            e.CanExecute = true;
         }
 
         private void New_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
+            PauseGame();
             if (ViewModel.IsGameRunning)
                 return;
             try
@@ -374,12 +377,13 @@ namespace Latrunculi.GUI
         private void Load_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = !ViewModel.IsGameRunning;
+            e.CanExecute = true;
         }
 
         private void Load_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
+            PauseGame();
             if (!ViewModel.IsGameRunning)
                 TryLoadGame(true);
         }
@@ -387,12 +391,13 @@ namespace Latrunculi.GUI
         private void Save_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = ViewModel.IsGamePaused || ViewModel.IsGameFinished;
+            e.CanExecute = true;
         }
 
         private void Save_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
+            PauseGame();
             if (ViewModel.IsGamePaused || ViewModel.IsGameFinished)
                 TrySaveGame(true, false);
         }
@@ -406,6 +411,7 @@ namespace Latrunculi.GUI
         private void SaveAs_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
+            PauseGame();
             if (ViewModel.IsGamePaused || ViewModel.IsGameFinished)
                 TrySaveGame(true, true);
         }
