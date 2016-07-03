@@ -45,14 +45,13 @@ namespace Latrunculi.GUI
             Controller = controller;
         }
 
-        private void Model_HistoryItemRemoved(object sender, EventArgs e)
+        private void Model_HistoryItemRemoved(object sender, HistoryItemRemovedEventArgs e)
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {
                 try
                 {
-                    if (ViewModel.Board.History.Count > 0)
-                        ViewModel.Board.History.RemoveFirstItem();
+                    ViewModel.Board.History.RemoveMove(e.Index);
                 }
                 catch (Exception exc)
                 {
@@ -86,8 +85,7 @@ namespace Latrunculi.GUI
             {
                 try
                 {
-                    HistoryItem.T item = e.Item;
-                    ViewModel.Board.History.InsertItem(item);
+                    ViewModel.Board.History.InsertMove(e.Index, e.Item);
                 }
                 catch (Exception exc)
                 {

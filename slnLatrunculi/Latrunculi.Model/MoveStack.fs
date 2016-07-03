@@ -16,6 +16,11 @@ module MoveStack =
         | EmptyStack -> empty
         | MoveStack m -> m
 
+    let length (stack: T) =
+        match stack with
+        | EmptyStack -> 0
+        | MoveStack m -> List.length m
+
     let map (f: BoardMove.T -> 'U) (stack: T) =
         let empty: 'U list = list.Empty
         match stack with

@@ -27,9 +27,14 @@ type MoveEventArgs(move: Result<Move.T, Error>) =
     inherit EventArgs()
     member val Move = move
 
-type HistoryItemAddedEventArgs(item: HistoryItem.T) =
+type HistoryItemAddedEventArgs (index: int, item: BoardMove.T) =
     inherit EventArgs()
+    member val Index = index
     member val Item = item
+
+type HistoryItemRemovedEventArgs (index: int) =
+    inherit EventArgs()
+    member val Index = index
 
 type GameErrorEventArgs(error: ErrorDefinitions.Error) =
     inherit EventArgs()
@@ -38,6 +43,7 @@ type GameErrorEventArgs(error: ErrorDefinitions.Error) =
 type ModelChangeEventHandler = delegate of obj * EventArgs -> unit
 type MoveSuggestionComputedEventHandler = delegate of obj * MoveEventArgs -> unit
 type HistoryItemAddedEventHandler = delegate of obj * HistoryItemAddedEventArgs -> unit
+type HistoryItemRemovedEventHandler = delegate of obj * HistoryItemRemovedEventArgs -> unit
 type GameErrorEventHandler = delegate of obj * GameErrorEventArgs -> unit
 
 module GameModel =
@@ -52,7 +58,7 @@ module GameModel =
         let moveSuggestionComputedEvent = new Event<MoveSuggestionComputedEventHandler, MoveEventArgs>()
         let boardChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let historyItemAddedEvent = new Event<HistoryItemAddedEventHandler, HistoryItemAddedEventArgs>()
-        let historyItemRemovedEvent = new Event<ModelChangeEventHandler, EventArgs>()
+        let historyItemRemovedEvent = new Event<HistoryItemRemovedEventHandler, HistoryItemRemovedEventArgs>()
         let historyClearedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let gameErrorEvent = new Event<GameErrorEventHandler, GameErrorEventArgs>()
         let computerPlayerThinkingEvent = new Event<ModelChangeEventHandler, EventArgs>()
@@ -65,8 +71,6 @@ module GameModel =
         member val Result = Rules.NoResult with get, set
 
         member val MoveRequest = MoveRequest.create with get, set
-        member val UndoStack = MoveStack.create with get, set
-        member val RedoStack = MoveStack.create with get, set
         
         [<CLIEvent>]
         member this.StatusChanged = statusChangedEvent.Publish
@@ -109,13 +113,13 @@ module GameModel =
         member this.RaiseBoardChanged() =
             boardChangedEvent.Trigger(this, EventArgs.Empty)
 
-        member this.RaiseHistoryItemAdded(x) =
-            historyItemAddedEvent.Trigger(this, HistoryItemAddedEventArgs(x))
+        member private this.RaiseHistoryItemAdded(index, item) =
+            historyItemAddedEvent.Trigger(this, HistoryItemAddedEventArgs(index, item))
 
-        member this.RaiseHistoryItemRemoved() =
-            historyItemRemovedEvent.Trigger(this, EventArgs.Empty)
+        member private this.RaiseHistoryItemRemoved(index) =
+            historyItemRemovedEvent.Trigger(this, HistoryItemRemovedEventArgs(index))
 
-        member this.RaiseHistoryCleared() =
+        member private this.RaiseHistoryCleared() =
             historyClearedEvent.Trigger(this, EventArgs.Empty)
 
         member this.RaiseGameErrorEvent(error) =
@@ -183,32 +187,13 @@ module GameModel =
                 Success ()
             | None -> Error NoPlayerOnMove
 
-        member this.getNumberOfMovesWithoutRemoval() =
-            this.Board.History.getNumberOfMovesWithoutRemoval
+        member this.NumberOfMovesWithoutRemoval =
+            this.Board.History.NumberOfMovesWithoutRemoval
 
+        member this.pushMoveToHistory (move: BoardMove.T) =
+            let index = this.Board.History.PushMove move
+            this.RaiseHistoryItemAdded(index, move)
 
-        member this.clearRedoStack() =
-            this.RedoStack <- MoveStack.create
-
-        member this.pushToUndoStack (move: BoardMove.T) =
-            this.UndoStack <- MoveStack.push this.UndoStack move
-
-        member this.tryPopFromUndoStack() =
-            maybe {
-                let! popResult = MoveStack.tryPop this.UndoStack
-                this.UndoStack <- fst popResult
-                let move = snd popResult
-                return move }
-
-        member this.pushToRedoStack (move: BoardMove.T) =
-            this.RedoStack <- MoveStack.push this.RedoStack move
-
-        member this.tryPopFromRedoStack() =
-            maybe {
-                let! popResult = MoveStack.tryPop this.RedoStack
-                this.RedoStack <- fst popResult
-                let move = snd popResult
-                return move }
 
     let tryCreate() =
         maybe {

@@ -48,19 +48,19 @@ module GameController =
                 Success move
             | _ -> Error HumanSelectedMoveRequestDoesNotExists
 
-        member this.TryGoToHistoryMove (id: int) =
-            let tryMoveFound (historyItems: HistoryItem.T list) =
-                match List.tryHead historyItems with
-                | Some i when i.ID = id -> Success ()
-                | _ -> Error RequestedHistoryMoveNotFound
-            maybe {
-                let! board = Board.tryInit this.Model.Board Rules.getInitialBoardSquares
-                let historyItems = List.filter (fun (a: HistoryItem.T) -> a.ID <= id) board.History.Items
-                do! tryMoveFound historyItems
-                do! List.foldBack (fun (item: HistoryItem.T) result ->
-                                Board.move board item.BoardMove
-                                Success ()) historyItems (Error RequestedHistoryMoveNotFound) 
-                return this }
+//        TODO: member this.TryGoToHistoryMove (id: int) =
+//            let tryMoveFound (historyItems: HistoryItem.T list) =
+//                match List.tryHead historyItems with
+//                | Some i when i.ID = id -> Success ()
+//                | _ -> Error RequestedHistoryMoveNotFound
+//            maybe {
+//                let! board = Board.tryInit this.Model.Board Rules.getInitialBoardSquares
+//                let historyItems = List.filter (fun (a: HistoryItem.T) -> a.ID <= id) board.History.Items
+//                do! tryMoveFound historyItems
+//                do! List.foldBack (fun (item: HistoryItem.T) result ->
+//                                Board.move board item.BoardMove
+//                                Success ()) historyItems (Error RequestedHistoryMoveNotFound) 
+//                return this }
             
 
         member this.TryNewGame() =
@@ -95,12 +95,13 @@ module GameController =
                         return player.TryGetMove }    
 
             let tryProcessMoveRequestAndChangePlayer =
+                // process UNDO / REDO request
                 let tryProcessRequest request =
                     maybe {
                         match request with
                         | MoveRequest.NoRequest -> return! Error NoMoveRequestExists
                         | MoveRequest.UndoRequest boardMove ->
-                            Board.invmove this.Model.Board boardMove |> ignore
+                            Board.invmove this.Model.Board boardMove
                             Board.removeMoveFromHistory this.Model.Board
                             this.Model.RaiseHistoryItemRemoved()
                             this.Model.MoveRequest <- MoveRequest.create 
@@ -109,7 +110,7 @@ module GameController =
                             // redo move gets validated
                             let! color = this.Model.tryGetActiveColor()
                             let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color bm.Move
-                            Board.move this.Model.Board boardMove |> ignore
+                            Board.move this.Model.Board boardMove
                             Board.addMoveToHistory this.Model.Board boardMove
                             this.Model.RaiseHistoryItemAdded <| List.head this.Model.Board.History
                             this.Model.MoveRequest <- MoveRequest.create 
@@ -132,8 +133,10 @@ module GameController =
 
             let tryApplyBoardMoveAndChangePlayer (boardMove: BoardMove.T) =
                 maybe {
-                    // apply move
-                    Board.move this.Model.Board boardMove |> ignore
+                    // apply PLAYER move
+                    Board.move this.Model.Board boardMove
+                    this.Model.pushMoveToHistory boardMove
+
                     Board.pushMoveToHistory this.Model.Board boardMove
 
                     // update stack
@@ -328,12 +331,10 @@ module GameController =
                                 // validate and create board move
                                 let! color = this.Model.tryGetActiveColor()
                                 let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color move
-                                // apply move
-                                Board.move this.Model.Board boardMove |> ignore
-                                Board.addMoveToHistory this.Model.Board boardMove
-                                this.Model.pushToUndoStack boardMove
-                                this.Model.RaiseHistoryItemAdded <| List.head this.Model.Board.History
-
+                                // apply move and add it to history
+                                Board.move this.Model.Board boardMove
+                                this.Model.pushMoveToHistory boardMove
+                                // get result
                                 this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
                                 do! this.Model.trySwapActiveColor()
                                 return! Success this.Model.Result }              
@@ -353,10 +354,15 @@ module GameController =
                         let! newPlayerSettings = PlayerSettingsDto.tryToPlayerSettings file.PlayerSettings
                         this.Model.changePlayerSettings newPlayerSettings |> ignore
 
-                        let! movesList = MovesDto.tryToMoveList file.History.Moves
-                        let! gameResult = this.TryApplyMovesLoadedFromFile movesList
-                        let! redoStack = RedoStackDto.tryToRedoStack file.History.RedoStack
-                        this.Model.RedoStack <- redoStack
+                        // get moves from undoStack
+                        let! undoStack = MoveStackDto.tryToMoveStack file.History.UndoStack
+                        // apply loaded moves
+                        let moves = MoveStack.map (fun item -> item.Move) undoStack
+                        let! gameResult = this.TryApplyMovesLoadedFromFile moves
+
+                        // load redoStack
+                        let! redoStack = MoveStackDto.tryToMoveStack file.History.RedoStack
+                        History.setRedoStack this.Model.Board.History redoStack
 
                         this.Model.RaiseBoardChanged()
 
@@ -377,9 +383,9 @@ module GameController =
                 do! checkGameStatus
                 let! pausedController = this.TryPause()
 
-                let! move = this.Model.tryPopFromUndoStack()
-                this.Model.MoveRequest <- MoveRequest.createUndoRequest move
-                this.Model.pushToRedoStack move
+//TODO:                let! move = this.Model.tryPopFromUndoStack()
+//                this.Model.MoveRequest <- MoveRequest.createUndoRequest move
+//                this.Model.pushToRedoStack move
 
                 let! resumedController = this.TryResume()
                 return this }
@@ -392,9 +398,9 @@ module GameController =
                 do! checkGameStatus
                 let! pausedController = this.TryPause()
 
-                let! move = this.Model.tryPopFromRedoStack()
-                this.Model.MoveRequest <- MoveRequest.createRedoRequest move
-                this.Model.pushToUndoStack move
+//TODO:                let! move = this.Model.tryPopFromRedoStack()
+//                this.Model.MoveRequest <- MoveRequest.createRedoRequest move
+//                this.Model.pushToUndoStack move
 
                 let! resumedController = this.TryResume()
                 return this }

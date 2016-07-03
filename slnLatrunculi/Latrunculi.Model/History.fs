@@ -9,31 +9,31 @@ module History =
 
         member this.PushMove (move: BoardMove.T) =
             this.UndoStack <- MoveStack.push this.UndoStack move
+            MoveStack.length this.UndoStack
 
         member this.Items =
             let undoList = MoveStack.toList this.UndoStack
             let redoList = MoveStack.toList this.RedoStack
-            let items = Seq.concat [undoList; redoList]
-            snd <| Seq.foldBack (fun item state ->
-                                let id = 1 + fst state
-                                let lst = snd state
-                                let newItem = HistoryItem.create id item
-                                (id, newItem::lst)) 
-                            items
-                            (0, [])
+            List.concat [undoList; redoList]
 
-        member this.getNumberOfMoves() =
+        member this.NumberOfMoves =
             List.fold (fun result i -> result + 1) 0 <| MoveStack.toList this.UndoStack
 
-        member this.getNumberOfMovesWithoutRemoval() =
+        member this.NumberOfMovesWithoutRemoval =
             List.foldBack (fun item result ->
                             if BoardMove.anyPiecesRemoved item then 0 else result + 1)
                         (MoveStack.toList this.UndoStack) 0
 
+    let setUndoStack (history: T) (stack: MoveStack.T) =
+        history.UndoStack <- stack
+
+    let setRedoStack (history: T) (stack: MoveStack.T) =
+        history.RedoStack <- stack
+
     let clone (source: T) =
         let result = T()
-        result.UndoStack <- source.UndoStack
-        result.RedoStack <- source.RedoStack
+        setUndoStack source source.UndoStack
+        setRedoStack source source.RedoStack
         result
         
     let create() =

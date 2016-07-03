@@ -108,7 +108,7 @@ namespace Latrunculi.ViewModel
         {
             get
             {
-                return 30 - Model.getNumberOfMovesWithoutRemoval();
+                return 30 - Model.NumberOfMovesWithoutRemoval;
             }
         }
 

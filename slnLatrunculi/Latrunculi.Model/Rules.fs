@@ -19,7 +19,7 @@ module Rules =
     let checkVictory board =
         let whiteCount = Board.whitePiecesCount board
         let blackCount = Board.blackPiecesCount board
-        let numOfMovesWithoutRemoval = History.getNumberOfMovesWithoutRemoval board.History
+        let numOfMovesWithoutRemoval = board.History.NumberOfMovesWithoutRemoval
         let getResult =
             if whiteCount = blackCount
                 then GameOverResult Draw

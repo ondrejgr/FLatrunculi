@@ -65,9 +65,6 @@ module Board =
     let tryGetSquare (board: T) coord =
         Success (getSquare board coord)
 
-    let pushMoveToHistory (board: T) (move: BoardMove.T) =
-        board.History.PushMove move
-
     let move (board: T) (move: BoardMove.T) =
         let m = move.Move 
         board.ChangeSquare m.Source m.NewSourceSquare
