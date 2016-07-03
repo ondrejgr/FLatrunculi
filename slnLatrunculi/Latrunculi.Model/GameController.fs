@@ -135,15 +135,8 @@ module GameController =
                 maybe {
                     // apply PLAYER move
                     Board.move this.Model.Board boardMove
-                    this.Model.pushMoveToHistory boardMove
+                    this.Model.pushMoveToHistoryAndClearRedoStack boardMove
 
-                    Board.pushMoveToHistory this.Model.Board boardMove
-
-                    // update stack
-                    this.Model.clearRedoStack()
-                    this.Model.pushToUndoStack boardMove
-
-                    this.Model.RaiseHistoryItemAdded <| List.head this.Model.Board.History
                     // update board
                     this.Model.RaiseBoardChanged()
 

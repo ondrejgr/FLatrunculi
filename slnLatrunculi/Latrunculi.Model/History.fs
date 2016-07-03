@@ -7,17 +7,25 @@ module History =
         member val UndoStack = MoveStack.create with get, set
         member val RedoStack = MoveStack.create with get, set
 
-        member this.PushMove (move: BoardMove.T) =
+        member this.ClearRedoStack() =
+            this.RedoStack <- MoveStack.create
+
+        member this.PushMoveToUndoStack (move: BoardMove.T) =
             this.UndoStack <- MoveStack.push this.UndoStack move
-            MoveStack.length this.UndoStack
 
         member this.Items =
             let undoList = MoveStack.toList this.UndoStack
             let redoList = MoveStack.toList this.RedoStack
             List.concat [undoList; redoList]
 
+        member this.UndoItems =
+            MoveStack.toList this.UndoStack
+
+        member this.UndoItemsCount =
+            List.length this.UndoItems
+
         member this.NumberOfMoves =
-            List.fold (fun result i -> result + 1) 0 <| MoveStack.toList this.UndoStack
+            List.fold (fun result i -> result + 1) 0 <| this.Items
 
         member this.NumberOfMovesWithoutRemoval =
             List.foldBack (fun item result ->

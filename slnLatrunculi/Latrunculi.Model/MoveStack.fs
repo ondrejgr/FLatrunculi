@@ -14,7 +14,7 @@ module MoveStack =
         let empty: BoardMove.T list = List.empty
         match stack with
         | EmptyStack -> empty
-        | MoveStack m -> m
+        | MoveStack m -> List.rev m
 
     let length (stack: T) =
         match stack with

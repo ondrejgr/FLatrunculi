@@ -36,6 +36,10 @@ type HistoryItemRemovedEventArgs (index: int) =
     inherit EventArgs()
     member val Index = index
 
+type HistoryItemsAddedEventArgs (items: BoardMove.T list) =
+    inherit EventArgs()
+    member val Items = items
+
 type GameErrorEventArgs(error: ErrorDefinitions.Error) =
     inherit EventArgs()
     member val Error = error with get
@@ -44,6 +48,7 @@ type ModelChangeEventHandler = delegate of obj * EventArgs -> unit
 type MoveSuggestionComputedEventHandler = delegate of obj * MoveEventArgs -> unit
 type HistoryItemAddedEventHandler = delegate of obj * HistoryItemAddedEventArgs -> unit
 type HistoryItemRemovedEventHandler = delegate of obj * HistoryItemRemovedEventArgs -> unit
+type HistoryItemsAddedEventHandler = delegate of obj * HistoryItemsAddedEventArgs -> unit
 type GameErrorEventHandler = delegate of obj * GameErrorEventArgs -> unit
 
 module GameModel =
@@ -60,6 +65,7 @@ module GameModel =
         let historyItemAddedEvent = new Event<HistoryItemAddedEventHandler, HistoryItemAddedEventArgs>()
         let historyItemRemovedEvent = new Event<HistoryItemRemovedEventHandler, HistoryItemRemovedEventArgs>()
         let historyClearedEvent = new Event<ModelChangeEventHandler, EventArgs>()
+        let historyItemsAddedEvent = new Event<HistoryItemsAddedEventHandler, HistoryItemsAddedEventArgs>()
         let gameErrorEvent = new Event<GameErrorEventHandler, GameErrorEventArgs>()
         let computerPlayerThinkingEvent = new Event<ModelChangeEventHandler, EventArgs>()
               
@@ -91,6 +97,8 @@ module GameModel =
         [<CLIEvent>]
         member this.HistoryCleared = historyClearedEvent.Publish
         [<CLIEvent>]
+        member this.HistoryItemsAdded = historyItemsAddedEvent.Publish
+        [<CLIEvent>]
         member this.GameError = gameErrorEvent.Publish
         [<CLIEvent>]
         member this.ComputerPlayerThinking = computerPlayerThinkingEvent.Publish
@@ -119,8 +127,11 @@ module GameModel =
         member private this.RaiseHistoryItemRemoved(index) =
             historyItemRemovedEvent.Trigger(this, HistoryItemRemovedEventArgs(index))
 
-        member private this.RaiseHistoryCleared() =
+        member this.RaiseHistoryCleared() =
             historyClearedEvent.Trigger(this, EventArgs.Empty)
+
+        member private this.RaiseHistoryItemsAdded(items) =
+            historyItemsAddedEvent.Trigger(this, HistoryItemsAddedEventArgs(items))
 
         member this.RaiseGameErrorEvent(error) =
             gameErrorEvent.Trigger(this, GameErrorEventArgs(error))
@@ -191,9 +202,13 @@ module GameModel =
             this.Board.History.NumberOfMovesWithoutRemoval
 
         member this.pushMoveToHistory (move: BoardMove.T) =
-            let index = this.Board.History.PushMove move
+            let index = this.Board.History.UndoItemsCount
+            this.Board.History.PushMoveToUndoStack move
             this.RaiseHistoryItemAdded(index, move)
 
+        member this.pushMoveToHistoryAndClearRedoStack (move: BoardMove.T) =
+            this.Board.History.ClearRedoStack()       
+            this.RaiseHistoryItemsAdded(this.Board.History.UndoItems)
 
     let tryCreate() =
         maybe {
