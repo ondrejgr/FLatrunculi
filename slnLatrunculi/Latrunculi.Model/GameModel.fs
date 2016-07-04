@@ -9,20 +9,6 @@ type GameStatus =
     | WaitingForHumanPlayerMove
     | Finished
 
-module MoveRequest =
-    [<StructuralEquality;NoComparison>]
-    type T =
-        | NoRequest
-        | UndoRequest of BoardMove.T
-        | RedoRequest of BoardMove.T
-
-    let create =
-        NoRequest
-    let createUndoRequest (move: BoardMove.T) =
-        UndoRequest move
-    let createRedoRequest (move: BoardMove.T) =
-        RedoRequest move
-
 type MoveEventArgs(move: Result<Move.T, Error>) =
     inherit EventArgs()
     member val Move = move
@@ -75,9 +61,7 @@ module GameModel =
         member val ActiveColor = None with get, set
         member val IsMoveSuggestionComputing = false with get, set
         member val Result = Rules.NoResult with get, set
-
-        member val MoveRequest = MoveRequest.create with get, set
-        
+       
         [<CLIEvent>]
         member this.StatusChanged = statusChangedEvent.Publish
         [<CLIEvent>]

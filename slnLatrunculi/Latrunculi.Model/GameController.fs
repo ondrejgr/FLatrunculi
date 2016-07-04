@@ -79,7 +79,6 @@ module GameController =
                 return this }
             
         member private this.ReportGameError e =
-            this.Model.MoveRequest <- MoveRequest.create
             this.Model.setStatus(GameStatus.Paused) |> ignore
             this.Model.RaiseGameErrorEvent(e)
 
@@ -93,43 +92,6 @@ module GameController =
                         return player.TryGetMove
                     | _ ->
                         return player.TryGetMove }    
-
-            let tryProcessMoveRequestAndChangePlayer =
-                // process UNDO / REDO request
-                let tryProcessRequest request =
-                    maybe {
-                        match request with
-                        | MoveRequest.NoRequest -> return! Error NoMoveRequestExists
-                        | MoveRequest.UndoRequest boardMove ->
-                            Board.invmove this.Model.Board boardMove
-                            Board.removeMoveFromHistory this.Model.Board
-                            this.Model.RaiseHistoryItemRemoved()
-                            this.Model.MoveRequest <- MoveRequest.create 
-                            return ()
-                        | MoveRequest.RedoRequest bm ->
-                            // redo move gets validated
-                            let! color = this.Model.tryGetActiveColor()
-                            let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color bm.Move
-                            Board.move this.Model.Board boardMove
-                            Board.addMoveToHistory this.Model.Board boardMove
-                            this.Model.RaiseHistoryItemAdded <| List.head this.Model.Board.History
-                            this.Model.MoveRequest <- MoveRequest.create 
-                            return () }
-                maybe {
-                    // process undo/redo
-                    do! tryProcessRequest this.Model.MoveRequest
-                    // update board
-                    this.Model.RaiseBoardChanged()
-
-                    // check game over
-                    this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
-                    do! this.Model.trySwapActiveColor()
-                    match this.Model.Result with
-                    | Rules.GameOverResult _ ->
-                        return Finished
-                    | Rules.NoResult ->
-                        let! controller = this.TryPause()
-                        return Continue }
 
             let tryApplyBoardMoveAndChangePlayer (boardMove: BoardMove.T) =
                 maybe {
@@ -157,23 +119,18 @@ module GameController =
                     return! tryApplyBoardMoveAndChangePlayer boardMove }
 
             async {
-                match this.Model.MoveRequest with
-                | MoveRequest.UndoRequest _ | MoveRequest.RedoRequest _->
-                    let moveProcessResult = tryProcessMoveRequestAndChangePlayer
-                    return moveProcessResult
-                | MoveRequest.NoRequest ->
-                    match getPlayerMoveWorkflow with
-                    | Success getPlayerMove ->
-                        // get player move
-                        let! moveResult = getPlayerMove()
-                        match moveResult with
-                        | Success move ->
-                            // apply move
-                            return tryApplyMoveAndChangePlayer move
-                        | Error e ->
-                            return Error e
+                match getPlayerMoveWorkflow with
+                | Success getPlayerMove ->
+                    // get player move
+                    let! moveResult = getPlayerMove()
+                    match moveResult with
+                    | Success move ->
+                        // apply move
+                        return tryApplyMoveAndChangePlayer move
                     | Error e ->
-                        return Error e }
+                        return Error e
+                | Error e ->
+                    return Error e }
 
         member private this.GameLoop(): Async<unit> =
             async {
