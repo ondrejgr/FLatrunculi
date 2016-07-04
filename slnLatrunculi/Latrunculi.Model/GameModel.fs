@@ -184,11 +184,16 @@ module GameModel =
         member this.NumberOfMovesWithoutRemoval =
             this.Board.History.NumberOfMovesWithoutRemoval
 
-        member this.pushMoveToHistoryAndClearRedoStack (move: BoardMove.T) =
+        member this.clearRedoStack() =
             let count = this.Board.History.RedoItemsCount
-            this.Board.History.ClearRedoStack()       
-            this.RaiseHistoryItemsRemoved(count)
+            match count with
+            | count when count > 0 ->
+                this.Board.History.ClearRedoStack()       
+                this.RaiseHistoryItemsRemoved(count)
+            | _ -> ()
 
+        member this.pushMoveToHistoryAndClearRedoStack (move: BoardMove.T) =
+            this.clearRedoStack()
             this.Board.History.PushMoveToUndoStack move
             this.RaiseHistoryItemAdded(move)
 

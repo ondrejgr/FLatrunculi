@@ -7,11 +7,36 @@ module History =
         member val UndoStack = MoveStack.create with get, set
         member val RedoStack = MoveStack.create with get, set
 
+        member private this.setUndoStack (stack: MoveStack.T) =
+            this.UndoStack <- stack
+
+        member private this.setRedoStack (stack: MoveStack.T) =
+            this.RedoStack <- stack
+
         member this.ClearRedoStack() =
             this.RedoStack <- MoveStack.create
 
+        member private this.tryPopMoveFromStack (target: MoveStack.T -> unit, stack: MoveStack.T) =
+            maybe {
+                let! popResult = MoveStack.tryPop stack
+                target <| fst popResult
+                let boardMove = snd popResult
+                return boardMove }
+
+        member this.tryPopMoveFromUndoStack() =
+            this.tryPopMoveFromStack(this.setUndoStack, this.UndoStack)
+
+        member this.tryPopMoveFromRedoStack() =
+            this.tryPopMoveFromStack(this.setRedoStack, this.RedoStack)
+
+        member private this.PushMoveToStack (target: MoveStack.T -> unit, stack: MoveStack.T, move: BoardMove.T) =
+            target <| MoveStack.push stack move
+
         member this.PushMoveToUndoStack (move: BoardMove.T) =
-            this.UndoStack <- MoveStack.push this.UndoStack move
+            this.PushMoveToStack(this.setUndoStack, this.UndoStack, move)
+
+        member this.PushMoveToRedoStack (move: BoardMove.T) =
+            this.PushMoveToStack(this.setRedoStack, this.RedoStack, move)
 
         member this.Items =
             let undoList = MoveStack.toList this.UndoStack
@@ -39,12 +64,6 @@ module History =
         | _ ->
             Success (Seq.toList <| Seq.take x history.UndoItems)
 
-    let setUndoStack (history: T) (stack: MoveStack.T) =
-        history.UndoStack <- stack
-
-    let setRedoStack (history: T) (stack: MoveStack.T) =
-        history.RedoStack <- stack
-
     let isUndoStackEmpty (history: T) =
         MoveStack.isEmpty history.UndoStack
 
@@ -53,8 +72,8 @@ module History =
 
     let clone (source: T) =
         let result = T()
-        setUndoStack source source.UndoStack
-        setRedoStack source source.RedoStack
+        result.UndoStack <- source.UndoStack
+        result.RedoStack <- source.RedoStack
         result
         
     let create() =
