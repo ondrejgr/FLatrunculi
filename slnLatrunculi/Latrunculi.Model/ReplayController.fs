@@ -10,55 +10,6 @@ module ReplayController =
         member private this.Model = model
         member val private cts: CancellationTokenSource option = None with get, set
 
-        member this.tryIncPosition(x: int) =
-            let tryMoveFound (newId: int) (historyItems: HistoryItem.T list) =
-                match List.tryHead historyItems with
-                | Some i when i.ID = newId -> Success ()
-                | _ -> Error RequestedHistoryMoveNotFound
-            maybe {
-                let newId = x + 1
-
-                match newId with
-                | newId when newId > this.Model.getNumberOfMovesInHistory() ->
-                    return -1
-
-                | newId ->
-                    let! board = Board.trySet this.Model.Board Rules.getInitialBoardSquares
-                    let historyItems = List.filter (fun (a: HistoryItem.T) -> a.ID <= newId) this.Model.Board.History
-                    do! tryMoveFound newId historyItems
-                    do! List.foldBack (fun (item: HistoryItem.T) result ->
-                                    Board.move board item.BoardMove
-                                    Success ()) historyItems (Error RequestedHistoryMoveNotFound) 
-                    this.Model.RaiseBoardChanged()
-                    this.Model.RaisePositionChangedEvent(newId)
-                    this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
-                    return newId }
-
-        member this.tryDecPosition(x: int) =
-            let tryMoveFound (newId: int) (historyItems: HistoryItem.T list) =
-                match List.tryHead historyItems with
-                | Some i when i.ID = newId -> Success ()
-                | _ -> Error RequestedHistoryMoveNotFound
-            maybe {
-                let! board = Board.trySet this.Model.Board Rules.getInitialBoardSquares
-                let newId = x - 1
-
-                match newId with
-                | 0 -> 
-                    this.Model.RaiseBoardChanged()
-                    this.Model.RaisePositionChangedEvent(0)
-                    return 0
-                | newId ->
-                    let historyItems = List.filter (fun (a: HistoryItem.T) -> a.ID <= newId) this.Model.Board.History
-                    do! tryMoveFound newId historyItems
-                    do! List.foldBack (fun (item: HistoryItem.T) result ->
-                                    Board.move board item.BoardMove
-                                    Success ()) historyItems (Error RequestedHistoryMoveNotFound) 
-                    this.Model.RaiseBoardChanged()
-                    this.Model.RaisePositionChangedEvent(newId)
-                    this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
-                    return newId }
-
         member private this.TryGetCts() =
             match this.cts with
             | Some cts -> Success cts
@@ -70,25 +21,6 @@ module ReplayController =
             this.cts <- Some (new CancellationTokenSource())
             Success (Option.get this.cts)
 
-        member this.RunTimer(id: int) =
-            async {
-                use! cnl = Async.OnCancel(fun () -> this.Model.setStatus(ReplayStatus.Paused) |> ignore) 
-                use timer = new System.Timers.Timer(this.Model.Interval)
-                timer.Enabled <- true
-                let! result = Async.AwaitEvent(timer.Elapsed)
-                timer.Start()
-                match this.tryIncPosition(id) with
-                | Success newId ->
-                    match newId with
-                    | newId when newId = -1 -> 
-                        this.Model.setStatus ReplayStatus.Paused |> ignore
-                        this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
-                        return ()
-                    | newId -> return! this.RunTimer(newId)
-                | Error e ->
-                    this.Model.RaiseGameErrorEvent(e)
-                    return () }
-
         member this.tryPause() =
             let checkGameStatus =
                 if this.Model.Status <> ReplayStatus.Running then Error GameIsNotRunning else Success ()
@@ -99,21 +31,17 @@ module ReplayController =
                 this.Model.setStatus ReplayStatus.Paused |> ignore
                 return this }
 
-        member this.tryResume(id: int) =
+        member this.tryResume() =
             let checkGameStatus =
                 if this.Model.Status = ReplayStatus.Running then Error GameIsAlreadyRunning else Success ()
             maybe {
                 do! checkGameStatus
                 let! cts = this.TryCreateCts()
                 this.Model.setStatus ReplayStatus.Running |> ignore
-                Async.Start(this.RunTimer(id), cts.Token)
+                Async.Start(this.RunTimer(), cts.Token)
                 return this }
                 
         member this.tryGoToPosition (id: int) =
-            let tryMoveFound (historyItems: HistoryItem.T list) =
-                match List.tryHead historyItems with
-                | Some i when i.ID = id -> Success ()
-                | _ -> Error RequestedHistoryMoveNotFound
             let tryPause =
                 maybe {
                     match this.Model.Status with
@@ -132,16 +60,39 @@ module ReplayController =
                     this.Model.setStatus ReplayStatus.Paused |> ignore
                     return this
                 | _ ->
-                    let historyItems = List.filter (fun (a: HistoryItem.T) -> a.ID <= id) this.Model.Board.History
-                    do! tryMoveFound historyItems
-                    do! List.foldBack (fun (item: HistoryItem.T) result ->
-                                    Board.move board item.BoardMove
-                                    Success ()) historyItems (Error RequestedHistoryMoveNotFound) 
+                    let! historyItems = History.tryTakeUndoStackItems id this.Model.Board.History
+                    let boardMoveFn = Board.move board
+                    List.iter boardMoveFn historyItems
 
                     this.Model.RaiseBoardChanged()
                     this.Model.setStatus ReplayStatus.Paused |> ignore
                     this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
                     return this }
+
+
+        member this.tryIncPosition() =
+            this.tryGoToPosition (this.Model.Position + 1)
+
+        member this.tryDecPosition() =
+            this.tryGoToPosition (this.Model.Position - 1)
+
+        member this.RunTimer() =
+            async {
+                use! cnl = Async.OnCancel(fun () -> this.Model.setStatus(ReplayStatus.Paused) |> ignore) 
+                use timer = new System.Timers.Timer(this.Model.Interval)
+                timer.Start()
+                let! result = Async.AwaitEvent(timer.Elapsed)
+
+                match this.tryIncPosition() with
+                | Success _ ->
+                    return! this.RunTimer()
+                | Error RequestedHistoryMoveNotFound ->
+                    this.Model.setStatus ReplayStatus.Paused |> ignore
+                    this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
+                    return ()
+                | Error e ->
+                    this.Model.RaiseGameErrorEvent(e)
+                    return () }
 
     let tryCreate (model: ReplayModel.T): Result<T, Error> =
         maybe {

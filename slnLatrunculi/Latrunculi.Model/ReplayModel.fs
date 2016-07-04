@@ -33,6 +33,7 @@ module ReplayModel =
         member val Status = Created with get, set
         member val Result = Rules.NoResult with get, set
 
+        member val Position = -1 with get, set
         member val Interval = 1000.0 with get, set
 
         [<CLIEvent>]
@@ -122,7 +123,7 @@ module ReplayModel =
 
 
         member this.getNumberOfMovesInHistory() =
-            History.getNumberOfMoves this.Board.History
+            this.Board.History.UndoItemsCount
 
     let tryCreate(board: Board.T, playerSettings: PlayerSettings.T): Result<T, Error> =
         maybe {

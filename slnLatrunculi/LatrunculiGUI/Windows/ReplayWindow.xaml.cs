@@ -48,6 +48,7 @@ namespace Latrunculi.GUI
             {
                 ignoreChange = true;
                 slider.Value = id;
+                ViewModel.Position = id;
                 ignoreChange = false;
             }), System.Windows.Threading.DispatcherPriority.Input, e.ID);
         }
@@ -96,7 +97,6 @@ namespace Latrunculi.GUI
             {
                 if (!ignoreChange)
                 {
-                    ViewModel.Position = (int)e.NewValue;
                     ModelException.TryThrow<ReplayController.T>(Controller.tryGoToPosition((int)e.NewValue));
                 }
             }
@@ -118,7 +118,7 @@ namespace Latrunculi.GUI
             {
                 try
                 {
-                    ModelException.TryThrow<int>(Controller.tryDecPosition(ViewModel.Position));
+                    ModelException.TryThrow<ReplayController.T>(Controller.tryDecPosition());
                 }
                 catch (Exception exc)
                 {
@@ -139,7 +139,7 @@ namespace Latrunculi.GUI
             {
                 try
                 {
-                    ModelException.TryThrow<int>(Controller.tryIncPosition(ViewModel.Position));
+                    ModelException.TryThrow<ReplayController.T>(Controller.tryIncPosition());
                 }
                 catch (Exception exc)
                 {
@@ -182,7 +182,7 @@ namespace Latrunculi.GUI
             {
                 if (ViewModel.IsPaused || ViewModel.IsCreated)
                 {
-                    ModelException.TryThrow<ReplayController.T>(Controller.tryResume(ViewModel.Position));
+                    ModelException.TryThrow<ReplayController.T>(Controller.tryResume());
                     CommandManager.InvalidateRequerySuggested();
                 }
             }

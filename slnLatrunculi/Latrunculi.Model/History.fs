@@ -24,13 +24,17 @@ module History =
         member this.UndoItemsCount =
             List.length this.UndoItems
 
-        member this.NumberOfMoves =
-            List.fold (fun result i -> result + 1) 0 <| this.Items
-
         member this.NumberOfMovesWithoutRemoval =
-            List.foldBack (fun item result ->
+            List.fold (fun result item ->
                             if BoardMove.anyPiecesRemoved item then 0 else result + 1)
-                        (MoveStack.toList this.UndoStack) 0
+                        0 (MoveStack.toList this.UndoStack)
+
+    let tryTakeUndoStackItems (x: int) (history: T)  =
+        match x with
+        | x when x < 1 -> Error RequestedHistoryMoveNotFound
+        | x when x > history.UndoItemsCount -> Error RequestedHistoryMoveNotFound
+        | _ ->
+            Success (Seq.toList <| Seq.take x history.UndoItems)
 
     let setUndoStack (history: T) (stack: MoveStack.T) =
         history.UndoStack <- stack
