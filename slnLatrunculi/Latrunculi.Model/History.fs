@@ -42,6 +42,12 @@ module History =
     let setRedoStack (history: T) (stack: MoveStack.T) =
         history.RedoStack <- stack
 
+    let isUndoStackEmpty (history: T) =
+        MoveStack.isEmpty history.UndoStack
+
+    let isRedoStackEmpty (history: T) =
+        MoveStack.isEmpty history.RedoStack
+
     let clone (source: T) =
         let result = T()
         setUndoStack source source.UndoStack

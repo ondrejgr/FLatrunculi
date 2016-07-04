@@ -134,7 +134,7 @@ namespace Latrunculi.ViewModel
         {
             get
             {
-                return !MoveStack.isEmpty(Model.UndoStack);
+                return !History.isUndoStackEmpty(Model.Board.History);
             }
         }
 
@@ -142,7 +142,7 @@ namespace Latrunculi.ViewModel
         {
             get
             {
-                return !MoveStack.isEmpty(Model.RedoStack);
+                return !History.isRedoStackEmpty(Model.Board.History);
             }
         }
 
