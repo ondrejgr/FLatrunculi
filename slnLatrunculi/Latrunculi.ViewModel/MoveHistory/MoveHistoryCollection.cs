@@ -16,16 +16,16 @@ namespace Latrunculi.ViewModel
         {
             OnPropertyChanged(new PropertyChangedEventArgs(propName));
         }
-
-        public void InsertMove(int index, BoardMove.T item)
+        
+        public void InsertMove(int moveNumber, BoardMove.T item)
         {
             PieceTypes pt = PieceTypes.ptNone;
             if (item.Color.Equals(Piece.Colors.Black))
                 pt = PieceTypes.ptBlack;
             else if (item.Color.Equals(Piece.Colors.White))
                 pt = PieceTypes.ptWhite;
-            
-            Insert(index, new MoveHistoryItem(index + 1, pt,
+
+            Insert(0, new MoveHistoryItem(moveNumber, pt,
                      Coord.toString(BoardMove.getSourceCoord(item)), 
                      Coord.toString(BoardMove.getTargetCoord(item)),
                      BoardMove.getRemovedPiecesCount(item)));

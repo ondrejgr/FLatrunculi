@@ -272,9 +272,8 @@ module GameController =
 
         member this.TryApplyMovesLoadedFromFile (moves: Move.T list) =
             maybe {
-                let! controller = this.TryNewGame()
-                return! Seq.fold
-                    (fun result (move: Move.T) ->
+                return! Seq.foldBack
+                    (fun (move: Move.T) result ->
                         match result with 
                         | Success Rules.GameResult.NoResult ->
                             maybe {
@@ -283,37 +282,38 @@ module GameController =
                                 let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color move
                                 // apply move and add it to history
                                 Board.move this.Model.Board boardMove
-                                this.Model.pushMoveToHistory boardMove
                                 // get result
                                 this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
                                 do! this.Model.trySwapActiveColor()
                                 return! Success this.Model.Result }              
                         | Success s -> Success s      
                         | Error e -> Error e) 
-                    (Success Rules.GameResult.NoResult) moves }
+                    moves (Success Rules.GameResult.NoResult) }
 
         member this.TryLoadGame (fileName: string) =
             let checkGameStatus =
                 if this.Model.Status = GameStatus.Running then Error GameIsRunning else Success ()
             match maybe {
                         do! checkGameStatus
-                        model.setStatus GameStatus.Paused |> ignore
+                        this.Model.setStatus GameStatus.Paused |> ignore
+                        let! controller = this.TryNewGame()
+
                         // load file
                         let! file = GameFileSerializer.TryLoadFile fileName
                         // change player settings
                         let! newPlayerSettings = PlayerSettingsDto.tryToPlayerSettings file.PlayerSettings
                         this.Model.changePlayerSettings newPlayerSettings |> ignore
 
-                        // get moves from undoStack
-                        let! undoStack = MoveStackDto.tryToMoveStack file.History.UndoStack
+                        // load game history
+                        do! HistoryDto.tryToHistory file.History this.Model.Board.History
+
                         // apply loaded moves
-                        let moves = MoveStack.map (fun item -> item.Move) undoStack
+                        let moves = MoveStack.map (fun item -> item.Move) this.Model.Board.History.UndoStack
                         let! gameResult = this.TryApplyMovesLoadedFromFile moves
 
-                        // load redoStack
-                        let! redoStack = MoveStackDto.tryToMoveStack file.History.RedoStack
-                        History.setRedoStack this.Model.Board.History redoStack
-
+                        // render history                                                
+                        List.iter this.Model.RaiseHistoryItemAdded this.Model.Board.History.Items
+                        // render board
                         this.Model.RaiseBoardChanged()
 
                         match gameResult with

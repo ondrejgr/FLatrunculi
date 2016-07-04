@@ -22,7 +22,10 @@ module History =
             MoveStack.toList this.UndoStack
 
         member this.UndoItemsCount =
-            List.length this.UndoItems
+            MoveStack.length this.UndoStack
+
+        member this.RedoItemsCount =
+            MoveStack.length this.RedoStack
 
         member this.NumberOfMovesWithoutRemoval =
             List.fold (fun result item ->
