@@ -1,5 +1,14 @@
 ﻿namespace Latrunculi.Model
 
+module HistoryItem = 
+    [<StructuralEquality;NoComparison>]
+    type T = {
+        ID: int;
+        Move: BoardMove.T }
+
+    let create id move =
+        { ID = id; Move = move}
+
 module History =
 
     [<NoEquality;NoComparison>]
@@ -41,10 +50,12 @@ module History =
         member this.Items =
             let undoList = MoveStack.toList this.UndoStack
             let redoList = MoveStack.toList this.RedoStack
-            List.concat [undoList; redoList]
-
-        member this.UndoItems =
-            MoveStack.toList this.UndoStack
+            let undoRedoList = List.concat [undoList; redoList]
+            let result = List.fold (fun result item ->
+                                    let id = 1 + fst result
+                                    let newItem = HistoryItem.create id item
+                                    (id, newItem::(snd result))) (0, []) undoRedoList
+            snd result
 
         member this.UndoItemsCount =
             MoveStack.length this.UndoStack
@@ -57,12 +68,13 @@ module History =
                             if BoardMove.anyPiecesRemoved item then 0 else result + 1)
                         0 (MoveStack.toList this.UndoStack)
 
-    let tryTakeUndoStackItems (x: int) (history: T)  =
+    let tryTakeUndoStackMoves (x: int) (history: T)  =
         match x with
         | x when x < 1 -> Error RequestedHistoryMoveNotFound
         | x when x > history.UndoItemsCount -> Error RequestedHistoryMoveNotFound
         | _ ->
-            Success (Seq.toList <| Seq.take x history.UndoItems)
+            let undoMoves = MoveStack.toList history.UndoStack
+            Success (Seq.toList <| Seq.take x undoMoves)
 
     let isUndoStackEmpty (history: T) =
         MoveStack.isEmpty history.UndoStack
