@@ -50,7 +50,25 @@ namespace Latrunculi.GUI
                 try
                 {
                     ViewModel.Board.History.ClearAndAddHistoryItems(e.Items);
-
+                    try
+                    {
+                        ignoreChange = true;
+                        Result<int, ErrorDefinitions.Error> result = Controller.tryPopMoveNumberFromUndoStack();
+                        if (result.IsSuccess)
+                        {
+                            int id = ((Result<int, ErrorDefinitions.Error>.Success)result).Item;
+                            MoveHistoryItem item = ViewModel.Board.History.FirstOrDefault(i => i.ID == id);
+                            history.SelectedItem = item;
+                        }
+                        else
+                        {
+                            history.SelectedItem = null;
+                        }
+                    }
+                    finally
+                    {
+                        ignoreChange = false;
+                    }
                 }
                 catch (Exception exc)
                 {
@@ -597,15 +615,19 @@ namespace Latrunculi.GUI
                 }), System.Windows.Threading.DispatcherPriority.Input);
         }
 
+        private bool ignoreChange = false;
         private void History_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             e.Handled = true;
             try
             {
-                MoveHistoryItem item = e.AddedItems.OfType<MoveHistoryItem>().FirstOrDefault();
+                if (!ignoreChange)
+                {
+                    MoveHistoryItem item = e.AddedItems.OfType<MoveHistoryItem>().FirstOrDefault();
 
-                //TODO:if (item != null)
-                //    ModelException.TryThrow<GameController.T>(Controller.TryGoToHistoryMove(item.ID));
+                    if (item != null)
+                        ModelException.TryThrow<GameController.T>(Controller.TryGoToMove(item.ID));
+                }
             }
             catch (Exception exc)
             {

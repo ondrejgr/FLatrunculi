@@ -60,9 +60,9 @@ module ReplayController =
                     this.Model.setStatus ReplayStatus.Paused |> ignore
                     return this
                 | _ ->
-//                    let! historyItems = History.tryTakeUndoStackMoves id this.Model.Board.History
-//                    let boardMoveFn = Board.move board
-//                    List.iter boardMoveFn historyItems
+                    let boardMoves = this.Model.Board.History.takeBoardMoves id
+                    let boardMoveFn = Board.move board
+                    List.iter boardMoveFn boardMoves
 
                     this.Model.RaiseBoardChanged()
                     this.Model.setStatus ReplayStatus.Paused |> ignore

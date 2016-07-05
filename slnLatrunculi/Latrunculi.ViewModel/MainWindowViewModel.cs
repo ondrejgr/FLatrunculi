@@ -107,6 +107,8 @@ namespace Latrunculi.ViewModel
         {
             ClearBoardIndicationsAndSelection();
             Board.RefreshFromModel(Model.Board);
+            OnPropertyChanged("NumberOfMovesRemaining");
+            OnPropertyChanged("NumberOfMovesRemainingWarn");
             Application.Current.Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
         }
 

@@ -263,7 +263,7 @@
                                    Count="{Binding BlackPiecesCount}"
                                    IsWinning="{Binding IsBlackWinning}"
                                    IsLosing="{Binding IsBlackLosing}"/>
-                <ctrls:History SelectionChanged="History_SelectionChanged" ItemsSource="{Binding Board.History}" Grid.Row="2"/>
+                <ctrls:History x:Name="history" SelectionChanged="History_SelectionChanged" ItemsSource="{Binding Board.History}" Grid.Row="2"/>
             </Grid>
         </Grid>
 

@@ -310,19 +310,43 @@ module GameController =
             | Error e -> Error (ErrorLoadingFile e)
 
 
-//         member this.TryGoToHistoryMove (id: int) =
-//            let tryMoveFound (historyItems: HistoryItem.T list) =
-//                match List.tryHead historyItems with
-//                | Some i when i.ID = id -> Success ()
-//                | _ -> Error RequestedHistoryMoveNotFound
-//            maybe {
-//                let! board = Board.tryInit this.Model.Board Rules.getInitialBoardSquares
-//                let historyItems = List.filter (fun (a: HistoryItem.T) -> a.ID <= id) board.History.Items
-//                do! tryMoveFound historyItems
-//                do! List.foldBack (fun (item: HistoryItem.T) result ->
-//                                Board.move board item.BoardMove
-//                                Success ()) historyItems (Error RequestedHistoryMoveNotFound) 
-//                return this }
+         member this.TryGoToMove (id: int) =
+            let checkGameStatus =
+                if this.Model.Status = GameStatus.Created 
+                    then Error GameIsNotRunning else Success ()
+            maybe {
+                do! checkGameStatus
+                let! pausedController = this.TryPause()
+                match id with
+                | 0 ->
+                    return this
+                | _ ->
+                    let boardMoves = this.Model.Board.History.takeBoardMoves id
+                    let redoBoardMoves = this.Model.Board.History.skipBoardMoves id
+                    let! newGameController = this.TryNewGame()
+                    // apply moves (including rule checking)
+                    do! List.fold (fun result (item: BoardMove.T) ->
+                                    match result with
+                                    | Success _ ->
+                                        maybe {
+                                            let! color = this.Model.tryGetActiveColor()
+                                            let move = item.Move
+                                            let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color move
+                                            Board.move this.Model.Board boardMove
+                                            this.Model.Board.History.PushMoveToUndoStack boardMove
+                                            do! this.Model.trySwapActiveColor()
+                                            return ()}   
+                                    | Error e -> Error e) (Success ()) boardMoves
+
+                    // recreate redo stack
+                    List.iter (fun (item: BoardMove.T) ->
+                            this.Model.Board.History.PushMoveToRedoStack item) redoBoardMoves
+
+                    // refresh board
+                    this.Model.RaiseBoardChanged()
+                    this.Model.RaiseHistoryChanged()
+                    this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
+                    return this }
 
         member this.TryUndo() =
             let checkGameStatus =
@@ -376,5 +400,12 @@ module GameController =
                 this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
                 return this }
             
+
+        member this.tryPopMoveNumberFromUndoStack() =
+            snd <| MoveStack.foldBack (fun item result ->
+                                         let id = 1 + fst result
+                                         (id, Success id)) 
+                                    this.Model.Board.History.UndoStack (0, Error StackIsEmpty)
+
     let create (model: GameModel.T) =
         T(model)

@@ -60,6 +60,46 @@ module History =
                                                     undoItemsResult this.RedoStack
             snd undoRedoItemsResult
 
+        member this.takeBoardMoves x =
+            // get board moves up to and including board move with specified number
+            let undoItemsResult = MoveStack.foldBack (fun item result ->
+                                                        let id = 1 + fst result
+                                                        match id with
+                                                        | id when id <= x ->
+                                                            (id, item::(snd result))
+                                                        | _ ->
+                                                            (id, (snd result)))
+                                                    this.UndoStack (0, [])
+            let undoRedoItemsResult = MoveStack.fold (fun result item ->
+                                                        let id = 1 + fst result
+                                                        match id with
+                                                        | id when id <= x ->
+                                                            (id, item::(snd result))
+                                                        | _ ->
+                                                            (id, (snd result)))
+                                                    undoItemsResult this.RedoStack
+            List.rev <| snd undoRedoItemsResult
+
+        member this.skipBoardMoves x =
+            // get board moves with move number grater than specified number
+            let undoItemsResult = MoveStack.foldBack (fun item result ->
+                                                        let id = 1 + fst result
+                                                        match id with
+                                                        | id when id > x ->
+                                                            (id, item::(snd result))
+                                                        | _ ->
+                                                            (id, (snd result)))
+                                                    this.UndoStack (0, [])
+            let undoRedoItemsResult = MoveStack.fold (fun result item ->
+                                                        let id = 1 + fst result
+                                                        match id with
+                                                        | id when id > x ->
+                                                            (id, item::(snd result))
+                                                        | _ ->
+                                                            (id, (snd result)))
+                                                    undoItemsResult this.RedoStack
+            snd undoRedoItemsResult
+
         member this.UndoItemsCount =
             MoveStack.length this.UndoStack
 
