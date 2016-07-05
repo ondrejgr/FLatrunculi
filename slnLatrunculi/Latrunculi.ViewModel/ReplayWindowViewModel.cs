@@ -44,6 +44,7 @@ namespace Latrunculi.ViewModel
 
         private void Model_ResultChanged(object sender, EventArgs e)
         {
+            Info = string.Empty;
             if (Position == NumberOfMoves)
             {
                 if (Model.Result.IsGameOverResult)
@@ -64,8 +65,6 @@ namespace Latrunculi.ViewModel
                     else
                         Info = "Hra skončila s neznámým vítězem - chyba aplikace ??";
                 }
-                else
-                    Info = string.Empty;
             }
         }
 
@@ -110,13 +109,6 @@ namespace Latrunculi.ViewModel
             OnPropertyChanged("IsPaused");
             OnPropertyChanged("IsRunning");
             OnPropertyChanged("IsFinished");
-
-            if (IsCreated)
-                Info = string.Empty;
-            else if (IsPaused)
-                Info = "Pozastaveno";
-            else if (IsRunning)
-                Info = string.Empty;
         }
 
         private int _position;

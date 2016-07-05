@@ -64,7 +64,7 @@ module ReplayModel =
         member this.RaiseGameErrorEvent(error) =
             gameErrorEvent.Trigger(this, GameErrorEventArgs(error))
 
-        member this.RaisePositionChangedEvent(id) =
+        member private this.OnPositionChanged(id) =
             positionChangedEvent.Trigger(this, PositionChangedEventArgs(id))
 
         member this.isWhitePlayerActive =
@@ -121,6 +121,10 @@ module ReplayModel =
             this.OnStatusChanged()
             this.Status
 
+        member this.setPosition x =
+            this.Position <- x
+            this.OnPositionChanged(x)
+            this.Position
 
         member this.getNumberOfMovesInHistory() =
             this.Board.History.UndoItemsCount

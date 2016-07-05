@@ -108,12 +108,12 @@ namespace Latrunculi.GUI
         private void Undo_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = !ViewModel.IsCreated && (ViewModel.Position > 0);
+            e.CanExecute = (ViewModel.Position > 0);
         }
 
         private void Undo_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (!ViewModel.IsCreated && (ViewModel.Position > 0))
+            if (ViewModel.Position > 0)
             {
                 try
                 {
@@ -129,12 +129,12 @@ namespace Latrunculi.GUI
         private void Redo_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.Handled = true;
-            e.CanExecute = !ViewModel.IsCreated && (ViewModel.Position < ViewModel.NumberOfMoves);
+            e.CanExecute = (ViewModel.Position < ViewModel.NumberOfMoves);
         }
 
         private void Redo_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (!ViewModel.IsCreated && (ViewModel.Position < ViewModel.NumberOfMoves))
+            if (ViewModel.Position < ViewModel.NumberOfMoves)
             {
                 try
                 {

@@ -42,22 +42,25 @@ module ReplayController =
                 return this }
                 
         member this.tryGoToPosition (id: int) =
-            let tryPause =
-                maybe {
-                    match this.Model.Status with
-                    | ReplayStatus.Running ->
-                        let! controller = this.tryPause()
-                        return ()
-                    | _ ->
-                        return () }
-                    
+            match this.Model.Status with
+            | ReplayStatus.Created -> this.Model.setStatus(ReplayStatus.Paused) |> ignore
+            | _ -> ()
             maybe {
-                do! tryPause
                 let! board = Board.trySet this.Model.Board Rules.getInitialBoardSquares
                 match id with
                 | 0 ->
                     this.Model.RaiseBoardChanged()
-                    this.Model.setStatus ReplayStatus.Paused |> ignore
+                    this.Model.setResult Rules.NoResult |> ignore
+                    this.Model.setPosition(id) |> ignore
+                    return this
+                | id when id < this.Model.getNumberOfMovesInHistory() ->
+                    let boardMoves = this.Model.Board.History.takeBoardMoves id
+                    let boardMoveFn = Board.move board
+                    List.iter boardMoveFn boardMoves
+
+                    this.Model.RaiseBoardChanged()
+                    this.Model.setPosition(id) |> ignore
+                    this.Model.setResult Rules.NoResult |> ignore
                     return this
                 | _ ->
                     let boardMoves = this.Model.Board.History.takeBoardMoves id
@@ -65,10 +68,10 @@ module ReplayController =
                     List.iter boardMoveFn boardMoves
 
                     this.Model.RaiseBoardChanged()
-                    this.Model.setStatus ReplayStatus.Paused |> ignore
+                    this.Model.setStatus(ReplayStatus.Paused) |> ignore
+                    this.Model.setPosition(id) |> ignore
                     this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
                     return this }
-
 
         member this.tryIncPosition() =
             this.tryGoToPosition (this.Model.Position + 1)
@@ -85,12 +88,16 @@ module ReplayController =
 
                 match this.tryIncPosition() with
                 | Success _ ->
-                    return! this.RunTimer()
+                    match this.Model.Status with
+                    | ReplayStatus.Running ->
+                        return! this.RunTimer()
+                    | _ -> return ()
                 | Error RequestedHistoryMoveNotFound ->
                     this.Model.setStatus ReplayStatus.Paused |> ignore
                     this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
                     return ()
                 | Error e ->
+                    this.Model.setStatus ReplayStatus.Paused |> ignore
                     this.Model.RaiseGameErrorEvent(e)
                     return () }
 
