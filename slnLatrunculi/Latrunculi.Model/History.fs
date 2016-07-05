@@ -107,9 +107,9 @@ module History =
             MoveStack.length this.RedoStack
 
         member this.NumberOfMovesWithoutRemoval =
-            MoveStack.fold (fun result item ->
+            MoveStack.foldBack (fun item result ->
                                 if BoardMove.anyPiecesRemoved item then 0 else result + 1)
-                        0 this.UndoStack
+                        this.UndoStack 0
 
     let isUndoStackEmpty (history: T) =
         MoveStack.isEmpty history.UndoStack
