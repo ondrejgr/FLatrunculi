@@ -33,9 +33,7 @@ namespace Latrunculi.ViewModel
             Model.ActivePlayerChanged -= Model_ActivePlayerChanged;
             Model.IsMoveSuggestionComputingChanged -= Model_IsMoveSuggestionComputingChanged;
             Model.MoveSuggestionComputed -= Model_MoveSuggestionComputed;
-            Model.HistoryCleared -= Model_HistoryCleared;
-            Model.HistoryItemAdded -= Model_HistoryItemAdded;
-            Model.HistoryItemRemoved -= Model_HistoryItemRemoved;
+            Model.HistoryChanged -= Model_HistoryChanged;
             Model.ComputerPlayerThinking -= Model_ComputerPlayerThinking;
         }
 
@@ -47,9 +45,7 @@ namespace Latrunculi.ViewModel
             Model.ActivePlayerChanged += Model_ActivePlayerChanged;
             Model.IsMoveSuggestionComputingChanged += Model_IsMoveSuggestionComputingChanged;
             Model.MoveSuggestionComputed += Model_MoveSuggestionComputed;
-            Model.HistoryCleared += Model_HistoryCleared;
-            Model.HistoryItemAdded += Model_HistoryItemAdded;
-            Model.HistoryItemRemoved += Model_HistoryItemRemoved;
+            Model.HistoryChanged += Model_HistoryChanged;
             Model.ComputerPlayerThinking += Model_ComputerPlayerThinking;
             Board.Init(Model.Board);
 
@@ -57,31 +53,18 @@ namespace Latrunculi.ViewModel
             OnStatusChanged();
         }
 
+        private void Model_HistoryChanged(object sender, HistoryChangedEventArgs e)
+        {
+            OnPropertyChanged("NumberOfMovesRemaining");
+            OnPropertyChanged("NumberOfMovesRemainingWarn");
+            OnPropertyChanged("IsUndoStackNotEmpty");
+            OnPropertyChanged("IsRedoStackNotEmpty");
+        }
+
         private void Model_ComputerPlayerThinking(object sender, EventArgs e)
         {
             StatusBarText = string.Format("Počítačový hráč \"{0}\" přemýšlí…", ActivePlayerName);
             OnPropertyChanged("IsGameWaitingForHumanPlayerMove");
-        }
-
-        private void OnNumberOfMovesChanged()
-        {
-            OnPropertyChanged("NumberOfMovesRemaining");
-            OnPropertyChanged("NumberOfMovesRemainingWarn");
-        }
-
-        private void Model_HistoryCleared(object sender, EventArgs e)
-        {
-            OnNumberOfMovesChanged();
-        }
-
-        private void Model_HistoryItemAdded(object sender, HistoryItemAddedEventArgs e)
-        {
-            OnNumberOfMovesChanged();
-        }
-
-        private void Model_HistoryItemRemoved(object sender, EventArgs e)
-        {
-            OnNumberOfMovesChanged();
         }
 
         private void Model_MoveSuggestionComputed(object sender, MoveEventArgs e)
@@ -124,9 +107,6 @@ namespace Latrunculi.ViewModel
         {
             ClearBoardIndicationsAndSelection();
             Board.RefreshFromModel(Model.Board);
-            OnPropertyChanged("IsUndoStackNotEmpty");
-            OnPropertyChanged("IsRedoStackNotEmpty");
-            OnNumberOfMovesChanged();
             Application.Current.Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
         }
 

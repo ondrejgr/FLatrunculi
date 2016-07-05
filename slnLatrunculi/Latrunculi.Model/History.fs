@@ -48,14 +48,17 @@ module History =
             this.PushMoveToStack(this.setRedoStack, this.RedoStack, move)
 
         member this.Items =
-            let undoList = MoveStack.toList this.UndoStack
-            let redoList = MoveStack.toList this.RedoStack
-            let undoRedoList = List.concat [undoList; redoList]
-            let result = List.fold (fun result item ->
-                                    let id = 1 + fst result
-                                    let newItem = HistoryItem.create id item
-                                    (id, newItem::(snd result))) (0, []) undoRedoList
-            snd result
+            let undoItemsResult = MoveStack.foldBack (fun item result ->
+                                                        let id = 1 + fst result
+                                                        let newItem = HistoryItem.create id item
+                                                        (id, newItem::(snd result)))
+                                                    this.UndoStack (0, [])
+            let undoRedoItemsResult = MoveStack.fold (fun result item ->
+                                                        let id = 1 + fst result
+                                                        let newItem = HistoryItem.create id item
+                                                        (id, newItem::(snd result)))
+                                                    undoItemsResult this.RedoStack
+            snd undoRedoItemsResult
 
         member this.UndoItemsCount =
             MoveStack.length this.UndoStack
@@ -64,17 +67,9 @@ module History =
             MoveStack.length this.RedoStack
 
         member this.NumberOfMovesWithoutRemoval =
-            List.fold (fun result item ->
-                            if BoardMove.anyPiecesRemoved item then 0 else result + 1)
-                        0 (MoveStack.toList this.UndoStack)
-
-    let tryTakeUndoStackMoves (x: int) (history: T)  =
-        match x with
-        | x when x < 1 -> Error RequestedHistoryMoveNotFound
-        | x when x > history.UndoItemsCount -> Error RequestedHistoryMoveNotFound
-        | _ ->
-            let undoMoves = MoveStack.toList history.UndoStack
-            Success (Seq.toList <| Seq.take x undoMoves)
+            MoveStack.fold (fun result item ->
+                                if BoardMove.anyPiecesRemoved item then 0 else result + 1)
+                        0 this.UndoStack
 
     let isUndoStackEmpty (history: T) =
         MoveStack.isEmpty history.UndoStack

@@ -59,8 +59,8 @@ module GameController =
 
                 // init board with default positions
                 let! board = Board.tryInit this.Model.Board Rules.getInitialBoardSquares
-                this.Model.RaiseHistoryCleared()
                 this.Model.RaiseBoardChanged()
+                this.Model.RaiseHistoryChanged()
                 return this }
             
         member private this.ReportGameError e =
@@ -296,10 +296,9 @@ module GameController =
                         let moves = MoveStack.map (fun item -> item.Move) this.Model.Board.History.UndoStack
                         let! gameResult = this.TryApplyMovesLoadedFromFile moves
 
-                        // render history                                                
-                        List.iter this.Model.RaiseHistoryItemAdded this.Model.Board.History.Items
                         // render board
                         this.Model.RaiseBoardChanged()
+                        this.Model.RaiseHistoryChanged()
 
                         match gameResult with
                         | Rules.GameOverResult _ ->
@@ -344,6 +343,7 @@ module GameController =
 
                 // refresh board
                 this.Model.RaiseBoardChanged()
+                this.Model.RaiseHistoryChanged()
 
                 // check game over
                 this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
@@ -369,6 +369,7 @@ module GameController =
 
                 // refresh board
                 this.Model.RaiseBoardChanged()
+                this.Model.RaiseHistoryChanged()
 
                 do! this.Model.trySwapActiveColor()
                 // check game over

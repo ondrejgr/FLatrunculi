@@ -10,12 +10,6 @@ module MoveStack =
     let create =
         EmptyStack
 
-    let toList (stack: T) =
-        let empty: BoardMove.T list = List.empty
-        match stack with
-        | EmptyStack -> empty
-        | MoveStack m -> List.rev m
-
     let length (stack: T) =
         match stack with
         | EmptyStack -> 0
@@ -26,6 +20,16 @@ module MoveStack =
         match stack with
         | EmptyStack -> empty
         | MoveStack m -> List.map f m
+
+    let fold (folder: 'State -> BoardMove.T -> 'State) (state: 'State) (stack: T): 'State =
+        match stack with
+        | EmptyStack -> state
+        | MoveStack m -> List.fold folder state m
+
+    let foldBack (folder: BoardMove.T -> 'State -> 'State) (stack: T) (state: 'State): 'State =
+        match stack with
+        | EmptyStack -> state
+        | MoveStack m -> List.foldBack folder m state
 
     let push (stack: T) (move: BoardMove.T) =
         match stack with

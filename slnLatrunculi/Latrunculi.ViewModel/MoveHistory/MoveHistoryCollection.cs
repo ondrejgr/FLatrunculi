@@ -10,30 +10,45 @@ using System.Threading.Tasks;
 
 namespace Latrunculi.ViewModel
 {
-    public class MoveHistoryCollection : ObservableCollection<MoveHistoryItem>
+    public class MoveHistoryCollection : Collection<MoveHistoryItem>, INotifyCollectionChanged, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+
         private void OnPropertyChanged(string propName)
         {
-            OnPropertyChanged(new PropertyChangedEventArgs(propName));
-        }
-        
-        public void InsertMove(int moveNumber, BoardMove.T item)
-        {
-            PieceTypes pt = PieceTypes.ptNone;
-            if (item.Color.Equals(Piece.Colors.Black))
-                pt = PieceTypes.ptBlack;
-            else if (item.Color.Equals(Piece.Colors.White))
-                pt = PieceTypes.ptWhite;
-
-            Insert(0, new MoveHistoryItem(moveNumber, pt,
-                     Coord.toString(BoardMove.getSourceCoord(item)), 
-                     Coord.toString(BoardMove.getTargetCoord(item)),
-                     BoardMove.getRemovedPiecesCount(item)));
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propName));
         }
 
-        public void RemoveMove(int index)
+        public void ClearAndAddHistoryItems(IEnumerable<HistoryItem.T> items)
         {
-            RemoveAt(index);
+            Clear();
+            foreach (HistoryItem.T item in items)
+            {
+                BoardMove.T move = item.Move;
+                PieceTypes pt = PieceTypes.ptNone;
+                if (move.Color.Equals(Piece.Colors.Black))
+                    pt = PieceTypes.ptBlack;
+                else if (move.Color.Equals(Piece.Colors.White))
+                    pt = PieceTypes.ptWhite;
+
+                MoveHistoryItem vm = new MoveHistoryItem(item.ID, pt,
+                     Coord.toString(BoardMove.getSourceCoord(move)),
+                     Coord.toString(BoardMove.getTargetCoord(move)),
+                     BoardMove.getRemovedPiecesCount(move));
+
+                Add(vm);
+            }
+
+            OnPropertyChanged("Count");
+            OnCollectionChanged();
+        }
+
+        private void OnCollectionChanged()
+        {
+            if (CollectionChanged != null)
+                CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
     }
 }

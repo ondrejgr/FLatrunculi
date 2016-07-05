@@ -38,83 +38,24 @@ namespace Latrunculi.GUI
             ViewModel = viewModel;
             ViewModel.PropertyChanged += ViewModel_PropertyChanged;
             ViewModel.Model.MoveSuggestionComputed += Model_MoveSuggestionComputed;
-            ViewModel.Model.HistoryItemAdded += Model_HistoryItemAdded;
-            ViewModel.Model.HistoryItemRemoved += Model_HistoryItemRemoved;
-            ViewModel.Model.HistoryCleared += Model_HistoryCleared;
-            ViewModel.Model.HistoryItemsRemoved += Model_HistoryItemsRemoved;
+            ViewModel.Model.HistoryChanged += Model_HistoryChanged;
             ViewModel.Model.GameError += Model_GameError;
             Controller = controller;
         }
 
-        private void Model_HistoryItemsRemoved(object sender, HistoryItemsRemovedEventArgs e)
+        private void Model_HistoryChanged(object sender, HistoryChangedEventArgs e)
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {
                 try
                 {
-                    int count = e.Count;
-                    while (count > 0)
-                    {
-                        ViewModel.Board.History.RemoveMove(ViewModel.Board.History.Count - 1);
-                        count--;
-                    }
-                }
-                catch (Exception exc)
-                {
-                    MessageBox.Show(this,
-                        string.Format("Nepodařilo se odstranit tahy z historie: {0}", ViewModelCommon.ConvertExceptionToShortString(exc)),
-                        "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }), System.Windows.Threading.DispatcherPriority.Background);
-        }
+                    ViewModel.Board.History.ClearAndAddHistoryItems(e.Items);
 
-        private void Model_HistoryItemAdded(object sender, HistoryItemAddedEventArgs e)
-        {
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                try
-                {
-                    int moveNumber = ViewModel.Board.History.Count;
-                    ViewModel.Board.History.InsertMove(moveNumber + 1, e.Item);
                 }
                 catch (Exception exc)
                 {
                     MessageBox.Show(this,
-                        string.Format("Nepodařilo se uložit tah do historie: {0}", ViewModelCommon.ConvertExceptionToShortString(exc)),
-                        "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }), System.Windows.Threading.DispatcherPriority.Background);
-        }
-
-        private void Model_HistoryItemRemoved(object sender, HistoryItemRemovedEventArgs e)
-        {
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                try
-                {
-                    ViewModel.Board.History.RemoveMove(e.Index);
-                }
-                catch (Exception exc)
-                {
-                    MessageBox.Show(this,
-                        string.Format("Nepodařilo se odstranit tah z historie: {0}", ViewModelCommon.ConvertExceptionToShortString(exc)),
-                        "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }), System.Windows.Threading.DispatcherPriority.Background);
-        }
-
-        private void Model_HistoryCleared(object sender, EventArgs e)
-        {
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                try
-                {
-                    ViewModel.Board.History.Clear();
-                }
-                catch (Exception exc)
-                {
-                    MessageBox.Show(this,
-                        string.Format("Nepodařilo se vymazat historii tahů: {0}", ViewModelCommon.ConvertExceptionToShortString(exc)),
+                        string.Format("Nepodařilo se aktualizovat historii tahů: {0}", ViewModelCommon.ConvertExceptionToShortString(exc)),
                         "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }), System.Windows.Threading.DispatcherPriority.Background);
