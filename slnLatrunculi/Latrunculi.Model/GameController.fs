@@ -193,8 +193,10 @@ module GameController =
                 | GameStatus.Running | GameStatus.WaitingForHumanPlayerMove ->
                     let! cts = this.TryGetCts()
                     cts.Cancel()
+                    this.Model.setStatus(GameStatus.Paused) |> ignore
                     return this
                 | _ ->
+                    this.Model.setStatus(GameStatus.Paused) |> ignore
                     return this }
 
         member this.TryResume() =
@@ -256,24 +258,26 @@ module GameController =
                 return this }
 
         member this.TryApplyMovesLoadedFromFile (moves: Move.T list) =
-            maybe {
-                return! Seq.foldBack
-                    (fun (move: Move.T) result ->
-                        match result with 
-                        | Success Rules.GameResult.NoResult ->
+            Seq.foldBack
+                (fun (move: Move.T) result ->
+                    match result with 
+                    | Success Rules.GameResult.NoResult ->
+                        let newResult =
                             maybe {
                                 // validate and create board move
                                 let! color = this.Model.tryGetActiveColor()
                                 let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color move
                                 // apply move and add it to history
                                 Board.move this.Model.Board boardMove
+                                this.Model.Board.History.PushMoveToUndoStack boardMove
                                 // get result
                                 this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
                                 do! this.Model.trySwapActiveColor()
-                                return! Success this.Model.Result }              
-                        | Success s -> Success s      
-                        | Error e -> Error e) 
-                    moves (Success Rules.GameResult.NoResult) }
+                                return this.Model.Result }              
+                        newResult
+                    | Success s -> Success s      
+                    | Error e -> Error e) 
+                moves (Success Rules.GameResult.NoResult)
 
         member this.TryLoadGame (fileName: string) =
             let checkGameStatus =
@@ -290,17 +294,20 @@ module GameController =
                         this.Model.changePlayerSettings newPlayerSettings |> ignore
 
                         // load game history
-                        do! HistoryDto.tryToHistory file.History this.Model.Board.History
+                        let! newHistory = HistoryDto.tryToHistory file.History
 
                         // apply loaded moves
-                        let moves = MoveStack.map (fun item -> item.Move) this.Model.Board.History.UndoStack
+                        let moves = MoveStack.map (fun item -> item.Move) newHistory.UndoStack
                         let! gameResult = this.TryApplyMovesLoadedFromFile moves
+
+                        // set redostack
+                        this.Model.Board.History.RedoStack <- newHistory.RedoStack
 
                         // render board
                         this.Model.RaiseBoardChanged()
                         this.Model.RaiseHistoryChanged()
 
-                        match gameResult with
+                        match this.Model.Result with
                         | Rules.GameOverResult _ ->
                             this.Model.setStatus(GameStatus.Finished) |> ignore
                             return this
@@ -330,10 +337,8 @@ module GameController =
                                     | Success _ ->
                                         maybe {
                                             let! color = this.Model.tryGetActiveColor()
-                                            let move = item.Move
-                                            let! boardMove = Rules.tryValidateAndGetBoardMove this.Model.Board color move
-                                            Board.move this.Model.Board boardMove
-                                            this.Model.Board.History.PushMoveToUndoStack boardMove
+                                            Board.move this.Model.Board item
+                                            this.Model.Board.History.PushMoveToUndoStack item
                                             do! this.Model.trySwapActiveColor()
                                             return ()}   
                                     | Error e -> Error e) (Success ()) boardMoves
@@ -346,7 +351,12 @@ module GameController =
                     this.Model.RaiseBoardChanged()
                     this.Model.RaiseHistoryChanged()
                     this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
-                    return this }
+                    match this.Model.Result with
+                    | Rules.GameOverResult _ ->
+                        this.Model.setStatus(GameStatus.Finished) |> ignore
+                        return this
+                    | _ -> 
+                        return this }
 
         member this.TryUndo() =
             let checkGameStatus =
@@ -371,7 +381,12 @@ module GameController =
 
                 // check game over
                 this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
-                return this }
+                match this.Model.Result with
+                | Rules.GameOverResult _ ->
+                    this.Model.setStatus(GameStatus.Finished) |> ignore
+                    return this
+                | _ -> 
+                    return this }
 
         member this.TryRedo() =
             let checkGameStatus =
@@ -398,7 +413,12 @@ module GameController =
                 do! this.Model.trySwapActiveColor()
                 // check game over
                 this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
-                return this }
+                match this.Model.Result with
+                | Rules.GameOverResult _ ->
+                    this.Model.setStatus(GameStatus.Finished) |> ignore
+                    return this
+                | _ -> 
+                    return this }
             
 
         member this.tryPopMoveNumberFromUndoStack() =

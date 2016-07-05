@@ -32,6 +32,7 @@ module GameModel =
         let status = Created
 
         let statusChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
+        let resultChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let playerSettingsChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let activePlayerChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
         let isMoveSuggestionComputingChangedEvent = new Event<ModelChangeEventHandler, EventArgs>()
@@ -51,6 +52,8 @@ module GameModel =
         [<CLIEvent>]
         member this.StatusChanged = statusChangedEvent.Publish
         [<CLIEvent>]
+        member this.ResultChanged = resultChangedEvent.Publish
+        [<CLIEvent>]
         member this.PlayerSettingsChanged = playerSettingsChangedEvent.Publish
         [<CLIEvent>]
         member this.ActivePlayerChanged = activePlayerChangedEvent.Publish
@@ -69,6 +72,9 @@ module GameModel =
 
         member private this.OnStatusChanged() =
             statusChangedEvent.Trigger(this, EventArgs.Empty)
+
+        member private this.OnResultChanged() =
+            resultChangedEvent.Trigger(this, EventArgs.Empty)
 
         member private this.OnPlayerSettingsChanged() =
             playerSettingsChangedEvent.Trigger(this, EventArgs.Empty)
@@ -101,6 +107,7 @@ module GameModel =
 
         member this.setResult x =
             this.Result <- x
+            this.OnResultChanged()
             this.Result
 
         member this.setIsMoveSuggestionComputing x =

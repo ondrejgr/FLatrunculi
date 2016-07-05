@@ -29,6 +29,7 @@ namespace Latrunculi.ViewModel
         {
             Model.BoardChanged -= Model_BoardChanged;
             Model.StatusChanged -= Model_StatusChanged;
+            Model.ResultChanged -= Model_ResultChanged;
             Model.PlayerSettingsChanged -= Model_PlayerSettingsChanged;
             Model.ActivePlayerChanged -= Model_ActivePlayerChanged;
             Model.IsMoveSuggestionComputingChanged -= Model_IsMoveSuggestionComputingChanged;
@@ -41,6 +42,7 @@ namespace Latrunculi.ViewModel
         {
             Model.BoardChanged += Model_BoardChanged;
             Model.StatusChanged += Model_StatusChanged;
+            Model.ResultChanged += Model_ResultChanged;
             Model.PlayerSettingsChanged += Model_PlayerSettingsChanged;
             Model.ActivePlayerChanged += Model_ActivePlayerChanged;
             Model.IsMoveSuggestionComputingChanged += Model_IsMoveSuggestionComputingChanged;
@@ -51,6 +53,11 @@ namespace Latrunculi.ViewModel
 
             OnPlayerSettingsChanged();
             OnStatusChanged();
+        }
+
+        private void Model_ResultChanged(object sender, EventArgs e)
+        {
+            OnResultChanged();
         }
 
         private void Model_HistoryChanged(object sender, HistoryChangedEventArgs e)
@@ -211,6 +218,31 @@ namespace Latrunculi.ViewModel
             }
         }
 
+        private void OnResultChanged()
+        {
+            Error = string.Empty;
+            if (Model.Result.IsGameOverResult)
+            {
+                Rules.GameOverResult result = ((Rules.GameResult.GameOverResult)Model.Result).Item;
+                if (result.IsDraw)
+                    Info = "Konec hry - remíza";
+                else if (result.IsVictory)
+                {
+                    Rules.Victory vict = ((Rules.GameOverResult.Victory)result).Item;
+                    if (vict.IsBlackWinner)
+                        Info = string.Format("Konec hry - zvítězil {0} (černý)", this.BlackPlayer.Name);
+                    else if (vict.IsWhiteWinner)
+                        Info = string.Format("Konec hry - zvítězil {0} (bílý)", this.WhitePlayer.Name);
+                    else
+                        Info = "Hra skončila bez vítěze - chyba aplikace ??";
+                }
+                else
+                    Info = "Hra skončila s neznámým vítězem - chyba aplikace ??";
+            }
+            else
+                Info = string.Empty;
+        }
+
         private void OnStatusChanged()
         {
             ClearBoardIndicationsAndSelection();
@@ -229,27 +261,7 @@ namespace Latrunculi.ViewModel
             }
             else if (IsGameFinished)
             {
-                Error = string.Empty;
-                if (Model.Result.IsGameOverResult)
-                {
-                    Rules.GameOverResult result = ((Rules.GameResult.GameOverResult)Model.Result).Item;
-                    if (result.IsDraw)
-                        Info = "Konec hry - remíza";
-                    else if (result.IsVictory)
-                    {
-                        Rules.Victory vict = ((Rules.GameOverResult.Victory)result).Item;
-                        if (vict.IsBlackWinner)
-                            Info = string.Format("Konec hry - zvítězil {0} (černý)", this.BlackPlayer.Name);
-                        else if (vict.IsWhiteWinner)
-                            Info = string.Format("Konec hry - zvítězil {0} (bílý)", this.WhitePlayer.Name);
-                        else
-                            Info = "Hra skončila bez vítěze - chyba aplikace ??";
-                    }
-                    else
-                        Info = "Hra skončila s neznámým vítězem - chyba aplikace ??";
-                }
-                else
-                    Info = "Hra skončila bez výsledku - chyba aplikace ??";
+                OnResultChanged();
             }
             else if (IsGamePaused)
             {

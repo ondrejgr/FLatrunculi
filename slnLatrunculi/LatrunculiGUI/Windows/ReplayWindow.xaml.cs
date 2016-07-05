@@ -48,7 +48,6 @@ namespace Latrunculi.GUI
             {
                 ignoreChange = true;
                 slider.Value = id;
-                ViewModel.Position = id;
                 ignoreChange = false;
             }), System.Windows.Threading.DispatcherPriority.Input, e.ID);
         }

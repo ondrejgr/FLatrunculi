@@ -167,11 +167,12 @@ module HistoryDto =
         {   UndoStack = MoveStackDto.fromMoveStack source.UndoStack
             RedoStack = MoveStackDto.fromMoveStack source.RedoStack }
 
-    let tryToHistory (source: T) (target: History.T) =
+    let tryToHistory (source: T) =
         maybe {
+            let result = History.create()
             let! undoStack = MoveStackDto.tryToMoveStack source.UndoStack
             let! redoStack = MoveStackDto.tryToMoveStack source.RedoStack
-            target.UndoStack <- undoStack
-            target.RedoStack <- redoStack
-            return () }
+            result.UndoStack <- undoStack
+            result.RedoStack <- redoStack
+            return result }
 
