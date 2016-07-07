@@ -373,7 +373,7 @@ V metodě GameLoop je nekonečná (tokenem zrušitelná) herní smyčka, která 
 \subsection{Realizace počítačového hráče - modul \texttt{Brain}}
 Pokud je instance třídy reprezentujícího hráče na tahu typu \texttt{ComputerPlayer}, je v~její metodě \texttt{GetMove} volán modul \texttt{Brain}, který obsahuje algoritmus pro zjištění nejlepšího tahu.
 
-Použit byl algoritmus \texttt{MiniMax} (viz \cite{kuhr2011}).
+Použit byl algoritmus \texttt{AlphaBeta} (viz \cite{abwiki}).
 
 Ohodnocovací funkce bere v~úvahu množství figurek (čím větší rozdíl v~množství soupeřových a~vlastních figurek, tím lepší).
 Dále se~jako pozitivní bere opuštění startovních políček.
@@ -445,8 +445,12 @@ Aplikace se spouští spustitelným souborem \texttt{LatrunculiGUI.exe}. Ve~slo�
  \url{https://en.wikipedia.org/wiki/Usage_share_of_operating_systems#Desktop_and_laptop_computers},
 			květen~2016.
 
+\bibitem{abwiki}Wikipedia: \emph{Alpha-beta pruning},
+ \url{https://en.wikipedia.org/wiki/Alpha_beta_pruning},
+			květen~2016.
+
 \bibitem{mvc}Wikipedia: \emph{Model-view-controller},
- \url{https://en.wikipedia.org/wiki/https://en.wikipedia.org/wiki/Model-view-controller},
+ \url{https://en.wikipedia.org/wiki/Model-view-controller},
 			květen~2016.
 
 %%\bibitem{wlaschin}Scott Wlaschin: \emph{F\# For Profit And Fun},

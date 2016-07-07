@@ -9,6 +9,11 @@ module Board =
         member val private Squares = sq
         member val History = History.create() with get, set
 
+        member this.ApplySquare (fn: Square.T -> 'U) (c: Coord.T) =
+            let col = Coord.ColIndex.[c.Column]
+            let row = Coord.RowIndex.[c.Row]
+            fn this.Squares.[row].[col]
+
         member this.GetSquare (c: Coord.T) =
             let col = Coord.ColIndex.[c.Column]
             let row = Coord.RowIndex.[c.Row]

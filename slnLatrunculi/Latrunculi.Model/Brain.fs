@@ -60,16 +60,23 @@ module Brain =
             // eval by number of pieces
             let ownPieces = Board.whitePiecesCount board
             let enemyPieces = Board.blackPiecesCount board
-
             result <- MoveValue.add result ((ownPieces - enemyPieces) * 10)
+
+            // add random number
+            match board.History.UndoItemsCount <= 4 with
+            | true ->
+                match result with
+                | x when x = MoveValue.getZero ->
+                    result <- MoveValue.add result <| rnd.Next(5, 16)
+                | _ -> ()
+            | false -> ()
+
 
         match maximizingColor with
         | Piece.Colors.Black as color -> 
             result <- MoveValue.getInvValue result
         | _ -> ()
 
-        if board.History.UndoItemsCount <= 3 then
-            result <- MoveValue.add result <| rnd.Next(0, 8)
         result
 
 
