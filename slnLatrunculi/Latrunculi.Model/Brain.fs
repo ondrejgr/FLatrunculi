@@ -157,7 +157,7 @@ module Brain =
         async {
             try
                 let getPositionEvaluation = getPositionEvaluationForColor color
-                let rootPosition = MoveTree.Position.create board color <| Rules.checkVictory board
+                let rootPosition = MoveTree.Position.create (Board.clone board) color <| Rules.checkVictory board
                 // create root node
                 let root = getNodeWithChildren <| MoveTree.createRoot rootPosition
 
