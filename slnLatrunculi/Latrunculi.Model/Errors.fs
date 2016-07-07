@@ -12,8 +12,6 @@ type Error =
     | InvalidSourceCoord
     | InvalidTargetCoord
     | SourceAndTargetCoordMayNotBeSame
-    // Board
-    | UnableToInitializeBoard
     // Rules
     | RelativeCoordIsOutOfRange
     | UnableToGetTargetSquare

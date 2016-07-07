@@ -16,8 +16,6 @@ module ErrorMessages =
         | InvalidSourceCoord -> error.ToString()
         | InvalidTargetCoord -> error.ToString()
         | SourceAndTargetCoordMayNotBeSame -> error.ToString()
-        // Board
-        | UnableToInitializeBoard -> "Nepodařilo se zinicializovat herní desku."
         // Rules
         | RelativeCoordIsOutOfRange -> error.ToString()
         | UnableToGetTargetSquare -> error.ToString()

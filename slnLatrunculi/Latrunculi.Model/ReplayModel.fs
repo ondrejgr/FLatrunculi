@@ -131,6 +131,6 @@ module ReplayModel =
 
     let tryCreate(board: Board.T, playerSettings: PlayerSettings.T): Result<T, Error> =
         maybe {
-            let! replayBoard = Board.tryClone board
+            let replayBoard = Board.clone board
             return T(replayBoard, playerSettings) }
 

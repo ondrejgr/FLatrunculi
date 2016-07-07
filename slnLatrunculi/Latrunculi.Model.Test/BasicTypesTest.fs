@@ -84,13 +84,13 @@ let BasicTypesTest() =
     let boardCoord2 = unwrapResultExn <| Coord.tryCreate 'B' 3
     let boardCoord3 = unwrapResultExn <| Coord.tryCreate 'B' 4
     let boardCoord4 = unwrapResultExn <| Coord.tryCreate 'B' 5
-    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+    ignore <| Board.init board (fun c ->
                             match c with
                             | { Column = Coord.ColumnNumber 'B'; Row = Coord.RowNumber 1 } -> squareWithWhitePiece
                             | { Column = Coord.ColumnNumber 'B'; Row = Coord.RowNumber 3 } -> squareEmpty
                             | { Column = Coord.ColumnNumber 'B'; Row = Coord.RowNumber 4 } -> squareWithWhitePiece
                             | { Column = Coord.ColumnNumber 'B'; Row = Coord.RowNumber 5 } -> squareWithWhitePiece
-                            | _ -> squareEmpty))
+                            | _ -> squareEmpty)
     // create invalid move
     Assert.Throws(fun () -> (Move.tryCreate boardCoord1 boardCoord1 squareEmpty squareWithWhitePiece) |> unwrapResultExn |> ignore) |> ignore
     // move with pieces removal

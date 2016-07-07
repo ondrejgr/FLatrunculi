@@ -35,7 +35,7 @@ let RulesTest() =
     Board.move board <| BoardMove.create Piece.Colors.White (unwrapResultExn <| Move.tryCreateFromStrCoord "A6" "A5" empty white)
 
     // voluntary passing between enemies - do not capture
-    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+    ignore <| Board.init board (fun c ->
                             match c with
                             | { Column = Coord.ColumnNumber 'B'; Row = Coord.RowNumber 6 } -> empty
                             | { Column = Coord.ColumnNumber 'B'; Row = Coord.RowNumber 4 } -> black
@@ -47,7 +47,7 @@ let RulesTest() =
                             | { Column = Coord.ColumnNumber 'C'; Row = Coord.RowNumber 3 } -> white
 
                             | { Column = Coord.ColumnNumber 'B'; Row = Coord.RowNumber 3 } -> empty
-                            | _ -> Rules.getInitialBoardSquares c))
+                            | _ -> Rules.getInitialBoardSquares c)
     let c1 = unwrapResultExn <| Coord.tryCreate 'B' 4
     let c2 = unwrapResultExn <| Coord.tryCreate 'B' 3
     let m = unwrapResultExn <| Move.tryCreate c1 c2 empty black
@@ -56,7 +56,7 @@ let RulesTest() =
     Assert.AreEqual(black, Board.getSquare board c2)
 
     // white captures black
-    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+    ignore <| Board.init board (fun c ->
                             match c with
                             | { Column = Coord.ColumnNumber 'B'; Row = Coord.RowNumber 6 } -> empty
                             | { Column = Coord.ColumnNumber 'B'; Row = Coord.RowNumber 3 } -> black
@@ -65,7 +65,7 @@ let RulesTest() =
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 2 } -> empty
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 3 } -> white
                             | { Column = Coord.ColumnNumber 'C'; Row = Coord.RowNumber 2 } -> white
-                            | _ -> Rules.getInitialBoardSquares c))
+                            | _ -> Rules.getInitialBoardSquares c)
     let c1 = unwrapResultExn <| Coord.tryCreate 'C' 2
     let c2 = unwrapResultExn <| Coord.tryCreate 'C' 3
     let c = unwrapResultExn <| Coord.tryCreate 'B' 3
@@ -75,13 +75,13 @@ let RulesTest() =
     Assert.AreEqual(empty, Board.getSquare board c)
     
     // capture in corner
-    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+    ignore <| Board.init board (fun c ->
                             match c with
                             | { Column = Coord.ColumnNumber 'B'; Row = Coord.RowNumber 6 } -> empty
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 1 } -> black
 
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 2 } -> empty
-                            | _ -> Rules.getInitialBoardSquares c))
+                            | _ -> Rules.getInitialBoardSquares c)
     let c1 = unwrapResultExn <| Coord.tryCreate 'B' 2
     let c2 = unwrapResultExn <| Coord.tryCreate 'A' 2
     let c = unwrapResultExn <| Coord.tryCreate 'A' 1
@@ -94,7 +94,7 @@ let RulesTest() =
     //        o
     //        x
     //      ox <-o
-    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+    ignore <| Board.init board (fun c ->
                             match c with
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 5 } -> empty
                             | { Column = Coord.ColumnNumber 'B'; Row = Coord.RowNumber 5 } -> empty
@@ -110,7 +110,7 @@ let RulesTest() =
                             | { Column = Coord.ColumnNumber 'C'; Row = Coord.RowNumber 5 } -> white
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 3 } -> white
                             | { Column = Coord.ColumnNumber 'C'; Row = Coord.RowNumber 2 } -> white
-                            | _ -> Rules.getInitialBoardSquares c))
+                            | _ -> Rules.getInitialBoardSquares c)
     let c1 = unwrapResultExn <| Coord.tryCreate 'C' 2
     let c2 = unwrapResultExn <| Coord.tryCreate 'C' 3
     let cx = unwrapResultExn <| Coord.tryCreate 'C' 4
@@ -125,7 +125,7 @@ let RulesTest() =
     //        o
     //        x
     //      ox xo
-    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+    ignore <| Board.init board (fun c ->
                             match c with
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 5 } -> empty
                             | { Column = Coord.ColumnNumber 'B'; Row = Coord.RowNumber 5 } -> empty
@@ -145,7 +145,7 @@ let RulesTest() =
                             | { Column = Coord.ColumnNumber 'C'; Row = Coord.RowNumber 5 } -> white
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 3 } -> white
                             | { Column = Coord.ColumnNumber 'C'; Row = Coord.RowNumber 2 } -> white
-                            | _ -> Rules.getInitialBoardSquares c))
+                            | _ -> Rules.getInitialBoardSquares c)
     let c1 = unwrapResultExn <| Coord.tryCreate 'C' 2
     let c2 = unwrapResultExn <| Coord.tryCreate 'C' 3
     let cx = unwrapResultExn <| Coord.tryCreate 'C' 4
@@ -162,7 +162,7 @@ let RulesTest() =
     //        o
     //        xS
     //      ox xo
-    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+    ignore <| Board.init board (fun c ->
                             match c with
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 5 } -> empty
                             | { Column = Coord.ColumnNumber 'B'; Row = Coord.RowNumber 5 } -> empty
@@ -183,7 +183,7 @@ let RulesTest() =
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 3 } -> white
                             | { Column = Coord.ColumnNumber 'C'; Row = Coord.RowNumber 2 } -> white
                             | { Column = Coord.ColumnNumber 'E'; Row = Coord.RowNumber 3 } -> white
-                            | _ -> Rules.getInitialBoardSquares c))
+                            | _ -> Rules.getInitialBoardSquares c)
     let c1 = unwrapResultExn <| Coord.tryCreate 'C' 2
     let c2 = unwrapResultExn <| Coord.tryCreate 'C' 3
     let cx = unwrapResultExn <| Coord.tryCreate 'C' 4
@@ -201,7 +201,7 @@ let RulesTest() =
     //    |oo  
     //    |x xo      
     //    ------------
-    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+    ignore <| Board.init board (fun c ->
                             match c with
                             | { Column = Coord.ColumnNumber 'C'; Row = Coord.RowNumber 2 } -> empty
                             | { Column = Coord.ColumnNumber 'D'; Row = Coord.RowNumber 2 } -> empty
@@ -214,7 +214,7 @@ let RulesTest() =
                             | { Column = Coord.ColumnNumber 'B'; Row = Coord.RowNumber 2 } -> white
                             | { Column = Coord.ColumnNumber 'D'; Row = Coord.RowNumber 1 } -> white
 
-                            | _ -> Rules.getInitialBoardSquares c))
+                            | _ -> Rules.getInitialBoardSquares c)
     let c1 = unwrapResultExn <| Coord.tryCreate 'B' 2
     let c2 = unwrapResultExn <| Coord.tryCreate 'B' 1
     let cx = unwrapResultExn <| Coord.tryCreate 'C' 1
@@ -229,34 +229,34 @@ let RulesTest() =
 
     let board = Board.create()
     // no winner -game continues
-    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+    ignore <| Board.init board (fun c ->
                             match c with
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 1 } -> black
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 2 } -> black
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 3 } -> white
-                            | _ -> Square.createEmpty ))
+                            | _ -> Square.createEmpty )
     Assert.IsTrue(match Rules.checkVictory board with
                     | Rules.NoResult -> true
                     | _ -> false)
     // black winner
-    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+    ignore <| Board.init board (fun c ->
                             match c with
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 1 } -> black
-                            | _ -> Square.createEmpty ))
+                            | _ -> Square.createEmpty )
     Assert.IsTrue(match Rules.checkVictory board with
                     | Rules.GameOverResult v when v = Rules.Victory Rules.BlackWinner -> true
                     | _ -> false)
     // white winner
-    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+    ignore <| Board.init board (fun c ->
                             match c with
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 1 } -> white
-                            | _ -> Square.createEmpty ))
+                            | _ -> Square.createEmpty )
     Assert.IsTrue(match Rules.checkVictory board with
                     | Rules.GameOverResult v when v = Rules.Victory Rules.WhiteWinner -> true
                     | _ -> false)
 
     // create some fake history
-    ignore <| (unwrapResultExn <| Board.tryInit board Rules.getInitialBoardSquares)
+    ignore <| Board.init board Rules.getInitialBoardSquares
     let c1 = unwrapResultExn <| Coord.tryCreate 'A' 2
     let c2 = unwrapResultExn <| Coord.tryCreate 'A' 3
     let m = unwrapResultExn <| Move.tryCreate c1 c2 empty white
@@ -265,33 +265,33 @@ let RulesTest() =
     for i = 1 to 30 do
         lst.PushMoveToUndoStack move
     // black winner -30 moves
-    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+    ignore <| Board.init board (fun c ->
                             match c with
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 1 } -> black
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 2 } -> black
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 3 } -> white
-                            | _ -> Square.createEmpty ))
+                            | _ -> Square.createEmpty )
     board.History <- lst
     Assert.IsTrue(match Rules.checkVictory board with
                     | Rules.GameOverResult v when v = Rules.Victory Rules.BlackWinner -> true
                     | _ -> false)
     // white winner -30 moves
-    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+    ignore <| Board.init board (fun c ->
                             match c with
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 1 } -> white
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 2 } -> black
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 3 } -> white
-                            | _ -> Square.createEmpty ))
+                            | _ -> Square.createEmpty )
     board.History <- lst
     Assert.IsTrue(match Rules.checkVictory board with
                     | Rules.GameOverResult v when v = Rules.Victory Rules.WhiteWinner -> true
                     | _ -> false)
     // draw
-    ignore <| (unwrapResultExn <| Board.tryInit board (fun c ->
+    ignore <| Board.init board (fun c ->
                             match c with
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 1 } -> white
                             | { Column = Coord.ColumnNumber 'A'; Row = Coord.RowNumber 2 } -> black
-                            | _ -> Square.createEmpty ))
+                            | _ -> Square.createEmpty )
     board.History <- lst
     Assert.IsTrue(match Rules.checkVictory board with
                     | Rules.GameOverResult v when v = Rules.Draw -> true

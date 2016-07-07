@@ -48,7 +48,7 @@ module GameController =
                 Success move
             | _ -> Error HumanSelectedMoveRequestDoesNotExists
 
-        member this.TryNewGame() =
+        member this.TryNewGame(): Result<T, Error> =
             maybe {
                 Player.Board <- Some this.Model.Board
                 Player.getHumanPlayerMoveFromUIWorkflow <- Some this.GetHumanMoveFromUI
@@ -58,7 +58,7 @@ module GameController =
                 this.Model.setResult Rules.NoResult |> ignore
 
                 // init board with default positions
-                let! board = Board.tryInit this.Model.Board Rules.getInitialBoardSquares
+                let board = Board.init this.Model.Board Rules.getInitialBoardSquares
                 this.Model.RaiseBoardChanged()
                 this.Model.RaiseHistoryChanged()
                 return this }

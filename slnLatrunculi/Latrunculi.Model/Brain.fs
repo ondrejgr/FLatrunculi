@@ -97,7 +97,7 @@ module Brain =
                         board.History.PushMoveToUndoStack(move)
                         let victory = Rules.checkVictory board 
                         // create child position
-                        let childPosition = MoveTree.Position.create (unwrapResultExn <| Board.tryClone board) childColor victory
+                        let childPosition = MoveTree.Position.create (Board.clone board) childColor victory
                         let child = MoveTree.createLeaf childPosition
                         // revert move
                         board.History.tryPopMoveFromUndoStack() |> ignore
@@ -153,11 +153,10 @@ module Brain =
                                           initialState <| MoveTree.getChildren node
             result
 
-    let tryGetBestMove (b: Board.T) (color: Piece.Colors) (depth: Depth.T): Async<Result<Move.T, Error>> =
+    let tryGetBestMove (board: Board.T) (color: Piece.Colors) (depth: Depth.T): Async<Result<Move.T, Error>> =
         async {
             try
                 let getPositionEvaluation = getPositionEvaluationForColor color
-                let board = unwrapResultExn <| Board.tryClone b
                 let rootPosition = MoveTree.Position.create board color <| Rules.checkVictory board
                 // create root node
                 let root = getNodeWithChildren <| MoveTree.createRoot rootPosition

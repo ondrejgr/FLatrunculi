@@ -170,6 +170,6 @@ module GameModel =
 
     let tryCreate() =
         maybe {
-            let! board = Board.create() |> Board.tryInit <| Rules.getEmptyBoardSquares
+            let board = Board.create() |> Board.init <| Rules.getEmptyBoardSquares
             let! playerSettings = PlayerSettings.tryCreateDefault()
             return T(board, playerSettings) }

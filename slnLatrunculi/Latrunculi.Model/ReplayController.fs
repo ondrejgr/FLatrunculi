@@ -41,12 +41,12 @@ module ReplayController =
                 Async.Start(this.RunTimer(), cts.Token)
                 return this }
                 
-        member this.tryGoToPosition (id: int) =
+        member this.tryGoToPosition (id: int): Result<T, Error> =
             match this.Model.Status with
             | ReplayStatus.Created -> this.Model.setStatus(ReplayStatus.Paused) |> ignore
             | _ -> ()
             maybe {
-                let! board = Board.trySet this.Model.Board Rules.getInitialBoardSquares
+                let board = Board.set this.Model.Board Rules.getInitialBoardSquares
                 match id with
                 | 0 ->
                     this.Model.RaiseBoardChanged()
@@ -73,10 +73,10 @@ module ReplayController =
                     this.Model.setResult <| (Rules.checkVictory this.Model.Board) |> ignore
                     return this }
 
-        member this.tryIncPosition() =
+        member this.tryIncPosition(): Result<T, Error> =
             this.tryGoToPosition (this.Model.Position + 1)
 
-        member this.tryDecPosition() =
+        member this.tryDecPosition(): Result<T, Error> =
             this.tryGoToPosition (this.Model.Position - 1)
 
         member this.RunTimer() =

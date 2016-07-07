@@ -6,13 +6,16 @@ module Board =
         let sq = Array.init (Seq.length Coord.RowNumbers) (fun _ -> 
             Array.create (Seq.length Coord.ColumnNumbers) Square.createEmpty)
 
-        member val private Squares = sq
+        member val private Squares = sq with get, set
         member val History = History.create() with get, set
 
-        member this.ApplySquare (fn: Square.T -> 'U) (c: Coord.T) =
-            let col = Coord.ColIndex.[c.Column]
-            let row = Coord.RowIndex.[c.Row]
-            fn this.Squares.[row].[col]
+        member this.clone() =
+            let result = T()
+            result.History <- History.clone this.History
+            let sq = Array.init (Seq.length Coord.RowNumbers) (fun i -> 
+                Array.copy this.Squares.[i])
+            result.Squares <- sq
+            result
 
         member this.GetSquare (c: Coord.T) =
             let col = Coord.ColIndex.[c.Column]
@@ -84,29 +87,18 @@ module Board =
         List.iter (fun (x: RemovedPiece.T) ->
                     board.ChangeSquare x.Coord (Square.createWithPiece x.Piece)) move.RemovedPieces
 
-    let trySet (board: T) (getInitalSquare: Coord.T -> Square.T) =
-        try
-            Coord.iter (fun c ->
-                    board.ChangeSquare c <| getInitalSquare c)
-            Success board
-        with
-        | _ -> Error UnableToInitializeBoard
+    let set (board: T) (getInitalSquare: Coord.T -> Square.T) =
+        Coord.iter (fun c ->
+                board.ChangeSquare c <| getInitalSquare c)
+        board
 
-    let tryInit (board: T) (getInitalSquare: Coord.T -> Square.T) =
-        try
-            board.History <- History.create()
-            Coord.iter (fun c ->
-                    board.ChangeSquare c <| getInitalSquare c)
-            Success board
-        with
-        | _ -> Error UnableToInitializeBoard
+    let init (board: T) (getInitalSquare: Coord.T -> Square.T) =
+        board.History <- History.create()
+        Coord.iter (fun c -> board.ChangeSquare c <| getInitalSquare c)
+        board
 
-    let tryClone (source: T) =
-        maybe {
-            let! result = T() |> tryInit <| source.GetSquare
-            result.History <- History.clone source.History
-            return result
-        }
+    let clone (source: T) =
+        source.clone()
 
     let create() =
         T()
