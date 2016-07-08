@@ -110,66 +110,77 @@ module Brain =
                                 MoveTree.getNodeWithChildAdded result child) 
                     node boardMoves
 
-    let rec minimax (getPositionEvaluation: getPositionEvaluationFunction) (depth: Depth.T) (alpha: MoveValue.T) (beta: MoveValue.T) (n: MoveTree.T) (searchType: SearchType.T): MoveValue.T =
-        if (Depth.isZero depth) || (MoveTree.isGameOverNode n) then 
-            let position = MoveTree.getPosition n
-            let result = getPositionEvaluation position
-            result
-        else
-            let node = getNodeWithChildren n 
+    let rec minimax (getPositionEvaluation: getPositionEvaluationFunction) (depth: Depth.T) (alpha: MoveValue.T) (beta: MoveValue.T) (n: MoveTree.T) (searchType: SearchType.T): Async<MoveValue.T> =
+        async {
+            if (Depth.isZero depth) || (MoveTree.isGameOverNode n) then 
+                let position = MoveTree.getPosition n
+                let result = getPositionEvaluation position
+                return result
+            else
+                let node = getNodeWithChildren n 
 
-            let initialV = match searchType with
-                            | SearchType.Maximizing -> MoveValue.getMin
-                            | SearchType.Minimizing -> MoveValue.getMax
+                let initialV = match searchType with
+                                | SearchType.Maximizing -> MoveValue.getMin
+                                | SearchType.Minimizing -> MoveValue.getMax
 
-            let initialState = MiniMaxState.createRecurse initialV alpha beta
-            let result = MiniMaxState.getResult 
-                            <| match searchType with
-                                | SearchType.Maximizing ->
-                                    List.fold (fun state (child: MoveTree.T) ->
-                                                match state with
-                                                | MiniMaxState.Recurse data ->
-                                                    let v = max data.V <| minimax getPositionEvaluation (Depth.dec depth) data.Alpha data.Beta child (SearchType.swap searchType)
-                                                    let alpha = max data.Alpha v    
-                                                    let beta = data.Beta
-                                                    if beta <= alpha then
-                                                        MiniMaxState.createExit v
-                                                    else
-                                                        MiniMaxState.createRecurse v alpha beta
-                                                | _ -> state)
-                                          initialState <| MoveTree.getChildren node
-                                | SearchType.Minimizing ->
-                                    List.fold (fun state (child: MoveTree.T) ->
-                                                match state with
-                                                | MiniMaxState.Recurse data ->
-                                                    let v = min data.V <| minimax getPositionEvaluation (Depth.dec depth) data.Alpha data.Beta child (SearchType.swap searchType)
-                                                    let alpha = data.Alpha
-                                                    let beta = min data.Beta v    
-                                                    if beta <= alpha then
-                                                        MiniMaxState.createExit v
-                                                    else
-                                                        MiniMaxState.createRecurse v alpha beta
-                                                | _ -> state)
-                                          initialState <| MoveTree.getChildren node
-            result
+
+                let initialState = MiniMaxState.createRecurse initialV alpha beta
+                let result = MiniMaxState.getResult 
+                                <| match searchType with
+                                    | SearchType.Maximizing ->
+                                        List.fold (fun state (child: MoveTree.T) ->
+                                                    Async.RunSynchronously(
+                                                        async {
+                                                            match state with
+                                                            | MiniMaxState.Recurse data ->
+                                                                let! newV = minimax getPositionEvaluation (Depth.dec depth) data.Alpha data.Beta child (SearchType.swap searchType)
+                                                                let v = max data.V newV
+                                                                let alpha = max data.Alpha v    
+                                                                let beta = data.Beta
+                                                                if beta <= alpha then
+                                                                    return MiniMaxState.createExit v
+                                                                else
+                                                                    return MiniMaxState.createRecurse v alpha beta
+                                                            | _ -> return state }))
+                                              initialState <| MoveTree.getChildren node
+                                    | SearchType.Minimizing ->
+                                        List.fold (fun state (child: MoveTree.T) ->
+                                                    Async.RunSynchronously(
+                                                        async {
+                                                            match state with
+                                                            | MiniMaxState.Recurse data ->
+                                                                let! newV = minimax getPositionEvaluation (Depth.dec depth) data.Alpha data.Beta child (SearchType.swap searchType)
+                                                                let v = min data.V newV
+                                                                let alpha = data.Alpha
+                                                                let beta = min data.Beta v    
+                                                                if beta <= alpha then
+                                                                    return MiniMaxState.createExit v
+                                                                else
+                                                                    return MiniMaxState.createRecurse v alpha beta
+                                                            | _ -> return state }))
+                                              initialState <| MoveTree.getChildren node
+                return result }
 
     let tryGetBestMove (board: Board.T) (color: Piece.Colors) (depth: Depth.T): Async<Result<Move.T, Error>> =
         async {
             try
+                
                 let getPositionEvaluation = getPositionEvaluationForColor color
                 let rootPosition = MoveTree.Position.create (Board.clone board) color <| Rules.checkVictory board
                 // create root node
                 let root = getNodeWithChildren <| MoveTree.createRoot rootPosition
 
                 let result = List.fold (fun result data ->
-                                            let bestValue = fst result
-                                            let move = fst data
-                                            let child = snd data
-                                            let value = minimax getPositionEvaluation (Depth.dec depth) MoveValue.getMin MoveValue.getMax child <| SearchType.createMaximizing
-                                            if value > bestValue then
-                                                (value, Some move)
-                                            else
-                                                result)
+                                            Async.RunSynchronously(
+                                                async {
+                                                    let bestValue = fst result
+                                                    let move = fst data
+                                                    let child = snd data
+                                                    let! value = minimax getPositionEvaluation (Depth.dec depth) MoveValue.getMin MoveValue.getMax child <| SearchType.createMaximizing
+                                                    if value > bestValue then
+                                                        return (value, Some move)
+                                                    else
+                                                        return result }))
                                         (MoveValue.getMin, None) <| MoveTree.getRootNodeChildren root
                        
                 let bestMove = snd result

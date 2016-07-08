@@ -45,3 +45,11 @@ let fn2 = Brain.tryGetBestMove board color (Depth.create 3)
 
 Async.RunSynchronously fn2
 //Async.RunSynchronously fn2
+
+
+let cts = new CancellationTokenSource()
+let test =
+    async {
+        for i in [1..100] do
+            do! Async.Sleep 100
+    }
