@@ -169,23 +169,28 @@ module Brain =
                 // create root node
                 let root = getNodeWithChildren <| MoveTree.createRoot rootPosition
 
-                let compute result data =
+                let compute (data: Move.T * MoveTree.T) =
                     async {
-                        let bestValue = fst result
                         let move = fst data
                         let child = snd data
                         let! value = minimax getPositionEvaluation (Depth.dec depth) MoveValue.getMin MoveValue.getMax child <| SearchType.createMaximizing
-                        if value > bestValue then
-                            return (value, Some move)
-                        else
-                            return result }
+                        return (value, move) }
 
-                let mutable state = (MoveValue.getMin, None)
-                for data in MoveTree.getRootNodeChildren root do
-                    let! newState = compute state data
-                    state <- newState
+                let children = MoveTree.getRootNodeChildren root
+                let computations = Seq.map compute children
+                                
+                let! results = Async.Parallel(computations)
+
+                let mutable bestMove = None
+                let mutable bestValue = MoveValue.getMin
+
+                for result in results do
+                    let value = fst result
+                    let move = snd result
+                    if value >= bestValue then
+                        bestValue <- value
+                        bestMove <- Some move
                        
-                let bestMove = snd state
                 match bestMove with
                 | Some m -> 
                     return Success m
