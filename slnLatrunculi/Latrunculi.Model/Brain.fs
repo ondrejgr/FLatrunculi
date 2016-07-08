@@ -169,20 +169,23 @@ module Brain =
                 // create root node
                 let root = getNodeWithChildren <| MoveTree.createRoot rootPosition
 
-                let result = List.fold (fun result data ->
-                                            Async.RunSynchronously(
-                                                async {
-                                                    let bestValue = fst result
-                                                    let move = fst data
-                                                    let child = snd data
-                                                    let! value = minimax getPositionEvaluation (Depth.dec depth) MoveValue.getMin MoveValue.getMax child <| SearchType.createMaximizing
-                                                    if value > bestValue then
-                                                        return (value, Some move)
-                                                    else
-                                                        return result }))
-                                        (MoveValue.getMin, None) <| MoveTree.getRootNodeChildren root
+                let compute result data =
+                    async {
+                        let bestValue = fst result
+                        let move = fst data
+                        let child = snd data
+                        let! value = minimax getPositionEvaluation (Depth.dec depth) MoveValue.getMin MoveValue.getMax child <| SearchType.createMaximizing
+                        if value > bestValue then
+                            return (value, Some move)
+                        else
+                            return result }
+
+                let mutable state = (MoveValue.getMin, None)
+                for data in MoveTree.getRootNodeChildren root do
+                    let! newState = compute state data
+                    state <- newState
                        
-                let bestMove = snd result
+                let bestMove = snd state
                 match bestMove with
                 | Some m -> 
                     return Success m
