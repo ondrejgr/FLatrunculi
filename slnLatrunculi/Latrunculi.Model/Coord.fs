@@ -144,6 +144,14 @@ module Coord =
             yield (createFromStringExn "A7", (createFromStringExn "A6", createFromStringExn "B7"))
             yield (createFromStringExn "H7", (createFromStringExn "H6", createFromStringExn "G7"))
         }
+
+    let getCornersSeq: seq<T> =
+        seq {
+            yield createFromStringExn "A1"
+            yield createFromStringExn "H1"
+            yield createFromStringExn "A7"
+            yield createFromStringExn "H7"
+        }
         
     let getCoordsSeq =
         seq {
