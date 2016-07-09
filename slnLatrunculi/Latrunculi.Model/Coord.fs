@@ -130,6 +130,12 @@ module Coord =
                 
             return! tryCreate (getCol newCol) (getRow newRow)
         }         
+
+    let tryGetDoubleRelative coord dir =
+        maybe {
+            let! rel = tryGetRelative coord dir
+            let! rel2 = tryGetRelative rel dir
+            return rel2 }         
         
     let getBoardCornersSeq: seq<BoardCorner> =
         seq {

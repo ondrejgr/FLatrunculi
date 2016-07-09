@@ -373,10 +373,15 @@ V metodě GameLoop je nekonečná (tokenem zrušitelná) herní smyčka, která 
 \subsection{Realizace počítačového hráče - modul \texttt{Brain}}
 Pokud je instance třídy reprezentujícího hráče na tahu typu \texttt{ComputerPlayer}, je v~její metodě \texttt{GetMove} volán modul \texttt{Brain}, který obsahuje algoritmus pro zjištění nejlepšího tahu.
 
-Použit byl algoritmus \texttt{AlphaBeta} (viz \cite{abwiki}).
+Použit byl algoritmus \texttt{AlphaBeta} (viz \cite{abwiki}). Hloubka vyhledávání herního stromu je 2 pro lehkého, 3 pro středního a 4 pro obtížného počítačového hráče.
 
-Ohodnocovací funkce bere v~úvahu množství figurek (čím větší rozdíl v~množství soupeřových a~vlastních figurek, tím lepší).
-Dále se~jako pozitivní bere opuštění startovních políček.
+Pro výpočet první úrovně stromu se používají paralelní vlákna. Tato úprava přinesla zrychlení výpočtu v~případě, že~je~použit počítač s~více jádry.
+
+Ohodnocovací funkce nejprve zkontroluje, zde se~jedná o~koncovou pozici. Pokud je~koncovou pozicí remíza, je~výsledné ohodnocení sníženo.
+
+Poté se spočítá rozdíl počtu figurek a~ten je vynásoben 20. Pro každou figurku hráče~na~tahu, která je~v~řádku 4, je~připočten bonus 2.
+
+Pro první 2 tahy každého hráče (od začátku hry) je~k~výsledku připočtena náhodná hodnota v~rozmezí 5~-~16.
 
 \subsection{Modul \texttt{MoveStack}}
 Modul implementuje zásobník, který je použit pro uložení tahů, které mohou být odvolány (Undo) nebo~opakovány (Redo).

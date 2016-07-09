@@ -14,3 +14,4 @@ module Depth =
     let dec (depth: T) =
         let (T value) = depth
         T (value - 1)
+    let apply f (T d) = f d 

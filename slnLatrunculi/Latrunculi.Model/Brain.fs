@@ -44,7 +44,8 @@ module Brain =
             | Minimizing -> createMaximizing
 
     type getPositionEvaluationFunction = MoveTree.Position.T -> MoveValue.T
-    let getPositionEvaluationForColor (maximizingColor: Piece.Colors) (position: MoveTree.Position.T): MoveValue.T =
+    let getPositionEvaluationForColor (skipIter: bool) (maximizingColor: Piece.Colors) (position: MoveTree.Position.T): MoveValue.T =
+        let minimizingColor = Piece.swapColor maximizingColor
         let board = position.Board
         let mutable result = MoveValue.getZero
 
@@ -60,7 +61,7 @@ module Brain =
             // eval by number of pieces
             let ownPieces = Board.whitePiecesCount board
             let enemyPieces = Board.blackPiecesCount board
-            result <- MoveValue.add result ((ownPieces - enemyPieces) * 10)
+            result <- MoveValue.add result ((ownPieces - enemyPieces) * 20)
 
             // add random number
             match board.History.UndoItemsCount <= 4 with
@@ -70,12 +71,40 @@ module Brain =
                     result <- MoveValue.add result <| rnd.Next(5, 16)
                 | _ -> ()
             | false -> ()
-
-
+     
+     
         match maximizingColor with
-        | Piece.Colors.Black as color -> 
+        | Piece.Colors.Black -> 
             result <- MoveValue.getInvValue result
-        | _ -> ()
+        | Piece.Colors.White -> 
+            result <- result
+
+        result <- MoveValue.add result <| board.RowSquaresIntFold (fun result square ->
+                                                    if Square.containsColor maximizingColor square then 2 + result else result)
+                                            (Coord.RowNumber 4)
+        result <- MoveValue.add result <| board.RowSquaresIntFold (fun result square ->
+                                                    if Square.containsColor minimizingColor square then -2 + result else result)
+                                            (Coord.RowNumber 4)
+
+        let containsOwnColor = Square.containsColor maximizingColor
+        let containsEnemyColor = Square.containsColor minimizingColor
+        
+        match skipIter with
+        | false ->
+            List.iter (fun coord ->
+                        maybe {
+                            let! rel = Coord.tryGetRelative coord Coord.Direction.Right
+                            let! relrel = Coord.tryGetDoubleRelative coord Coord.Direction.Right
+                            let! relSquare = Board.tryGetSquare board rel
+                            let! relrelSquare = Board.tryGetSquare board relrel
+                            match containsOwnColor relrelSquare && Square.isEmpty relSquare with
+                            | true ->
+                                result <- MoveValue.add result 4
+                                return ()
+                            | false ->
+                                return ()
+                        } |> ignore) <| board.GetCoordsWithPieceColor maximizingColor
+        | true -> ()
 
         result
 
@@ -163,8 +192,8 @@ module Brain =
     let tryGetBestMove (board: Board.T) (color: Piece.Colors) (depth: Depth.T): Async<Result<Move.T, Error>> =
         async {
             try
-                
-                let getPositionEvaluation = getPositionEvaluationForColor color
+                let getPositionEvaluation = getPositionEvaluationForColor false color
+
                 let rootPosition = MoveTree.Position.create (Board.clone board) color <| Rules.checkVictory board
                 // create root node
                 let root = getNodeWithChildren <| MoveTree.createRoot rootPosition

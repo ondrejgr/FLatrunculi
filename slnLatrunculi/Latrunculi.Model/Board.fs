@@ -9,6 +9,10 @@ module Board =
         member val private Squares = sq with get, set
         member val History = History.create() with get, set
 
+        member this.RowSquaresIntFold (fn: int -> Square.T -> int) (rowNumber: Coord.RowNumber) =
+            let rowIndex = Coord.RowIndex.[rowNumber]
+            Array.fold fn 0 this.Squares.[rowIndex]
+
         member this.clone() =
             let result = T()
             result.History <- History.clone this.History
