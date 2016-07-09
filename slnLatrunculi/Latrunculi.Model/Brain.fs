@@ -92,18 +92,26 @@ module Brain =
         match skipIter with
         | false ->
             List.iter (fun coord ->
-                        maybe {
-                            let! rel = Coord.tryGetRelative coord Coord.Direction.Right
-                            let! relrel = Coord.tryGetDoubleRelative coord Coord.Direction.Right
-                            let! relSquare = Board.tryGetSquare board rel
-                            let! relrelSquare = Board.tryGetSquare board relrel
-                            match containsOwnColor relrelSquare && Square.isEmpty relSquare with
-                            | true ->
-                                result <- MoveValue.add result 4
-                                return ()
-                            | false ->
-                                return ()
-                        } |> ignore) <| board.GetCoordsWithPieceColor maximizingColor
+                        result <- MoveValue.add result
+                                                <| (returnDefault 0 <| maybe {
+                                                    let! rel = Coord.tryGetRelative coord Coord.Direction.Right
+                                                    let! relrel = Coord.tryGetDoubleRelative coord Coord.Direction.Right
+                                                    let! relSquare = Board.tryGetSquare board rel
+                                                    let! relrelSquare = Board.tryGetSquare board relrel
+                                                    match containsOwnColor relrelSquare && Square.isEmpty relSquare with
+                                                    | true ->
+                                                        return 4
+                                                    | false ->
+                                                        return 0 })
+                                                + (returnDefault 0 <| maybe {
+                                                    let! rel = Coord.tryGetRelative coord Coord.Direction.Up
+                                                    let! relSquare = Board.tryGetSquare board rel
+                                                    match containsEnemyColor relSquare with
+                                                    | true ->
+                                                        return 5
+                                                    | false ->
+                                                        return 0 }))
+                        <| board.GetCoordsWithPieceColor maximizingColor
         | true -> ()
 
         result

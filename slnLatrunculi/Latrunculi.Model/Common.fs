@@ -15,6 +15,11 @@ let changeError e m =
     | Success x -> Success x
     | Error _ -> Error e
 
+let returnDefault (def: 'TSuccess) (m: Result<'TSuccess, 'TError>): 'TSuccess =
+    match m with
+    | Success x -> x
+    | Error _ -> def
+
 type MaybeBuilder() =
     member this.Bind(m, f) = 
         match m with
